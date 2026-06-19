@@ -13,7 +13,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-    origin:"*",
+    origin:"http://localhost:3000",
     credentials:true
 }));
 
@@ -23,7 +23,10 @@ app.use(morgan('dev'));
 connectDB();
 
 // routes
-app.use("/l", surveyRoutes);
+app.use("/health", (req, res) => {
+    res.send("OK");
+});
+app.use("/l", surveyRoutes);//webhook for typeform survey 
 app.use("/api/user",userRouter);
 app.use("/api/dashboard",dashboardRouter,authMiddleware);
 
