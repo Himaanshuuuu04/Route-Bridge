@@ -111,7 +111,7 @@ export async function removeSurvey(req, res) {
     }
 }
 
-export async function updateSurvey(req, res) {
+export async function   updateSurvey(req, res) {
     try {
 
         const { id } = req.params;
