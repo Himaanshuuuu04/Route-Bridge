@@ -89,3 +89,18 @@ export async function signUp(req, res) {
         res.status(500).json({ message: "Internal Server Error" });
     }
 }
+
+export async function logout(req, res) {
+    try {
+        const isProd = process.env.NODE_ENV === "production" || (req.get("origin") && req.get("origin").startsWith("https"));
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: isProd,
+            sameSite: isProd ? "none" : "strict",
+        });
+        return res.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}

@@ -1,17 +1,33 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ToastProvider } from "./context/ToastContext";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const calSans = localFont({
+  src: [
+    {
+      path: "../public/calsans-static-ui/CalSansUI-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/calsans-static-ui/CalSansUI-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../public/calsans-static-ui/CalSansUI-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../public/calsans-static-ui/CalSansUI-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-calsans",
 });
 
 export const metadata: Metadata = {
@@ -27,9 +43,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${calSans.variable} h-full antialiased dark`}
     >
-      <body className="min-h-full flex flex-col bg-background  text-foreground ">
+      <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
         <TooltipProvider>
           <ToastProvider>
             {children}
