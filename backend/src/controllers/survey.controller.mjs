@@ -1,10 +1,10 @@
 import SurveyModel from "../models/survey.mjs";
-import connectDB from "../config/db.mjs";
+
 
 export async function completeSurvey(req, res) {
     try {
         console.log(req);
-        connectDB();
+    
         const uid = req.query.uid;
         const pid = req.query.pid;
         if (!uid || !pid) {
@@ -30,7 +30,7 @@ export async function completeSurvey(req, res) {
 export async function terminateSurvey(req, res) {
     try {
         console.log(req);
-        connectDB();
+       
         const uid = req.query.uid;
         const pid = req.query.pid;
         if (!uid || !pid) {
@@ -56,7 +56,7 @@ export async function terminateSurvey(req, res) {
 export async function quotafullSurvey(req, res) {
     try {
         console.log(req);
-        connectDB();
+      
         const uid = req.query.uid;
         const pid = req.query.pid;
         if (!uid || !pid) {
@@ -82,7 +82,7 @@ export async function quotafullSurvey(req, res) {
 export async function securitytermSurvey(req, res) {
     try {
         console.log(req);
-        connectDB();
+   
         const uid = req.query.uid;
         const pid = req.query.pid;
         if (!uid || !pid) {

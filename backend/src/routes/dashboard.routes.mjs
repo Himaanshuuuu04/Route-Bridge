@@ -3,15 +3,18 @@ import {getSurveyCount, getRecentSurveys, getCompletedSurveys, getTerminatedSurv
 import authMiddleware from '../middleware/auth.middleware.mjs';
 
 
-const SurveyRouter = express.Router();
-SurveyRouter.use(authMiddleware);
-SurveyRouter.get('/getcount', getSurveyCount);
-SurveyRouter.get('/getRecentSurveys', getRecentSurveys);
-SurveyRouter.get('/getCompletedSurveys', getCompletedSurveys);
-SurveyRouter.get('/getTerminatedSurveys', getTerminatedSurveys);
-SurveyRouter.get('/getQuotaFullSurveys', getQuotaFullSurveys);
-SurveyRouter.get('/getSecurityTermSurveys', getSecurityTermSurveys);
-SurveyRouter.delete('/remove/:id',removeSurvey)
-SurveyRouter.put('/update/:id',updateSurvey)
+const dashboardRouter = express.Router();
 
-export default SurveyRouter;
+dashboardRouter.use(authMiddleware);
+
+dashboardRouter.get('/getcount', getSurveyCount);
+
+dashboardRouter.get('/getRecentSurveys', getRecentSurveys);
+dashboardRouter.get('/getCompletedSurveys', getCompletedSurveys);
+dashboardRouter.get('/getTerminatedSurveys', getTerminatedSurveys);
+dashboardRouter.get('/getQuotaFullSurveys', getQuotaFullSurveys);
+dashboardRouter.get('/getSecurityTermSurveys', getSecurityTermSurveys);
+dashboardRouter.delete('/remove/:id',removeSurvey)
+dashboardRouter.put('/update/:id',updateSurvey)
+
+export default dashboardRouter;

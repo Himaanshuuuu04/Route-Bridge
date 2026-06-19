@@ -1,10 +1,10 @@
 import SurveyModel from "../models/survey.mjs";
-import connectDB from "../config/db.mjs";
+
 
 
 export async function getSurveyCount(req, res) {
     try {
-        connectDB();
+
         const total_entries = await SurveyModel.countDocuments();
         const complete_entries = await SurveyModel.countDocuments({ status: "Complete" });
         const terminate_entries = await SurveyModel.countDocuments({ status: "Terminate" });
@@ -25,7 +25,7 @@ export async function getSurveyCount(req, res) {
 
 export async function getRecentSurveys(req, res) {
     try {
-        connectDB();
+
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 50;
         const skip = (page - 1) * limit;
@@ -39,7 +39,7 @@ export async function getRecentSurveys(req, res) {
 
 export async function getCompletedSurveys(req, res) {
     try {
-        connectDB();
+
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 50;
         const skip = (page - 1) * limit;
@@ -53,7 +53,7 @@ export async function getCompletedSurveys(req, res) {
 
 export async function getTerminatedSurveys(req, res) {
     try {
-        connectDB();
+
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 50;
         const skip = (page - 1) * limit;
@@ -67,7 +67,7 @@ export async function getTerminatedSurveys(req, res) {
 
 export async function getQuotaFullSurveys(req, res) {
     try {
-        connectDB();
+
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 50;
         const skip = (page - 1) * limit;
@@ -81,7 +81,7 @@ export async function getQuotaFullSurveys(req, res) {
 
 export async function getSecurityTermSurveys(req, res) {
     try {
-        connectDB();
+
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 50;
         const skip = (page - 1) * limit;
@@ -95,7 +95,7 @@ export async function getSecurityTermSurveys(req, res) {
 
 export async function removeSurvey(req, res) {
     try {
-        connectDB();
+
         const { id } = req.params;
         if (!id) {
             return res.status(400).json({ message: "Survey ID is required" });
@@ -113,14 +113,14 @@ export async function removeSurvey(req, res) {
 
 export async function updateSurvey(req, res) {
     try {
-        connectDB();
+
         const { id } = req.params;
         const { status } = req.body;
-        if(!id || !status){
+        if (!id || !status) {
             return res.status(400).json({ message: "Survey ID and status are required" });
         }
         const survey = await SurveyModel.findByIdAndUpdate(id, { status }, { new: true });
-        if(!survey){
+        if (!survey) {
             return res.status(404).json({ message: "Survey not found" });
         }
         return res.status(200).json(survey);

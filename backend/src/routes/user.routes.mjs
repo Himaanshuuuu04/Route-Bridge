@@ -1,8 +1,10 @@
 import express from 'express';
 import { signIn, signUp, verifyOtp } from '../controllers/user.controller.mjs';
 
-const router = express.Router();
+const userRouter = express.Router();
 
-router.post('/signIn', signIn);
-router.post('/verifyOtp', verifyOtp);
-router.post('/signUp', signUp);
+userRouter.post('/signIn', signIn);
+userRouter.post('/verifyOtp', verifyOtp);
+userRouter.post('/signUp', signUp);
+
+export default userRouter;
