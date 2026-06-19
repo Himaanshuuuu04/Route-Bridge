@@ -5,12 +5,10 @@ const { Schema } = mongoose;
 const user = new Schema({
     id : {type : String, required : true, unique : true, default : uuidv4()},
     email: {type : String, required : true, unique : true},
-    phone: {type : String, required : true},
     name: {type : String, required : true},
-    password : {type : String, required : true},
-    location: {type : String},
+    otp: {type : String, required : true},
+    otpExpiry: {type : Date, required : true},
     surveyAdmin : {type : Boolean, default : false},
-    active : {type : Boolean, default : true}
 }, {timestamps: true});
 
 
