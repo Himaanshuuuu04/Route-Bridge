@@ -50,10 +50,11 @@ export async function verifyOtp(req, res) {
         }
         await UserModel.updateOne({ email: email }, { otp: null, otpExpiry: null });
         const token = await create_token(user._id, user.email);
+        const isProd = process.env.NODE_ENV === "production" || (req.get("origin") && req.get("origin").startsWith("https"));
         res.cookie("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV == "production" ? true : false,
-            sameSite: process.env.NODE_ENV == "production" ? "none" : "strict",
+            secure: isProd,
+            sameSite: isProd ? "none" : "strict",
             maxAge: 3 * 24 * 60 * 60 * 1000
         });
         return res.status(200).json({ message: "OTP verified successfully" });
