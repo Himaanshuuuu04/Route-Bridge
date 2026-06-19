@@ -1,0 +1,210 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  CLIENT
+  RESPONDENT
+}
+
+enum UserStatus {
+  PENDING
+  VERIFIED
+  SUSPENDED
+}
+
+enum SurveyStatus {
+  ACTIVE
+  PAUSED
+  CLOSED
+}
+
+enum SessionStatus {
+  STARTED
+  COMPLETE
+  TERMINATED
+  QUOTA_FULL
+  SECURITY_TERM
+}
+
+enum TransactionType {
+  SURVEY_REWARD
+  WITHDRAWAL
+  BONUS
+}
+
+enum WithdrawalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PAID
+}
+
+// ── 1. USER TABLE ──
+model User {
+  id                 String       @id @default(uuid())
+  clerkId            String       @unique
+  email              String       @unique
+  phone              String?      @unique
+  role               Role
+  status             UserStatus   @default(PENDING)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  respondent         Respondent?
+  client             Client?
+}
+
+// ── 2. RESPONDENT PROFILE ──
+model Respondent {
+  id                    String               @id @default(uuid())
+  uid                   String               @unique // Respondent Identifier
+  userId                String               @unique
+  user                  User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName              String
+  age                   Int
+  gender                String
+  country               String
+  state                 String
+  city                  String
+  education             String
+  occupation            String
+  incomeRange           String
+  deviceType            String?
+  profileCompleted      Boolean              @default(false)
+  trustScore            Float                @default(100.0)
+  totalCompletedSurveys Int                  @default(0)
+  lifetimeEarnings      Float                @default(0.0)
+  interests             RespondentInterest[]
+  sessions              SurveySession[]
+  wallet                Wallet?
+  withdrawals           WithdrawalRequest[]
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+}
+
+// ── 3. INTERESTS & JOIN TABLE ──
+model Interest {
+  id          String               @id @default(uuid())
+  name        String               @unique
+  respondents RespondentInterest[]
+}
+
+model RespondentInterest {
+  id           String     @id @default(uuid())
+  respondentId String
+  interestId   String
+  respondent   Respondent @relation(fields: [respondentId], references: [id], onDelete: Cascade)
+  interest     Interest   @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@unique([respondentId, interestId])
+}
+
+// ── 4. CLIENTS (BRANDS) ──
+model Client {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName String
+  industry    String
+  website     String?
+  surveys     Survey[]
+  createdAt   DateTime @default(now())
+}
+
+// ── 5. SURVEY ──
+model Survey {
+  id             String            @id @default(uuid())
+  pid            String            @unique // Project ID
+  clientId       String?
+  client         Client?           @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  surveyName     String
+  provider       String
+  surveyUrl      String
+  expectedLength Int
+  rewardAmount   Float
+  quotaRequired  Int?
+  currentQuota   Int               @default(0)
+  status         SurveyStatus      @default(ACTIVE)
+  targetingRules SurveyTargeting[]
+  sessions       SurveySession[]
+  createdAt      DateTime          @default(now())
+}
+
+// ── 6. TARGETING ENGINE RULES ──
+model SurveyTargeting {
+  id          String  @id @default(uuid())
+  surveyId    String
+  survey      Survey  @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  country     String?
+  state       String?
+  city        String?
+  gender      String?
+  minAge      Int?
+  maxAge      Int?
+  education   String?
+  occupation  String?
+  incomeRange String?
+}
+
+// ── 7. SURVEY SESSION ──
+model SurveySession {
+  id             String             @id @default(uuid())
+  clickId        String             @unique // Unique redirect click ID
+  respondentId   String
+  surveyId       String
+  respondent     Respondent         @relation(fields: [respondentId], references: [id], onDelete: Cascade)
+  survey         Survey             @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  uid            String             // Matched Respondent UID
+  pid            String             // Matched Survey PID
+  status         SessionStatus      @default(STARTED)
+  startedAt      DateTime           @default(now())
+  completedAt    DateTime?
+  durationSeconds Int?
+  rewardCredited Boolean            @default(false)
+  createdAt      DateTime           @default(now())
+  transaction    WalletTransaction?
+
+  @@index([uid])
+  @@index([pid])
+  @@index([clickId])
+}
+
+// ── 8. WALLET ──
+model Wallet {
+  id           String              @id @default(uuid())
+  respondentId String              @unique
+  respondent   Respondent          @relation(fields: [respondentId], references: [id], onDelete: Cascade)
+  balance      Float               @default(0.0)
+  transactions WalletTransaction[]
+}
+
+// ── 9. WALLET TRANSACTIONS ──
+model WalletTransaction {
+  id              String          @id @default(uuid())
+  transactionId   String          @unique // Ledger transaction ID
+  walletId        String
+  wallet          Wallet          @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  surveySessionId String?         @unique
+  surveySession   SurveySession?  @relation(fields: [surveySessionId], references: [id], onDelete: SetNull)
+  amount          Float
+  transactionType TransactionType
+  createdAt       DateTime        @default(now())
+}
+
+// ── 10. WITHDRAWALS ──
+model WithdrawalRequest {
+  id           String           @id @default(uuid())
+  respondentId String
+  respondent   Respondent       @relation(fields: [respondentId], references: [id], onDelete: Cascade)
+  amount       Float
+  payoutMethod String
+  payoutDetails Json
+  status       WithdrawalStatus @default(PENDING)
+  requestedAt  DateTime         @default(now())
+  processedAt  DateTime?
+}

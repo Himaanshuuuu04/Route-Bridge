@@ -9,9 +9,18 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.mjs",
-    "dev": "nodemon src/index.mjs"
+    "dev": "nodemon src/index.mjs",
+    "seed": "node prisma/seed.mjs",
+    "generate": "prisma generate",
+    "migrate": "prisma migrate dev",
+    "status": "prisma migrate status"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.mjs"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "axios": "^1.18.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
@@ -23,6 +32,8 @@
     "mongoose": "^9.7.1",
     "morgan": "^1.11.0",
     "nodemailer": "^9.0.1",
+    "pg": "^8.22.0",
+    "prisma": "^7.8.0",
     "uuid": "^14.0.0"
   }
 }
