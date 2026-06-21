@@ -10,6 +10,7 @@ import authMiddleware from "./middleware/auth.middleware.mjs";
 import connectDB from "./config/db.mjs"
 
 dotenv.config();
+dotenv.config({ path: "../.env" });
 const app = express();
 
 const allowedOrigins = [

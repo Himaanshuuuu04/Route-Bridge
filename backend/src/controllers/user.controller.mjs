@@ -4,10 +4,10 @@ import dotenv from "dotenv"
 import { sendMail } from "../helpers/sender.mjs";
 
 dotenv.config();
+dotenv.config({ path: "../.env" });
 
 export async function signIn(req, res) {
     try {
-  
         const email = req.body.email;
         if (!email) {
             return res.status(400).json({ message: "Bad Request" });
