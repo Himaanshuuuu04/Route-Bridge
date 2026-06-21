@@ -13,7 +13,11 @@ dotenv.config();
 dotenv.config({ path: "../.env" });
 const app = express();
 
+// Trust reverse proxy (Caddy) for secure cookies and headers
+app.set("trust proxy", 1);
+
 const allowedOrigins = [
+    "https://dashboard.evoglobalinsight.com",
     "https://portal.evoglobalinsight.com",
     "http://localhost:3000",
     "http://localhost:5173",

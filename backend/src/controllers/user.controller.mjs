@@ -51,12 +51,16 @@ export async function verifyOtp(req, res) {
         await UserModel.updateOne({ email: email }, { otp: null, otpExpiry: null });
         const token = await create_token(user._id, user.email);
         const isProd = process.env.NODE_ENV === "production" || (req.get("origin") && req.get("origin").startsWith("https"));
-        res.cookie("token", token, {
+        const cookieOptions = {
             httpOnly: true,
             secure: isProd,
-            sameSite: isProd ? "none" : "strict",
+            sameSite: process.env.COOKIE_SAME_SITE || (isProd ? "none" : "strict"),
             maxAge: 3 * 24 * 60 * 60 * 1000
-        });
+        };
+        if (process.env.COOKIE_DOMAIN) {
+            cookieOptions.domain = process.env.COOKIE_DOMAIN;
+        }
+        res.cookie("token", token, cookieOptions);
         return res.status(200).json({ message: "OTP verified successfully" });
 
     } catch (error) {
@@ -93,11 +97,15 @@ export async function signUp(req, res) {
 export async function logout(req, res) {
     try {
         const isProd = process.env.NODE_ENV === "production" || (req.get("origin") && req.get("origin").startsWith("https"));
-        res.clearCookie("token", {
+        const cookieOptions = {
             httpOnly: true,
             secure: isProd,
-            sameSite: isProd ? "none" : "strict",
-        });
+            sameSite: process.env.COOKIE_SAME_SITE || (isProd ? "none" : "strict"),
+        };
+        if (process.env.COOKIE_DOMAIN) {
+            cookieOptions.domain = process.env.COOKIE_DOMAIN;
+        }
+        res.clearCookie("token", cookieOptions);
         return res.status(200).json({ message: "Logged out successfully" });
     } catch (error) {
         console.log(error);
