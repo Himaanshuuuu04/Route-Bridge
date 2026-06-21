@@ -1,15 +1,38 @@
 import SurveyModel from "../models/survey.mjs";
 
-
+function buildDateFilter(req) {
+    const filter = {};
+    if (req.query.startDate || req.query.endDate) {
+        filter.createdAt = {};
+        if (req.query.startDate) {
+            const start = new Date(req.query.startDate);
+            if (!isNaN(start.getTime())) {
+                start.setUTCHours(0, 0, 0, 0);
+                filter.createdAt.$gte = start;
+            }
+        }
+        if (req.query.endDate) {
+            const end = new Date(req.query.endDate);
+            if (!isNaN(end.getTime())) {
+                end.setUTCHours(23, 59, 59, 999);
+                filter.createdAt.$lte = end;
+            }
+        }
+        if (Object.keys(filter.createdAt).length === 0) {
+            delete filter.createdAt;
+        }
+    }
+    return filter;
+}
 
 export async function getSurveyCount(req, res) {
     try {
-
-        const total_entries = await SurveyModel.countDocuments();
-        const complete_entries = await SurveyModel.countDocuments({ status: "Complete" });
-        const terminate_entries = await SurveyModel.countDocuments({ status: "Terminate" });
-        const quota_full_entries = await SurveyModel.countDocuments({ status: "Quota Full" });
-        const security_term_entries = await SurveyModel.countDocuments({ status: "Security Term" });
+        const filter = buildDateFilter(req);
+        const total_entries = await SurveyModel.countDocuments(filter);
+        const complete_entries = await SurveyModel.countDocuments({ ...filter, status: "Complete" });
+        const terminate_entries = await SurveyModel.countDocuments({ ...filter, status: "Terminate" });
+        const quota_full_entries = await SurveyModel.countDocuments({ ...filter, status: "Quota Full" });
+        const security_term_entries = await SurveyModel.countDocuments({ ...filter, status: "Security Term" });
         return res.status(200).json({
             total_entries,
             complete_entries,
@@ -25,11 +48,11 @@ export async function getSurveyCount(req, res) {
 
 export async function getRecentSurveys(req, res) {
     try {
-
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 50;
         const skip = (page - 1) * limit;
-        const surveys = await SurveyModel.find().sort({ createdAt: -1 }).skip(skip).limit(limit);
+        const filter = buildDateFilter(req);
+        const surveys = await SurveyModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit);
         return res.status(200).json(surveys);
     } catch (error) {
         console.log(error);
@@ -39,11 +62,11 @@ export async function getRecentSurveys(req, res) {
 
 export async function getCompletedSurveys(req, res) {
     try {
-
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 50;
         const skip = (page - 1) * limit;
-        const surveys = await SurveyModel.find({ status: "Complete" }).sort({ createdAt: -1 }).skip(skip).limit(limit);
+        const filter = { ...buildDateFilter(req), status: "Complete" };
+        const surveys = await SurveyModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit);
         return res.status(200).json(surveys);
     } catch (error) {
         console.log(error);
@@ -53,11 +76,11 @@ export async function getCompletedSurveys(req, res) {
 
 export async function getTerminatedSurveys(req, res) {
     try {
-
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 50;
         const skip = (page - 1) * limit;
-        const surveys = await SurveyModel.find({ status: "Terminate" }).sort({ createdAt: -1 }).skip(skip).limit(limit);
+        const filter = { ...buildDateFilter(req), status: "Terminate" };
+        const surveys = await SurveyModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit);
         return res.status(200).json(surveys);
     } catch (error) {
         console.log(error);
@@ -67,11 +90,11 @@ export async function getTerminatedSurveys(req, res) {
 
 export async function getQuotaFullSurveys(req, res) {
     try {
-
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 50;
         const skip = (page - 1) * limit;
-        const surveys = await SurveyModel.find({ status: "Quota Full" }).sort({ createdAt: -1 }).skip(skip).limit(limit);
+        const filter = { ...buildDateFilter(req), status: "Quota Full" };
+        const surveys = await SurveyModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit);
         return res.status(200).json(surveys);
     } catch (error) {
         console.log(error);
@@ -81,11 +104,11 @@ export async function getQuotaFullSurveys(req, res) {
 
 export async function getSecurityTermSurveys(req, res) {
     try {
-
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 50;
         const skip = (page - 1) * limit;
-        const surveys = await SurveyModel.find({ status: "Security Term" }).sort({ createdAt: -1 }).skip(skip).limit(limit);
+        const filter = { ...buildDateFilter(req), status: "Security Term" };
+        const surveys = await SurveyModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit);
         return res.status(200).json(surveys);
     } catch (error) {
         console.log(error);
@@ -95,7 +118,6 @@ export async function getSecurityTermSurveys(req, res) {
 
 export async function removeSurvey(req, res) {
     try {
-
         const { id } = req.params;
         if (!id) {
             return res.status(400).json({ message: "Survey ID is required" });
@@ -111,9 +133,8 @@ export async function removeSurvey(req, res) {
     }
 }
 
-export async function   updateSurvey(req, res) {
+export async function updateSurvey(req, res) {
     try {
-
         const { id } = req.params;
         const { status } = req.body;
         if (!id || !status) {

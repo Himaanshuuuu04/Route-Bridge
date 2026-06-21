@@ -14,6 +14,8 @@ export interface Survey {
   pid: string;
   status: string;
   ipAddress: string;
+  country?: string;
+  countryCode?: string;
   createdAt: string;
 }
 
@@ -43,6 +45,12 @@ interface AppState {
   setPage: (page: number) => void;
   limit: number;
   setLimit: (limit: number) => void;
+  
+  // Date Filters
+  startDate: string;
+  setStartDate: (date: string) => void;
+  endDate: string;
+  setEndDate: (date: string) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -66,4 +74,9 @@ export const useAppStore = create<AppState>((set) => ({
   setPage: (page) => set({ page }),
   limit: 10,
   setLimit: (limit) => set({ limit }),
+  
+  startDate: '',
+  setStartDate: (startDate) => set({ startDate }),
+  endDate: '',
+  setEndDate: (endDate) => set({ endDate }),
 }));

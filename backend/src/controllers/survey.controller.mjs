@@ -1,20 +1,29 @@
 import SurveyModel from "../models/survey.mjs";
-
+import { getCountryFromIp } from "../helpers/ip.mjs";
 
 export async function completeSurvey(req, res) {
     try {
-        console.log(req);
+      
     
         const uid = req.query.uid;
         const pid = req.query.pid;
         if (!uid || !pid) {
             return res.status(400).json({ message: "Bad Request" });
         }
-        // const ipAddress = req.query.ipAddress;
+        
+        let ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.ip || req.socket.remoteAddress || '';
+        if (ip.includes(',')) {
+            ip = ip.split(',')[0].trim();
+        }
+        
+        const geo = await getCountryFromIp(ip);
+
         const survey = await SurveyModel.create({
             uid: uid,
             pid: pid,
-            ipAddress: req.ip,
+            ipAddress: ip,
+            country: geo.country,
+            countryCode: geo.countryCode,
             status: "Complete"
         });
         if (!survey) {
@@ -29,18 +38,27 @@ export async function completeSurvey(req, res) {
 
 export async function terminateSurvey(req, res) {
     try {
-        console.log(req);
+      
        
         const uid = req.query.uid;
         const pid = req.query.pid;
         if (!uid || !pid) {
             return res.status(400).json({ message: "Bad Request" });
         }
-        // const ipAddress = req.query.ipAddress;
+        
+        let ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.ip || req.socket.remoteAddress || '';
+        if (ip.includes(',')) {
+            ip = ip.split(',')[0].trim();
+        }
+        
+        const geo = await getCountryFromIp(ip);
+
         const survey = await SurveyModel.create({
             uid: uid,
             pid: pid,
-            ipAddress: req.ip,
+            ipAddress: ip,
+            country: geo.country,
+            countryCode: geo.countryCode,
             status: "Terminate"
         });
         if (!survey) {
@@ -55,18 +73,27 @@ export async function terminateSurvey(req, res) {
 
 export async function quotafullSurvey(req, res) {
     try {
-        console.log(req);
+
       
         const uid = req.query.uid;
         const pid = req.query.pid;
         if (!uid || !pid) {
             return res.status(400).json({ message: "Bad Request" });
         }
-        // const ipAddress = req.query.ipAddress;
+        
+        let ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.ip || req.socket.remoteAddress || '';
+        if (ip.includes(',')) {
+            ip = ip.split(',')[0].trim();
+        }
+        
+        const geo = await getCountryFromIp(ip);
+
         const survey = await SurveyModel.create({
             uid: uid,
             pid: pid,
-            ipAddress: req.ip,
+            ipAddress: ip,
+            country: geo.country,
+            countryCode: geo.countryCode,
             status: "Quota Full"
         });
         if (!survey) {
@@ -81,18 +108,27 @@ export async function quotafullSurvey(req, res) {
 
 export async function securitytermSurvey(req, res) {
     try {
-        console.log(req);
+  
    
         const uid = req.query.uid;
         const pid = req.query.pid;
         if (!uid || !pid) {
             return res.status(400).json({ message: "Bad Request" });
         }
-        // const ipAddress = req.query.ipAddress;
+        
+        let ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.ip || req.socket.remoteAddress || '';
+        if (ip.includes(',')) {
+            ip = ip.split(',')[0].trim();
+        }
+        
+        const geo = await getCountryFromIp(ip);
+
         const survey = await SurveyModel.create({
             uid: uid,
             pid: pid,
-            ipAddress: req.ip,
+            ipAddress: ip,
+            country: geo.country,
+            countryCode: geo.countryCode,
             status: "Security Term"
         });
 
