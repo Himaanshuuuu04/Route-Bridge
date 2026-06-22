@@ -1,29 +1,53 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import api from "../../lib/api";
+
+type ScreenerConfig = Record<string, string | number>;
+
+interface AxiosErrorResponse {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
 
 export default function ScreenerPage({ params }: { params: Promise<{ hash: string }> }) {
   const resolvedParams = use(params);
-  const router = useRouter();
   const searchParams = useSearchParams();
   const vendor_rid = searchParams.get('vendor_rid');
 
   const [loading, setLoading] = useState(true);
-  const [config, setConfig] = useState<any>(null);
-  const [answers, setAnswers] = useState<any>({});
+  const [config, setConfig] = useState<ScreenerConfig | null>(null);
+  const [answers, setAnswers] = useState<Record<string, string | number>>({});
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Check if token exists in localStorage
+    const token = localStorage.getItem(`screener_token_${resolvedParams.hash}`);
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
     // Fetch GET /api/screener/config/:hash
-    api.get(`/api/screener/config/${resolvedParams.hash}`)
+    api.get(`/api/screener/config/${resolvedParams.hash}`, { headers })
       .then(res => {
-        setConfig(res.data.eligibilityRules);
-        setLoading(false);
+        if (res.data.status === 'rejected') {
+          setError(res.data.message || "Sorry, you do not qualify for this survey.");
+          setLoading(false);
+        } else if (res.data.status === 'qualified' && res.data.redirectUrl) {
+          // If the user already qualified and is visiting again, forward them
+          window.location.href = res.data.redirectUrl;
+        } else {
+          setConfig(res.data.eligibilityRules);
+          setLoading(false);
+        }
       })
       .catch(err => {
-        setError(err.response?.data?.message || "Failed to load screener");
+        const errorMsg = err && typeof err === 'object' && 'response' in err
+          ? (err as AxiosErrorResponse).response?.data?.message
+          : null;
+        setError(errorMsg || "Failed to load screener");
         setLoading(false);
       });
   }, [resolvedParams.hash]);
@@ -38,13 +62,20 @@ export default function ScreenerPage({ params }: { params: Promise<{ hash: strin
         answers
       });
 
+      if (res.data.token) {
+        localStorage.setItem(`screener_token_${resolvedParams.hash}`, res.data.token);
+      }
+
       if (res.data.status === 'qualified') {
         window.location.href = res.data.redirectUrl;
       } else {
         setError("Sorry, you do not qualify for this survey.");
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Submission failed");
+    } catch (err: unknown) {
+      const errorMsg = err && typeof err === 'object' && 'response' in err
+        ? (err as AxiosErrorResponse).response?.data?.message
+        : null;
+      setError(errorMsg || "Submission failed");
     } finally {
       setLoading(false);
     }

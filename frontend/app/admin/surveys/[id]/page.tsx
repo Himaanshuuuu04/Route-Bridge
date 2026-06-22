@@ -65,8 +65,8 @@ export default function SurveyDetailsPage({ params }: { params: Promise<{ id: st
     );
   }
 
-  // Frontend URL for redirect links
-  const frontendUrl = process.env.NEXT_PUBLIC_API_URL || window.location.origin;
+  // Backend API URL for redirect links (as backend handles the /r/:hash route)
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
   return (
     <div className="flex flex-col gap-6">
@@ -142,7 +142,7 @@ export default function SurveyDetailsPage({ params }: { params: Promise<{ id: st
                     // Use backend route (e.g. http://localhost:5000/r/:hash)
                     // We assume the Next API proxy or the backend URL handles /r/:hash directly.
                     // The backend index.mjs maps /r to trafficRoutes.
-                    const redirectUrl = `${frontendUrl}/r/${vl.hash}?vendor_rid=[ID]`;
+                    const redirectUrl = `${backendUrl}/r/${vl.hash}?vendor_rid=[ID]`;
                     
                     return (
                       <div key={vl._id} className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/30">

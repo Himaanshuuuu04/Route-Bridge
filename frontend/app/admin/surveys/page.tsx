@@ -69,6 +69,9 @@ export default function SurveysPage() {
   // Fast add states
   const [newSupplierName, setNewSupplierName] = useState("");
   const [isAddingSupplier, setIsAddingSupplier] = useState(false);
+  const [newVendorName, setNewVendorName] = useState("");
+  const [newVendorPostback, setNewVendorPostback] = useState("");
+  const [isAddingVendor, setIsAddingVendor] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -155,6 +158,24 @@ export default function SurveysPage() {
       showToast("Supplier created", "success");
     } catch (error) {
       showToast("Failed to create supplier", "error");
+    }
+  };
+
+  const handleCreateVendor = async () => {
+    if (!newVendorName.trim()) return;
+    try {
+      const res = await api.post('/api/admin/surveys/vendors', { 
+        name: newVendorName.trim(), 
+        postbackUrl: newVendorPostback.trim() || undefined,
+        isActive: true 
+      });
+      setVendors([res.data, ...vendors]);
+      setNewVendorName("");
+      setNewVendorPostback("");
+      setIsAddingVendor(false);
+      showToast("Vendor created successfully", "success");
+    } catch (error) {
+      showToast("Failed to create vendor", "error");
     }
   };
 
@@ -430,10 +451,43 @@ export default function SurveysPage() {
             <div className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-lg p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold flex items-center gap-2"><LinkIcon className="h-4 w-4 text-indigo-500" /> Vendor Links</h3>
-                <Button type="button" variant="outline" size="sm" onClick={() => setVendorLinks([...vendorLinks, { vendorId: "", quota: 0, hash: "" }])}>
-                  <Plus className="h-3 w-3 mr-1" /> Add Vendor
-                </Button>
+                <div className="flex gap-2">
+                  {!isAddingVendor && (
+                    <Button type="button" variant="outline" size="sm" onClick={() => setIsAddingVendor(true)} title="Create New Vendor">
+                      <Plus className="h-3 w-3 mr-1" /> Create Vendor
+                    </Button>
+                  )}
+                  <Button type="button" variant="outline" size="sm" onClick={() => setVendorLinks([...vendorLinks, { vendorId: "", quota: 0, hash: "" }])}>
+                    <Plus className="h-3 w-3 mr-1" /> Link Vendor
+                  </Button>
+                </div>
               </div>
+
+              {isAddingVendor && (
+                <div className="bg-white dark:bg-slate-950 p-3 rounded-lg border border-slate-200 dark:border-slate-800 space-y-3 shadow-sm">
+                  <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">Create New Vendor</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <Input 
+                      placeholder="Vendor Name" 
+                      value={newVendorName} 
+                      onChange={e => setNewVendorName(e.target.value)} 
+                    />
+                    <Input 
+                      placeholder="Postback URL (optional)" 
+                      value={newVendorPostback} 
+                      onChange={e => setNewVendorPostback(e.target.value)} 
+                    />
+                  </div>
+                  <div className="flex justify-end gap-2 text-xs">
+                    <Button type="button" variant="ghost" size="sm" onClick={() => {
+                      setIsAddingVendor(false);
+                      setNewVendorName("");
+                      setNewVendorPostback("");
+                    }}>Cancel</Button>
+                    <Button type="button" size="sm" onClick={handleCreateVendor} className="bg-emerald-600 hover:bg-emerald-700 text-white">Save Vendor</Button>
+                  </div>
+                </div>
+              )}
               {vendorLinks.length === 0 ? (
                 <p className="text-xs text-slate-500 italic">No vendors linked. Add a vendor to generate a secure routing link.</p>
               ) : (
