@@ -75,7 +75,7 @@ export function renderSurveyTemplate(status, pid, uid, ipAddress, createdAt) {
 
         .logo {
             max-width: 320px;
-            height: auto;
+            height: 100px;
         }
 
         .card {
@@ -190,7 +190,7 @@ export function renderSurveyTemplate(status, pid, uid, ipAddress, createdAt) {
 </head>
 <body>
     <div class="logo-container">
-        <img src="/full_logo.webp" alt="EvoGlobalInsight Logo" class="logo">
+        <img src="https://i.postimg.cc/KvwKr1L2/full-logo.webp" alt="EvoGlobalInsight Logo" class="logo">
     </div>
 
     <div class="card">
