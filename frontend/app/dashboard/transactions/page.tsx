@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Activity, RefreshCw, Search } from "lucide-react";
-import { useGetTransactionsQuery } from "@/app/store/apiSlice";
+import { Activity, RefreshCw, Search, Trash2 } from "lucide-react";
+import { useGetTransactionsQuery, useDeleteTransactionMutation } from "@/app/store/apiSlice";
+import { useToast } from "@/app/context/ToastContext";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +16,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function TransactionsPage() {
   const [search, setSearch] = useState("");
   const { data: transactions = [], isLoading, isFetching, refetch } = useGetTransactionsQuery();
+  const [deleteTransaction] = useDeleteTransactionMutation();
+  const { showToast } = useToast();
+
+  const handleDelete = async (id: string) => {
+    if (confirm("Are you sure you want to delete this transaction record?")) {
+      try {
+        await deleteTransaction(id).unwrap();
+        showToast("Transaction deleted successfully", "success");
+      } catch {
+        showToast("Failed to delete transaction", "error");
+      }
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -84,7 +98,8 @@ export default function TransactionsPage() {
                   <TableHead className="font-semibold text-zinc-400">Survey</TableHead>
                   <TableHead className="font-semibold text-zinc-400">Vendor</TableHead>
                   <TableHead className="font-semibold text-zinc-400">Status</TableHead>
-                  <TableHead className="font-semibold text-zinc-400 text-right pr-6">Started At</TableHead>
+                  <TableHead className="font-semibold text-zinc-400 text-right">Started At</TableHead>
+                  <TableHead className="w-[60px] pr-6 text-right font-semibold text-zinc-400">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -96,12 +111,13 @@ export default function TransactionsPage() {
                         <TableCell><Skeleton className="h-10 w-32 bg-white/5 rounded-md" /></TableCell>
                         <TableCell><Skeleton className="h-5 w-20 bg-white/5 rounded-md" /></TableCell>
                         <TableCell><Skeleton className="h-6 w-24 bg-white/5 rounded-full" /></TableCell>
-                        <TableCell className="text-right pr-6"><Skeleton className="h-5 w-32 ml-auto bg-white/5 rounded-md" /></TableCell>
+                        <TableCell className="text-right"><Skeleton className="h-5 w-32 ml-auto bg-white/5 rounded-md" /></TableCell>
+                        <TableCell className="text-right pr-6"><Skeleton className="h-8 w-8 ml-auto bg-white/5 rounded-lg" /></TableCell>
                       </TableRow>
                     ))
                   ) : filtered.length === 0 ? (
                     <TableRow className="border-none">
-                      <TableCell colSpan={5} className="h-32 text-center text-zinc-500 font-medium">
+                      <TableCell colSpan={6} className="h-32 text-center text-zinc-500 font-medium">
                         <div className="flex flex-col items-center justify-center">
                           <Activity className="h-8 w-8 text-zinc-600 mb-2" />
                           <p>No transactions found.</p>
@@ -136,10 +152,21 @@ export default function TransactionsPage() {
                         <TableCell>
                           {getStatusBadge(t.status)}
                         </TableCell>
-                        <TableCell className="text-right pr-6 text-sm text-zinc-500">
+                        <TableCell className="text-right text-sm text-zinc-500">
                           {new Date(t.startedAt).toLocaleString(undefined, { 
                             month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
                           })}
+                        </TableCell>
+                        <TableCell className="text-right pr-6">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => handleDelete(t._id)}
+                            title="Delete Transaction"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </TableCell>
                       </motion.tr>
                     ))

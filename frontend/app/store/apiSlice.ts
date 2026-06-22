@@ -66,11 +66,14 @@ export interface Survey {
 export interface Supplier {
   _id: string;
   name: string;
+  isActive?: boolean;
 }
 
 export interface Vendor {
   _id: string;
   name: string;
+  postbackUrl?: string;
+  isActive?: boolean;
 }
 
 export interface Transaction {
@@ -171,6 +174,10 @@ export const apiSlice = createApi({
       query: (data) => ({ url: '/api/admin/surveys/suppliers', method: 'POST', data }),
       invalidatesTags: ['Suppliers'],
     }),
+    deleteSupplier: builder.mutation<{ message: string }, string>({
+      query: (id) => ({ url: `/api/admin/surveys/suppliers/${id}`, method: 'DELETE' }),
+      invalidatesTags: ['Suppliers', 'AdminSurveys', 'Surveys'],
+    }),
     getVendors: builder.query<Vendor[], void>({
       query: () => ({ url: '/api/admin/surveys/vendors', method: 'GET' }),
       providesTags: ['Vendors'],
@@ -179,9 +186,17 @@ export const apiSlice = createApi({
       query: (data) => ({ url: '/api/admin/surveys/vendors', method: 'POST', data }),
       invalidatesTags: ['Vendors'],
     }),
+    deleteVendor: builder.mutation<{ message: string }, string>({
+      query: (id) => ({ url: `/api/admin/surveys/vendors/${id}`, method: 'DELETE' }),
+      invalidatesTags: ['Vendors', 'AdminSurveys', 'Surveys'],
+    }),
     getTransactions: builder.query<Transaction[], void>({
       query: () => ({ url: '/api/admin/surveys/transactions?limit=100', method: 'GET' }),
       providesTags: ['Transactions'],
+    }),
+    deleteTransaction: builder.mutation<{ message: string }, string>({
+      query: (id) => ({ url: `/api/admin/surveys/transactions/${id}`, method: 'DELETE' }),
+      invalidatesTags: ['Transactions'],
     }),
   }),
 });
@@ -199,7 +214,10 @@ export const {
   useDeleteAdminSurveyMutation,
   useGetSuppliersQuery,
   useCreateSupplierMutation,
+  useDeleteSupplierMutation,
   useGetVendorsQuery,
   useCreateVendorMutation,
+  useDeleteVendorMutation,
   useGetTransactionsQuery,
+  useDeleteTransactionMutation,
 } = apiSlice;

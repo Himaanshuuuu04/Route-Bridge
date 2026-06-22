@@ -179,3 +179,55 @@ export async function getTransactions(req, res) {
         res.status(500).json({ message: "Internal Server Error" });
     }
 }
+
+export async function deleteSupplier(req, res) {
+    try {
+        const { id } = req.params;
+        
+        // Remove supplier reference from surveys
+        await SurveyModel.updateMany({ supplierId: id }, { $unset: { supplierId: "" } });
+        
+        const deletedSupplier = await SupplierModel.findByIdAndDelete(id);
+        if (!deletedSupplier) return res.status(404).json({ message: "Supplier not found" });
+        
+        res.status(200).json({ message: "Supplier deleted successfully", deletedSupplier });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+export async function deleteVendor(req, res) {
+    try {
+        const { id } = req.params;
+        
+        // Remove vendor links from surveys
+        await SurveyModel.updateMany(
+            { "vendorLinks.vendorId": id },
+            { $pull: { vendorLinks: { vendorId: id } } }
+        );
+        
+        const deletedVendor = await VendorModel.findByIdAndDelete(id);
+        if (!deletedVendor) return res.status(404).json({ message: "Vendor not found" });
+        
+        res.status(200).json({ message: "Vendor deleted successfully", deletedVendor });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+export async function deleteTransaction(req, res) {
+    try {
+        const { id } = req.params;
+        
+        const deletedTransaction = await TransactionModel.findByIdAndDelete(id);
+        if (!deletedTransaction) return res.status(404).json({ message: "Transaction not found" });
+        
+        res.status(200).json({ message: "Transaction deleted successfully", deletedTransaction });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+

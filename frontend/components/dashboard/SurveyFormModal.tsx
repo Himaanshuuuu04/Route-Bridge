@@ -11,8 +11,10 @@ import { useToast } from "@/app/context/ToastContext";
 import {
   useGetSuppliersQuery,
   useCreateSupplierMutation,
+  useDeleteSupplierMutation,
   useGetVendorsQuery,
   useCreateVendorMutation,
+  useDeleteVendorMutation,
   useCreateAdminSurveyMutation,
   useUpdateAdminSurveyMutation,
   Survey,
@@ -31,7 +33,9 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
   const { data: vendors = [] } = useGetVendorsQuery(undefined, { skip: !isOpen });
   
   const [createSupplier] = useCreateSupplierMutation();
+  const [deleteSupplier] = useDeleteSupplierMutation();
   const [createVendor] = useCreateVendorMutation();
+  const [deleteVendor] = useDeleteVendorMutation();
   const [createSurvey, { isLoading: isCreating }] = useCreateAdminSurveyMutation();
   const [updateSurvey, { isLoading: isUpdating }] = useUpdateAdminSurveyMutation();
 
@@ -119,6 +123,32 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
       showToast("Vendor created successfully", "success");
     } catch {
       showToast("Failed to create vendor", "error");
+    }
+  };
+
+  const handleDeleteSupplier = async (id: string) => {
+    if (confirm("Are you sure you want to delete this supplier? This will remove it from all surveys.")) {
+      try {
+        await deleteSupplier(id).unwrap();
+        if (formData.supplierId === id) {
+          setFormData({ ...formData, supplierId: "" });
+        }
+        showToast("Supplier deleted successfully", "success");
+      } catch {
+        showToast("Failed to delete supplier", "error");
+      }
+    }
+  };
+
+  const handleDeleteVendor = async (id: string) => {
+    if (confirm("Are you sure you want to delete this vendor? This will remove it from all surveys and routing links.")) {
+      try {
+        await deleteVendor(id).unwrap();
+        setVendorLinks(vendorLinks.filter(vl => vl.vendorId !== id));
+        showToast("Vendor deleted successfully", "success");
+      } catch {
+        showToast("Failed to delete vendor", "error");
+      }
     }
   };
 
@@ -264,6 +294,25 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                             <Button type="button" size="sm" onClick={handleCreateSupplier} className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium">Save</Button>
                             <Button type="button" size="sm" variant="ghost" onClick={() => { setIsAddingSupplier(false); setNewSupplierName(""); }} className="text-zinc-400 hover:text-white hover:bg-zinc-900"><X className="h-4 w-4" /></Button>
                           </div>
+                          
+                          {suppliers.length > 0 && (
+                            <div className="pt-2 border-t border-emerald-500/10 space-y-1 max-h-[140px] overflow-y-auto custom-scrollbar">
+                              <div className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1 select-none">Existing Suppliers</div>
+                              {suppliers.map(sup => (
+                                <div key={sup._id} className="flex items-center justify-between text-xs py-1 px-1.5 rounded hover:bg-zinc-900/50 group/sup">
+                                  <span className="text-zinc-300 truncate">{sup.name}</span>
+                                  <button 
+                                    type="button" 
+                                    onClick={() => handleDeleteSupplier(sup._id)}
+                                    className="text-zinc-500 hover:text-red-400 transition-colors opacity-0 group-hover/sup:opacity-100 p-0.5"
+                                    title={`Delete ${sup.name}`}
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -488,6 +537,28 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                             Save Vendor
                           </Button>
                         </div>
+
+                        {vendors.length > 0 && (
+                          <div className="pt-3 border-t border-violet-500/10 space-y-1 max-h-[140px] overflow-y-auto custom-scrollbar">
+                            <div className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1 select-none">Existing Vendors</div>
+                            {vendors.map(v => (
+                              <div key={v._id} className="flex items-center justify-between text-xs py-1 px-1.5 rounded hover:bg-zinc-900/50 group/v">
+                                <div className="flex flex-col min-w-0">
+                                  <span className="text-zinc-300 truncate font-medium">{v.name}</span>
+                                  {v.postbackUrl && <span className="text-[10px] text-zinc-500 truncate">{v.postbackUrl}</span>}
+                                </div>
+                                <button 
+                                  type="button" 
+                                  onClick={() => handleDeleteVendor(v._id)}
+                                  className="text-zinc-500 hover:text-red-400 transition-colors opacity-0 group-hover/v:opacity-100 p-0.5 shrink-0 ml-2"
+                                  title={`Delete ${v.name}`}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </motion.div>
                     )}
                   </AnimatePresence>
