@@ -8,7 +8,7 @@ export const processSupplierWebhook = async (supplierId, payload) => {
         throw new Error('Missing uid in webhook payload');
     }
 
-    const transaction = await TransactionModel.findOne({ transactionToken: uid });
+    const transaction = await TransactionModel.findOne({ transactionToken: uid }).sort({ createdAt: -1 });
     if (!transaction) {
         // We log and ignore if transaction isn't found
         console.warn(`Webhook received for unknown transactionToken: ${uid}`);

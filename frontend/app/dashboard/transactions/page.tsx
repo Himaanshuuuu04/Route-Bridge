@@ -97,6 +97,7 @@ export default function TransactionsPage() {
                   <TableHead className="font-semibold text-zinc-400 pl-6 py-4 w-[250px]">Transaction ID / RID</TableHead>
                   <TableHead className="font-semibold text-zinc-400">Survey</TableHead>
                   <TableHead className="font-semibold text-zinc-400">Vendor</TableHead>
+                  <TableHead className="font-semibold text-zinc-400">IP Address</TableHead>
                   <TableHead className="font-semibold text-zinc-400">Status</TableHead>
                   <TableHead className="font-semibold text-zinc-400 text-right">Started At</TableHead>
                   <TableHead className="w-[60px] pr-6 text-right font-semibold text-zinc-400">Actions</TableHead>
@@ -110,6 +111,7 @@ export default function TransactionsPage() {
                         <TableCell className="pl-6"><Skeleton className="h-10 w-48 bg-white/5 rounded-md" /></TableCell>
                         <TableCell><Skeleton className="h-10 w-32 bg-white/5 rounded-md" /></TableCell>
                         <TableCell><Skeleton className="h-5 w-20 bg-white/5 rounded-md" /></TableCell>
+                        <TableCell><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
                         <TableCell><Skeleton className="h-6 w-24 bg-white/5 rounded-full" /></TableCell>
                         <TableCell className="text-right"><Skeleton className="h-5 w-32 ml-auto bg-white/5 rounded-md" /></TableCell>
                         <TableCell className="text-right pr-6"><Skeleton className="h-8 w-8 ml-auto bg-white/5 rounded-lg" /></TableCell>
@@ -117,7 +119,7 @@ export default function TransactionsPage() {
                     ))
                   ) : filtered.length === 0 ? (
                     <TableRow className="border-none">
-                      <TableCell colSpan={6} className="h-32 text-center text-zinc-500 font-medium">
+                      <TableCell colSpan={7} className="h-32 text-center text-zinc-500 font-medium">
                         <div className="flex flex-col items-center justify-center">
                           <Activity className="h-8 w-8 text-zinc-600 mb-2" />
                           <p>No transactions found.</p>
@@ -148,6 +150,9 @@ export default function TransactionsPage() {
                         </TableCell>
                         <TableCell className="text-zinc-300 font-medium">
                           {t.vendorId?.name || "Unknown"}
+                        </TableCell>
+                        <TableCell className="text-zinc-300 font-mono text-xs">
+                          {t.ipAddress || 'N/A'}
                         </TableCell>
                         <TableCell>
                           {getStatusBadge(t.status)}

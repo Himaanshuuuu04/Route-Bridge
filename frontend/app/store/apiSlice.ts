@@ -72,7 +72,10 @@ export interface Supplier {
 export interface Vendor {
   _id: string;
   name: string;
-  postbackUrl?: string;
+  completeUrl?: string;
+  terminateUrl?: string;
+  quotaFullUrl?: string;
+  securityTermUrl?: string;
   isActive?: boolean;
 }
 
@@ -83,6 +86,7 @@ export interface Transaction {
   vendorId: { _id: string; name: string };
   respondentId: string;
   vendorRid: string;
+  ipAddress?: string;
   status: string;
   startedAt: string;
   completedAt?: string;
@@ -182,7 +186,7 @@ export const apiSlice = createApi({
       query: () => ({ url: '/api/admin/surveys/vendors', method: 'GET' }),
       providesTags: ['Vendors'],
     }),
-    createVendor: builder.mutation<Vendor, { name: string; postbackUrl?: string; isActive?: boolean }>({
+    createVendor: builder.mutation<Vendor, { name: string; completeUrl?: string; terminateUrl?: string; quotaFullUrl?: string; securityTermUrl?: string; isActive?: boolean }>({
       query: (data) => ({ url: '/api/admin/surveys/vendors', method: 'POST', data }),
       invalidatesTags: ['Vendors'],
     }),

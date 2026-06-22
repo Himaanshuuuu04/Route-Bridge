@@ -2,11 +2,12 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const transactionSchema = new Schema({
-    transactionToken: { type: String, unique: true, required: true, index: true },
+    transactionToken: { type: String, required: true, index: true },
     surveyId: { type: Schema.Types.ObjectId, ref: 'Survey' },
     vendorId: { type: Schema.Types.ObjectId, ref: 'Vendor' },
     respondentId: { type: Schema.Types.ObjectId, ref: 'Respondent' },
     vendorRid: { type: String }, // ID passed to us by the vendor on click
+    ipAddress: { type: String },
     status: { 
         type: String, 
         enum: ['started', 'completed', 'screened_out', 'quota_full', 'fraud', 'terminate', 'security_term'],

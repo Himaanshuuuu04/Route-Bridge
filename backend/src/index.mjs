@@ -115,14 +115,20 @@ app.get('/mock-supplier', (req, res) => {
     `);
 });
 
-app.get('/mock-vendor-callback', (req, res) => {
-    const { rid, status } = req.query;
+const handleMockVendorCallback = (statusStr) => (req, res) => {
+    // Check multiple query variations (rid, vendor_rid, uid) for flexibility
+    const identifier = req.query.vendor_rid || req.query.rid || req.query.uid || 'Unknown';
     console.log('\x1b[36m%s\x1b[0m', `[Mock Vendor Callback] Webhook trigger successfully received!`);
-    console.log(`  └─ Vendor RID: ${rid}`);
-    console.log(`  └─ Mapped Status: ${status}`);
+    console.log(`  └─ Vendor RID: ${identifier}`);
+    console.log(`  └─ Simulated Status Endpoint: ${statusStr}`);
     console.log(`  └─ Timestamp: ${new Date().toISOString()}\n`);
-    res.status(200).send("Mock Vendor received postback OK!");
-});
+    res.status(200).send(`Mock Vendor received ${statusStr} postback OK!`);
+};
+
+app.get('/mock-vendor-callback/complete', handleMockVendorCallback('Complete'));
+app.get('/mock-vendor-callback/terminate', handleMockVendorCallback('Terminate'));
+app.get('/mock-vendor-callback/quotafull', handleMockVendorCallback('Quota Full'));
+app.get('/mock-vendor-callback/securityterm', handleMockVendorCallback('Security Term'));
 
 // error handling
 app.use((err, req, res, next) => {

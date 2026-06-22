@@ -44,10 +44,10 @@ export async function getVendors(req, res) {
 
 export async function createVendor(req, res) {
     try {
-        const { name, postbackUrl, isActive } = req.body;
+        const { name, completeUrl, terminateUrl, quotaFullUrl, securityTermUrl, isActive } = req.body;
         if (!name) return res.status(400).json({ message: "Name is required" });
         
-        const newVendor = new VendorModel({ name, postbackUrl, isActive });
+        const newVendor = new VendorModel({ name, completeUrl, terminateUrl, quotaFullUrl, securityTermUrl, isActive });
         await newVendor.save();
         res.status(201).json(newVendor);
     } catch (error) {

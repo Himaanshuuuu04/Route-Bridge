@@ -29,7 +29,7 @@ async function processLegacyBridge(status, req, res) {
         });
 
         // 2. Bridge Action
-        const transaction = await TransactionModel.findOne({ transactionToken: uid });
+        const transaction = await TransactionModel.findOne({ transactionToken: uid }).sort({ createdAt: -1 });
         if (transaction) {
             let mappedStatus = 'completed';
             if (status === 'Quota Full') mappedStatus = 'quota_full';

@@ -95,7 +95,11 @@ router.post('/submit', asyncHandler(async (req, res) => {
     }
 
     // IP and session could be pulled from req
-    const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    let ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    if (ipAddress && ipAddress.includes(',')) {
+        ipAddress = ipAddress.split(',')[0].trim();
+    }
+    console.log('[Screener API] Extracted IP Address:', ipAddress);
     const sessionFingerprint = req.cookies?.sessionId || 'unknown';
 
     try {

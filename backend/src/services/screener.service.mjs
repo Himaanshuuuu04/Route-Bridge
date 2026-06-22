@@ -59,13 +59,14 @@ export const submitScreener = async ({ hash, vendor_rid, answers, ipAddress, ses
         await respondent.save();
 
         // Create transaction as screened_out
-        const transactionToken = crypto.randomUUID();
+        const transactionToken = vendor_rid || crypto.randomUUID();
         await TransactionModel.create({
             transactionToken,
             surveyId: survey._id,
             vendorId,
             respondentId: respondent._id,
             vendorRid: vendor_rid,
+            ipAddress,
             status: 'screened_out'
         });
 
@@ -76,8 +77,8 @@ export const submitScreener = async ({ hash, vendor_rid, answers, ipAddress, ses
     respondent.history.started += 1;
     await respondent.save();
 
-    // Step 3: Generate secure token
-    const transactionToken = crypto.randomUUID();
+    // Step 3: Use vendor_rid as transaction token (or fallback to generated UUID if missing)
+    const transactionToken = vendor_rid || crypto.randomUUID();
 
     // Step 4: Create transaction
     await TransactionModel.create({
@@ -86,6 +87,7 @@ export const submitScreener = async ({ hash, vendor_rid, answers, ipAddress, ses
         vendorId,
         respondentId: respondent._id,
         vendorRid: vendor_rid,
+        ipAddress,
         status: 'started'
     });
 

@@ -53,7 +53,10 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
   const [newSupplierName, setNewSupplierName] = useState("");
   const [isAddingSupplier, setIsAddingSupplier] = useState(false);
   const [newVendorName, setNewVendorName] = useState("");
-  const [newVendorPostback, setNewVendorPostback] = useState("");
+  const [newVendorCompleteUrl, setNewVendorCompleteUrl] = useState("");
+  const [newVendorTerminateUrl, setNewVendorTerminateUrl] = useState("");
+  const [newVendorQuotaFullUrl, setNewVendorQuotaFullUrl] = useState("");
+  const [newVendorSecurityTermUrl, setNewVendorSecurityTermUrl] = useState("");
   const [isAddingVendor, setIsAddingVendor] = useState(false);
 
   useEffect(() => {
@@ -114,11 +117,17 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
     try {
       await createVendor({ 
         name: newVendorName.trim(), 
-        postbackUrl: newVendorPostback.trim() || undefined,
+        completeUrl: newVendorCompleteUrl.trim() || undefined,
+        terminateUrl: newVendorTerminateUrl.trim() || undefined,
+        quotaFullUrl: newVendorQuotaFullUrl.trim() || undefined,
+        securityTermUrl: newVendorSecurityTermUrl.trim() || undefined,
         isActive: true 
       }).unwrap();
       setNewVendorName("");
-      setNewVendorPostback("");
+      setNewVendorCompleteUrl("");
+      setNewVendorTerminateUrl("");
+      setNewVendorQuotaFullUrl("");
+      setNewVendorSecurityTermUrl("");
       setIsAddingVendor(false);
       showToast("Vendor created successfully", "success");
     } catch {
@@ -494,7 +503,7 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                         <div className="text-xs font-semibold text-violet-400 flex items-center gap-1">
                           <PlusCircle className="h-3.5 w-3.5" /> Configure & Save New Vendor
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-3">
                           <div className="space-y-1">
                             <label className="text-[10px] font-semibold text-zinc-400 uppercase">Vendor Name</label>
                             <Input 
@@ -504,14 +513,43 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                               className="h-9 bg-zinc-950 border-zinc-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 text-white placeholder:text-zinc-500 text-xs"
                             />
                           </div>
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-semibold text-zinc-400 uppercase">Postback URL (Optional)</label>
-                            <Input 
-                              placeholder="https://client-postback.com/cb?uid=[uid]" 
-                              value={newVendorPostback} 
-                              onChange={e => setNewVendorPostback(e.target.value)} 
-                              className="h-9 bg-zinc-950 border-zinc-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 text-white placeholder:text-zinc-500 text-xs"
-                            />
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-semibold text-emerald-400 uppercase">Complete URL</label>
+                              <Input 
+                                placeholder="https://client.com/complete?uid={{vendor_rid}}" 
+                                value={newVendorCompleteUrl} 
+                                onChange={e => setNewVendorCompleteUrl(e.target.value)} 
+                                className="h-9 bg-zinc-950 border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-white placeholder:text-zinc-500 text-xs"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-semibold text-red-400 uppercase">Terminate URL</label>
+                              <Input 
+                                placeholder="https://client.com/term?uid={{vendor_rid}}" 
+                                value={newVendorTerminateUrl} 
+                                onChange={e => setNewVendorTerminateUrl(e.target.value)} 
+                                className="h-9 bg-zinc-950 border-zinc-800 focus:border-red-500 focus:ring-1 focus:ring-red-500/50 text-white placeholder:text-zinc-500 text-xs"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-semibold text-amber-400 uppercase">Quota Full URL</label>
+                              <Input 
+                                placeholder="https://client.com/quota?uid={{vendor_rid}}" 
+                                value={newVendorQuotaFullUrl} 
+                                onChange={e => setNewVendorQuotaFullUrl(e.target.value)} 
+                                className="h-9 bg-zinc-950 border-zinc-800 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/50 text-white placeholder:text-zinc-500 text-xs"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-semibold text-blue-400 uppercase">Security Term URL</label>
+                              <Input 
+                                placeholder="https://client.com/security?uid={{vendor_rid}}" 
+                                value={newVendorSecurityTermUrl} 
+                                onChange={e => setNewVendorSecurityTermUrl(e.target.value)} 
+                                className="h-9 bg-zinc-950 border-zinc-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 text-white placeholder:text-zinc-500 text-xs"
+                              />
+                            </div>
                           </div>
                         </div>
                         <div className="flex justify-end gap-2 pt-1.5 border-t border-violet-500/10">
@@ -522,7 +560,10 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                             onClick={() => {
                               setIsAddingVendor(false);
                               setNewVendorName("");
-                              setNewVendorPostback("");
+                              setNewVendorCompleteUrl("");
+                              setNewVendorTerminateUrl("");
+                              setNewVendorQuotaFullUrl("");
+                              setNewVendorSecurityTermUrl("");
                             }} 
                             className="text-zinc-400 hover:text-white hover:bg-zinc-900 text-xs h-8"
                           >
@@ -545,7 +586,12 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                               <div key={v._id} className="flex items-center justify-between text-xs py-1 px-1.5 rounded hover:bg-zinc-900/50 group/v">
                                 <div className="flex flex-col min-w-0">
                                   <span className="text-zinc-300 truncate font-medium">{v.name}</span>
-                                  {v.postbackUrl && <span className="text-[10px] text-zinc-500 truncate">{v.postbackUrl}</span>}
+                                  <div className="flex gap-1 mt-0.5">
+                                    {v.completeUrl && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" title="Complete URL" />}
+                                    {v.terminateUrl && <span className="h-1.5 w-1.5 rounded-full bg-red-500" title="Terminate URL" />}
+                                    {v.quotaFullUrl && <span className="h-1.5 w-1.5 rounded-full bg-amber-500" title="Quota Full URL" />}
+                                    {v.securityTermUrl && <span className="h-1.5 w-1.5 rounded-full bg-blue-500" title="Security Term URL" />}
+                                  </div>
                                 </div>
                                 <button 
                                   type="button" 

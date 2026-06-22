@@ -25,17 +25,41 @@ agenda.define('propagate-webhook', async (job) => {
         }
 
         const vendor = transaction.vendorId;
-        if (!vendor || !vendor.postbackUrl) {
-            console.log(`No postbackUrl for vendor ${vendor ? vendor.name : 'Unknown'}`);
+        if (!vendor) {
+            console.log(`No vendor found for transaction ${transactionId}`);
             return;
         }
 
-        // Replace macros: {{status}} with transaction status, {{vendor_rid}} with Transaction.vendorRid.
-        let postbackUrl = vendor.postbackUrl
-            .replace('{{status}}', transaction.status)
-            .replace('{{vendor_rid}}', transaction.vendorRid || '');
+        let targetUrl = '';
+        switch (transaction.status) {
+            case 'completed':
+                targetUrl = vendor.completeUrl;
+                break;
+            case 'screened_out':
+            case 'terminate':
+                targetUrl = vendor.terminateUrl;
+                break;
+            case 'quota_full':
+                targetUrl = vendor.quotaFullUrl;
+                break;
+            case 'security_term':
+            case 'fraud':
+                targetUrl = vendor.securityTermUrl;
+                break;
+            default:
+                // No mapping or just started/unknown status
+                break;
+        }
 
-        console.log(`Firing webhook to vendor ${vendor.name}: ${postbackUrl}`);
+        if (!targetUrl) {
+            console.log(`No suitable callback URL configured for status '${transaction.status}' on vendor ${vendor.name}`);
+            return;
+        }
+
+        // Replace macros: {{vendor_rid}} with Transaction.vendorRid.
+        let postbackUrl = targetUrl.replace('{{vendor_rid}}', transaction.vendorRid || '');
+
+        console.log(`Firing webhook to vendor ${vendor.name} for status ${transaction.status}: ${postbackUrl}`);
         
         // Fire HTTP GET to downstream vendor
         await axios.get(postbackUrl);

@@ -3,7 +3,10 @@ const { Schema } = mongoose;
 
 const vendorSchema = new Schema({
     name: { type: String, required: true },
-    postbackUrl: { type: String }, // Where we send our webhooks
+    completeUrl: { type: String },
+    terminateUrl: { type: String },
+    quotaFullUrl: { type: String },
+    securityTermUrl: { type: String },
     isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
