@@ -1,0 +1,181 @@
+import crypto from 'crypto';
+import SurveyModel from '../models/survey.model.mjs';
+import SupplierModel from '../models/supplier.model.mjs';
+import VendorModel from '../models/vendor.model.mjs';
+import TransactionModel from '../models/transaction.model.mjs';
+
+// ---- Suppliers ----
+
+export async function getSuppliers(req, res) {
+    try {
+        const suppliers = await SupplierModel.find().sort({ createdAt: -1 });
+        res.status(200).json(suppliers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+export async function createSupplier(req, res) {
+    try {
+        const { name, postbackUrl, isActive } = req.body;
+        if (!name) return res.status(400).json({ message: "Name is required" });
+        
+        const newSupplier = new SupplierModel({ name, postbackUrl, isActive });
+        await newSupplier.save();
+        res.status(201).json(newSupplier);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+// ---- Vendors ----
+
+export async function getVendors(req, res) {
+    try {
+        const vendors = await VendorModel.find().sort({ createdAt: -1 });
+        res.status(200).json(vendors);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+export async function createVendor(req, res) {
+    try {
+        const { name, postbackUrl, isActive } = req.body;
+        if (!name) return res.status(400).json({ message: "Name is required" });
+        
+        const newVendor = new VendorModel({ name, postbackUrl, isActive });
+        await newVendor.save();
+        res.status(201).json(newVendor);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+// ---- Surveys ----
+
+export async function getSurveys(req, res) {
+    try {
+        const surveys = await SurveyModel.find()
+            .populate('supplierId')
+            .populate('vendorLinks.vendorId')
+            .sort({ createdAt: -1 });
+        res.status(200).json(surveys);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+export async function getSurveyById(req, res) {
+    try {
+        const { id } = req.params;
+        const survey = await SurveyModel.findById(id)
+            .populate('supplierId')
+            .populate('vendorLinks.vendorId');
+        if (!survey) return res.status(404).json({ message: "Survey not found" });
+        res.status(200).json(survey);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+export async function createSurvey(req, res) {
+    try {
+        const { name, projectId, supplierId, baseSupplierUrl, status, eligibilityRules, vendorLinks } = req.body;
+        
+        // Ensure vendor links have unique hashes
+        const processedVendorLinks = (vendorLinks || []).map(link => {
+            return {
+                ...link,
+                hash: link.hash || crypto.randomBytes(8).toString('hex')
+            };
+        });
+
+        const newSurvey = new SurveyModel({
+            name,
+            projectId,
+            supplierId,
+            baseSupplierUrl,
+            status,
+            eligibilityRules,
+            vendorLinks: processedVendorLinks
+        });
+
+        await newSurvey.save();
+        
+        const savedSurvey = await SurveyModel.findById(newSurvey._id)
+            .populate('supplierId')
+            .populate('vendorLinks.vendorId');
+            
+        res.status(201).json(savedSurvey);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message || "Internal Server Error" });
+    }
+}
+
+export async function updateSurvey(req, res) {
+    try {
+        const { id } = req.params;
+        const { name, projectId, supplierId, baseSupplierUrl, status, eligibilityRules, vendorLinks } = req.body;
+        
+        const processedVendorLinks = (vendorLinks || []).map(link => {
+            return {
+                ...link,
+                hash: link.hash || crypto.randomBytes(8).toString('hex')
+            };
+        });
+
+        const updatedSurvey = await SurveyModel.findByIdAndUpdate(
+            id,
+            { name, projectId, supplierId, baseSupplierUrl, status, eligibilityRules, vendorLinks: processedVendorLinks },
+            { new: true }
+        ).populate('supplierId').populate('vendorLinks.vendorId');
+
+        if (!updatedSurvey) return res.status(404).json({ message: "Survey not found" });
+        res.status(200).json(updatedSurvey);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+export async function deleteSurvey(req, res) {
+    try {
+        const { id } = req.params;
+        const deletedSurvey = await SurveyModel.findByIdAndDelete(id);
+        if (!deletedSurvey) return res.status(404).json({ message: "Survey not found" });
+        res.status(200).json(deletedSurvey);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+// ---- Transactions ----
+
+export async function getTransactions(req, res) {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 50;
+        const skip = (page - 1) * limit;
+
+        const transactions = await TransactionModel.find()
+            .populate('surveyId', 'name projectId')
+            .populate('vendorId', 'name')
+            .sort({ startedAt: -1 })
+            .skip(skip)
+            .limit(limit);
+            
+        res.status(200).json(transactions);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}

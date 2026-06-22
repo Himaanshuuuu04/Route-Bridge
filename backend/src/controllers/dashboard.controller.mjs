@@ -1,4 +1,4 @@
-import SurveyModel from "../models/survey.mjs";
+import SurveyModel from "../models/legacycallback.mjs";
 
 function buildDateFilter(req) {
     const filter = {};

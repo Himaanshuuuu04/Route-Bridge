@@ -12,12 +12,14 @@
     "dev": "nodemon src/index.mjs"
   },
   "dependencies": {
+    "agenda": "^5.0.0",
     "axios": "^1.18.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dot-env": "^0.0.1",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.3.0",
     "mongoose": "^9.7.1",
