@@ -2,7 +2,7 @@
 
 import { use } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Copy, Link as LinkIcon, Settings } from "lucide-react";
+import { ArrowLeft, Check, CheckCircle2, Copy, Link as LinkIcon, Settings } from "lucide-react";
 import { useToast } from "@/app/context/ToastContext";
 import { useGetAdminSurveyByIdQuery } from "@/app/store/apiSlice";
 
@@ -87,18 +87,36 @@ export default function SurveyDetailsPage({ params }: { params: Promise<{ id: st
                 <CardTitle className="text-lg flex items-center gap-2 text-white"><Settings className="h-5 w-5 text-emerald-500" /> Eligibility Rules</CardTitle>
               </CardHeader>
               <CardContent>
-                {!survey.eligibilityRules || Object.keys(survey.eligibilityRules).length === 0 ? (
+                {!survey.eligibilityRules || survey.eligibilityRules.length === 0 ? (
                   <div className="p-4 bg-white/5 rounded-lg text-center text-sm text-zinc-500 border border-white/5">
                     No specific eligibility rules defined.
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    {Object.entries(survey.eligibilityRules).map(([key, value]) => (
-                      <div key={key} className="flex justify-between items-center p-3 bg-white/5 rounded-lg text-sm border border-white/10">
-                        <span className="font-medium text-zinc-300">{key}</span>
-                        <span className="bg-black/50 px-2 py-1 rounded text-zinc-400 font-mono border border-white/5">
-                          {String(value)}
-                        </span>
+                  <div className="space-y-4">
+                    {survey.eligibilityRules.map((rule, idx) => (
+                      <div key={idx} className="p-4 bg-white/5 rounded-xl border border-white/10 space-y-3">
+                        <h4 className="font-semibold text-zinc-200 text-sm leading-snug">
+                          {rule.question}
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {rule.options.map((opt, optIdx) => {
+                            const isAccepted = rule.acceptedAnswers.includes(opt);
+                            return (
+                              <Badge
+                                key={optIdx}
+                                variant="outline"
+                                className={`text-xs px-2.5 py-1 flex items-center gap-1.5 transition-all ${
+                                  isAccepted
+                                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 font-medium"
+                                    : "bg-white/[0.02] text-zinc-500 border-white/5"
+                                }`}
+                              >
+                                {isAccepted && <Check className="h-3 w-3 text-emerald-400 shrink-0" />}
+                                <span>{opt}</span>
+                              </Badge>
+                            );
+                          })}
+                        </div>
                       </div>
                     ))}
                   </div>

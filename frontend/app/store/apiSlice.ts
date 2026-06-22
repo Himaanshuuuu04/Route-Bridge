@@ -46,6 +46,12 @@ export interface SurveyCount {
   security_term_entries: number;
 }
 
+export interface EligibilityRule {
+  question: string;
+  options: string[];
+  acceptedAnswers: string[];
+}
+
 export interface Survey {
   _id: string;
   uid?: string;
@@ -54,7 +60,7 @@ export interface Survey {
   projectId?: string;
   supplierId?: any;
   baseSupplierUrl?: string;
-  eligibilityRules?: Record<string, string>;
+  eligibilityRules?: EligibilityRule[];
   vendorLinks?: any[];
   status: string;
   ipAddress?: string;

@@ -273,14 +273,7 @@ export default function ScreenerPage({ params }: { params: Promise<{ hash: strin
           EvoGlobalinsight conducts professional demographic research to match participants with corporate research projects. We value and secure your data.
         </div>
 
-        <div className="flex items-center justify-center gap-4 text-[11px] font-semibold text-slate-500">
-          <a href="#" className="hover:text-slate-800 transition-colors">Privacy Policy</a>
-          <span className="text-slate-300">•</span>
-          <a href="#" className="hover:text-slate-800 transition-colors">Terms of Service</a>
-          <span className="text-slate-300">•</span>
-          <a href="#" className="hover:text-slate-800 transition-colors">Contact Support</a>
-        </div>
-
+        
         <div className="text-[10px] text-slate-400 tracking-wider uppercase font-bold">
           © {new Date().getFullYear()} EvoGlobalinsight. All rights reserved.
         </div>
