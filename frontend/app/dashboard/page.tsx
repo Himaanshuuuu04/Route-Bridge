@@ -95,7 +95,7 @@ export default function DashboardPage() {
         className="flex items-center justify-between mb-10"
       >
         <div className="flex items-center gap-4">
-          <SidebarTrigger className="md:hidden text-white" />
+          <SidebarTrigger className="text-white hover:bg-white/10 hover:text-white" />
           <div>
             <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-white">Dashboard Overview</h2>
             <p className="text-zinc-400 mt-2 font-medium">Real-time metrics and survey insights.</p>
@@ -137,14 +137,14 @@ export default function DashboardPage() {
         <StatCard title="Fraud" value={counts?.fraud_entries || 0} icon={<XCircle className="w-5 h-5 text-pink-400" />} loading={!counts} delay={0.8} />
       </motion.div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+      <div className="flex flex-col gap-8">
         <DashboardCharts counts={counts} />
 
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="xl:col-span-2"
+          className="w-full"
         >
           <SurveyTable 
             surveys={surveys}

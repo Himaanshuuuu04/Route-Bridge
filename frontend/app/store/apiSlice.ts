@@ -38,6 +38,17 @@ const axiosBaseQuery =
     }
   };
 
+export interface TimelineItem {
+  date: string;
+  started: number;
+  completed: number;
+  screened_out: number;
+  quota_full: number;
+  fraud: number;
+  terminate: number;
+  security_term: number;
+}
+
 export interface SurveyCount {
   total_entries: number;
   complete_entries: number;
@@ -47,6 +58,7 @@ export interface SurveyCount {
   started_entries: number;
   screened_out_entries: number;
   fraud_entries: number;
+  timeline?: TimelineItem[];
 }
 
 export interface EligibilityRule {

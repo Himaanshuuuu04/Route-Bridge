@@ -106,7 +106,7 @@ export default function CategoryPage({ params }: PageProps) {
         className="flex flex-col gap-4 mb-8"
       >
         <div className="flex items-center gap-3">
-          <SidebarTrigger className="md:hidden text-white" />
+          <SidebarTrigger className="text-white hover:bg-white/10 hover:text-white" />
           <Link 
             href="/dashboard" 
             className="text-zinc-400 hover:text-white transition-colors flex items-center gap-1.5 text-sm font-semibold group"

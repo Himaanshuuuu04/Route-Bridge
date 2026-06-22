@@ -37,6 +37,51 @@ export async function getSurveyCount(req, res) {
         const screened_out_entries = await TransactionModel.countDocuments({ ...filter, status: "screened_out" });
         const fraud_entries = await TransactionModel.countDocuments({ ...filter, status: "fraud" });
 
+        // Aggregate entries count grouped by date and status
+        const timelineData = await TransactionModel.aggregate([
+            { $match: filter },
+            {
+                $group: {
+                    _id: {
+                        date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                        status: "$status"
+                    },
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id.date",
+                    statuses: {
+                        $push: {
+                            status: "$_id.status",
+                            count: "$count"
+                        }
+                    }
+                }
+            },
+            { $sort: { _id: 1 } }
+        ]);
+
+        const timeline = timelineData.map(item => {
+            const formatted = {
+                date: item._id,
+                started: 0,
+                completed: 0,
+                screened_out: 0,
+                quota_full: 0,
+                fraud: 0,
+                terminate: 0,
+                security_term: 0
+            };
+            item.statuses.forEach(s => {
+                if (s.status in formatted) {
+                    formatted[s.status] = s.count;
+                }
+            });
+            return formatted;
+        });
+
         return res.status(200).json({
             total_entries,
             complete_entries,
@@ -45,7 +90,8 @@ export async function getSurveyCount(req, res) {
             security_term_entries,
             started_entries,
             screened_out_entries,
-            fraud_entries
+            fraud_entries,
+            timeline
         });
     } catch (error) {
         console.log(error);

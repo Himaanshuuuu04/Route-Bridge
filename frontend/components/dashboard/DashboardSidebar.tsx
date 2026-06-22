@@ -12,7 +12,8 @@ import {
   SidebarMenu, 
   SidebarMenuItem, 
   SidebarMenuButton, 
-  SidebarFooter 
+  SidebarFooter,
+  useSidebar
 } from "@/components/ui/sidebar";
 import { useToast } from "@/app/context/ToastContext";
 import { useLogoutMutation } from "@/app/store/apiSlice";
@@ -34,6 +35,8 @@ export function DashboardSidebar() {
   const router = useRouter();
   const { showToast } = useToast();
   const [logout] = useLogoutMutation();
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
 
   const handleLogout = async () => {
     try {
@@ -59,13 +62,15 @@ export function DashboardSidebar() {
   ];
 
   return (
-    <Sidebar variant="inset" className="bg-black/50 border-r border-white/5 backdrop-blur-xl">
+    <Sidebar collapsible="icon" variant="inset" className="bg-black/50 border-r border-white/5 backdrop-blur-xl">
       <SidebarHeader>
-        <div className="flex items-center gap-3 p-4">
-          <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+        <div className="flex items-center gap-3 p-4 justify-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
             <BarChart3 className="w-5 h-5 text-white" />
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-white">Analytics</h1>
+          {!isCollapsed && (
+            <h1 className="text-xl font-bold tracking-tight text-white animate-in fade-in duration-200">Analytics</h1>
+          )}
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -95,9 +100,11 @@ export function DashboardSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <div className="px-4 py-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1 mt-2">
-            Administration
-          </div>
+          {!isCollapsed && (
+            <div className="px-4 py-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1 mt-2 animate-in fade-in duration-200">
+              Administration
+            </div>
+          )}
           <SidebarMenu className="gap-1">
             {adminItems.map((item) => (
               <SidebarMenuItem key={item.href}>
@@ -127,6 +134,7 @@ export function DashboardSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton 
                 onClick={handleLogout}
+                tooltip="Sign out"
                 className="text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors font-medium"
               >
                 <LogOut className="mr-2 h-4 w-4" />
