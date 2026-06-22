@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import SurveyModel from '../models/survey.model.mjs';
-import RespondentModel from '../models/respondent.model.mjs';
 import TransactionModel from '../models/transaction.model.mjs';
 import VendorModel from '../models/vendor.model.mjs';
 
@@ -21,26 +20,6 @@ export const submitScreener = async ({ hash, vendor_rid, answers, ipAddress, ses
     // Identify Vendor
     const vendorLink = survey.vendorLinks.find(link => link.hash === hash);
     const vendorId = vendorLink.vendorId;
-
-    // Step 1: Find or Create Respondent
-    // Here we can use sessionFingerprint, IP, or email (if provided in answers)
-    // For simplicity we create a new one or update if email exists
-    let respondent;
-    if (answers.email) {
-        respondent = await RespondentModel.findOne({ email: answers.email });
-    }
-    if (!respondent) {
-        respondent = new RespondentModel({
-            email: answers.email,
-            demographics: answers
-        });
-        await respondent.save();
-    } else {
-        // Update demographics
-        respondent.demographics = { ...respondent.demographics, ...answers };
-        await respondent.save();
-    }
-
     // Step 2: Evaluate Answers against eligibilityRules
     // Logic: check if the user's selected option is included in the acceptedAnswers array
     let isQualified = true;
@@ -55,17 +34,12 @@ export const submitScreener = async ({ hash, vendor_rid, answers, ipAddress, ses
     }
 
     if (!isQualified) {
-        // Update respondent history
-        respondent.history.screenedOut += 1;
-        await respondent.save();
-
         // Create transaction as screened_out
         const transactionToken = vendor_rid || crypto.randomUUID();
         await TransactionModel.create({
             transactionToken,
             surveyId: survey._id,
             vendorId,
-            respondentId: respondent._id,
             vendorRid: vendor_rid,
             ipAddress,
             status: 'screened_out'
@@ -75,9 +49,6 @@ export const submitScreener = async ({ hash, vendor_rid, answers, ipAddress, ses
     }
 
     // Qualified
-    respondent.history.started += 1;
-    await respondent.save();
-
     // Step 3: Use vendor_rid as transaction token (or fallback to generated UUID if missing)
     const transactionToken = vendor_rid || crypto.randomUUID();
 
@@ -86,7 +57,6 @@ export const submitScreener = async ({ hash, vendor_rid, answers, ipAddress, ses
         transactionToken,
         surveyId: survey._id,
         vendorId,
-        respondentId: respondent._id,
         vendorRid: vendor_rid,
         ipAddress,
         status: 'started'
