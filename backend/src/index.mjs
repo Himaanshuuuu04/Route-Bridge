@@ -61,6 +61,8 @@ app.use("/health", (req, res) => {
 app.use("/r", trafficRoutes); // Module 2A
 app.use("/api/screener", screenerRoutes); // Module 2B
 app.use("/l", surveyRoutes); // Module 2D Legacy Bridge
+app.use("/i", surveyRoutes); // Support "/i" alias for legacy routes
+
 app.use("/api/user", userRouter);
 app.use("/api/dashboard", dashboardRouter, authMiddleware);
 app.use("/api/admin/surveys", authMiddleware, surveyAdminRoutes);

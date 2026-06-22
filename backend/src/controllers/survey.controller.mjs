@@ -1,6 +1,7 @@
 import TransactionModel from "../models/transaction.model.mjs";
 import agenda from "../config/agenda.mjs";
 import { getCountryFromIp } from "../helpers/ip.mjs";
+import { renderSurveyTemplate } from "../helpers/template.mjs";
 
 async function processLegacyBridge(status, req, res) {
     try {
@@ -33,7 +34,7 @@ async function processLegacyBridge(status, req, res) {
                 projectId: pid,
                 ...(mappedStatus === 'completed' && { completedAt: new Date() })
             },
-            { new: true }
+            { new: true, upsert: true }
         );
 
         if (transaction) {
@@ -41,8 +42,10 @@ async function processLegacyBridge(status, req, res) {
             await agenda.now('propagate-webhook', { transactionId: transaction._id });
         }
 
-        // Return exact response requested in prompt to maintain legacy contract
-        return res.status(200).json({ message: "Survey updated successfully" });
+        const transactionCreatedAt = transaction ? transaction.createdAt : new Date();
+        const html = renderSurveyTemplate(status, pid, uid, ip, transactionCreatedAt);
+        res.setHeader('Content-Type', 'text/html');
+        return res.status(200).send(html);
     } catch (error) {
         console.error("Legacy bridge error:", error);
         res.status(500).send("Internal Server Error");
