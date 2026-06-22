@@ -9,9 +9,8 @@ export function proxy(request: NextRequest) {
   const publicRoutes = ['/', '/signin', '/signup'];
   const isPublicRoute = publicRoutes.includes(pathname);
   
-  // Routes that require authentication
-  const protectedRoutes = ['/dashboard'];
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+  // All other routes are protected (screener is excluded by matcher)
+  const isProtectedRoute = !isPublicRoute;
 
   // 1. Redirect to dashboard if logged in and trying to access public routes (like signin/signup/landing)
   if (token && isPublicRoute) {
@@ -26,12 +25,8 @@ export function proxy(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Configure the middleware to only run on specific paths to optimize performance
 export const config = {
   matcher: [
-    '/',
-    '/signin',
-    '/signup',
-    '/dashboard/:path*'
+    '/((?!api|_next/static|_next/image|favicon.ico|screener).*)',
   ],
 };

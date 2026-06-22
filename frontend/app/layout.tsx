@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ToastProvider } from "./context/ToastContext";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { StoreProvider } from "./store/Provider";
 
 const calSans = localFont({
   src: [
@@ -46,11 +47,13 @@ export default function RootLayout({
       className={`${calSans.variable} h-full antialiased dark`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
-        <TooltipProvider>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
-        </TooltipProvider>
+        <StoreProvider>
+          <TooltipProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </TooltipProvider>
+        </StoreProvider>
       </body>
     </html>
   );
