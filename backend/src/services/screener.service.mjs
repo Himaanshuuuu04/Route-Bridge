@@ -38,6 +38,7 @@ export const submitScreener = async ({ hash, vendor_rid, answers, ipAddress, ses
         const transactionToken = vendor_rid || crypto.randomUUID();
         await TransactionModel.create({
             transactionToken,
+            projectId: survey.projectId,
             surveyId: survey._id,
             vendorId,
             vendorRid: vendor_rid,
@@ -55,6 +56,7 @@ export const submitScreener = async ({ hash, vendor_rid, answers, ipAddress, ses
     // Step 4: Create transaction
     await TransactionModel.create({
         transactionToken,
+        projectId: survey.projectId,
         surveyId: survey._id,
         vendorId,
         vendorRid: vendor_rid,

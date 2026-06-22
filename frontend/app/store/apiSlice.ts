@@ -44,6 +44,9 @@ export interface SurveyCount {
   terminate_entries: number;
   quota_full_entries: number;
   security_term_entries: number;
+  started_entries: number;
+  screened_out_entries: number;
+  fraud_entries: number;
 }
 
 export interface EligibilityRule {
@@ -116,18 +119,13 @@ export const apiSlice = createApi({
     }),
     getSurveys: builder.query<Survey[], { category: string; page: number; limit: number; startDate?: string; endDate?: string }>({
       query: ({ category, page, limit, startDate, endDate }) => {
-        let endpoint = '/api/dashboard/getRecentSurveys';
-        if (category === 'Complete') endpoint = '/api/dashboard/getCompletedSurveys';
-        else if (category === 'Terminate') endpoint = '/api/dashboard/getTerminatedSurveys';
-        else if (category === 'Quota Full') endpoint = '/api/dashboard/getQuotaFullSurveys';
-        else if (category === 'Security Term') endpoint = '/api/dashboard/getSecurityTermSurveys';
-
         return {
-          url: endpoint,
+          url: '/api/dashboard/getRecentSurveys',
           method: 'GET',
           params: {
             page,
             limit,
+            status: category,
             ...(startDate && { startDate }),
             ...(endDate && { endDate }),
           },

@@ -3,10 +3,13 @@ const { Schema } = mongoose;
 
 const transactionSchema = new Schema({
     transactionToken: { type: String, required: true, index: true },
+    projectId: { type: String, index: true },
     surveyId: { type: Schema.Types.ObjectId, ref: 'Survey' },
     vendorId: { type: Schema.Types.ObjectId, ref: 'Vendor' },
     vendorRid: { type: String }, // ID passed to us by the vendor on click
     ipAddress: { type: String },
+    country: { type: String, default: 'Unknown' },
+    countryCode: { type: String, default: 'UN' },
     status: { 
         type: String, 
         enum: ['started', 'completed', 'screened_out', 'quota_full', 'fraud', 'terminate', 'security_term'],

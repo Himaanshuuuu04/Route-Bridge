@@ -1,4 +1,4 @@
-import SurveyModel from "../models/legacycallback.mjs";
+import TransactionModel from "../models/transaction.model.mjs";
 
 function buildDateFilter(req) {
     const filter = {};
@@ -28,17 +28,24 @@ function buildDateFilter(req) {
 export async function getSurveyCount(req, res) {
     try {
         const filter = buildDateFilter(req);
-        const total_entries = await SurveyModel.countDocuments(filter);
-        const complete_entries = await SurveyModel.countDocuments({ ...filter, status: "Complete" });
-        const terminate_entries = await SurveyModel.countDocuments({ ...filter, status: "Terminate" });
-        const quota_full_entries = await SurveyModel.countDocuments({ ...filter, status: "Quota Full" });
-        const security_term_entries = await SurveyModel.countDocuments({ ...filter, status: "Security Term" });
+        const total_entries = await TransactionModel.countDocuments(filter);
+        const complete_entries = await TransactionModel.countDocuments({ ...filter, status: "completed" });
+        const terminate_entries = await TransactionModel.countDocuments({ ...filter, status: "terminate" });
+        const quota_full_entries = await TransactionModel.countDocuments({ ...filter, status: "quota_full" });
+        const security_term_entries = await TransactionModel.countDocuments({ ...filter, status: "security_term" });
+        const started_entries = await TransactionModel.countDocuments({ ...filter, status: "started" });
+        const screened_out_entries = await TransactionModel.countDocuments({ ...filter, status: "screened_out" });
+        const fraud_entries = await TransactionModel.countDocuments({ ...filter, status: "fraud" });
+
         return res.status(200).json({
             total_entries,
             complete_entries,
             terminate_entries,
             quota_full_entries,
-            security_term_entries
+            security_term_entries,
+            started_entries,
+            screened_out_entries,
+            fraud_entries
         });
     } catch (error) {
         console.log(error);
@@ -52,63 +59,21 @@ export async function getRecentSurveys(req, res) {
         const limit = parseInt(req.query.limit) || 50;
         const skip = (page - 1) * limit;
         const filter = buildDateFilter(req);
-        const surveys = await SurveyModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit);
-        return res.status(200).json(surveys);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Internal Server Error" });
-    }
-}
+        
+        if (req.query.status && req.query.status !== 'All') {
+            filter.status = req.query.status;
+        }
 
-export async function getCompletedSurveys(req, res) {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 50;
-        const skip = (page - 1) * limit;
-        const filter = { ...buildDateFilter(req), status: "Complete" };
-        const surveys = await SurveyModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit);
-        return res.status(200).json(surveys);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Internal Server Error" });
-    }
-}
-
-export async function getTerminatedSurveys(req, res) {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 50;
-        const skip = (page - 1) * limit;
-        const filter = { ...buildDateFilter(req), status: "Terminate" };
-        const surveys = await SurveyModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit);
-        return res.status(200).json(surveys);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Internal Server Error" });
-    }
-}
-
-export async function getQuotaFullSurveys(req, res) {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 50;
-        const skip = (page - 1) * limit;
-        const filter = { ...buildDateFilter(req), status: "Quota Full" };
-        const surveys = await SurveyModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit);
-        return res.status(200).json(surveys);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Internal Server Error" });
-    }
-}
-
-export async function getSecurityTermSurveys(req, res) {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 50;
-        const skip = (page - 1) * limit;
-        const filter = { ...buildDateFilter(req), status: "Security Term" };
-        const surveys = await SurveyModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit);
+        const surveys = await TransactionModel.find(filter)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .populate('vendorId', 'name')
+            .populate({
+                path: 'surveyId',
+                select: 'supplierId name projectId',
+                populate: { path: 'supplierId', select: 'name' }
+            });
         return res.status(200).json(surveys);
     } catch (error) {
         console.log(error);
@@ -122,7 +87,7 @@ export async function removeSurvey(req, res) {
         if (!id) {
             return res.status(400).json({ message: "Survey ID is required" });
         }
-        const survey = await SurveyModel.findByIdAndDelete(id);
+        const survey = await TransactionModel.findByIdAndDelete(id);
         if (!survey) {
             return res.status(404).json({ message: "Survey not found" });
         }
@@ -140,7 +105,7 @@ export async function updateSurvey(req, res) {
         if (!id || !status) {
             return res.status(400).json({ message: "Survey ID and status are required" });
         }
-        const survey = await SurveyModel.findByIdAndUpdate(id, { status }, { new: true });
+        const survey = await TransactionModel.findByIdAndUpdate(id, { status }, { new: true });
         if (!survey) {
             return res.status(404).json({ message: "Survey not found" });
         }

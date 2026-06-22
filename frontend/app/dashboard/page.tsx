@@ -62,10 +62,13 @@ export default function DashboardPage() {
   const getTotalItemsForTab = () => {
     if (!counts) return 0;
     if (currentTab === "All") return counts.total_entries;
-    if (currentTab === "Complete") return counts.complete_entries;
-    if (currentTab === "Terminate") return counts.terminate_entries;
-    if (currentTab === "Quota Full") return counts.quota_full_entries;
-    if (currentTab === "Security Term") return counts.security_term_entries;
+    if (currentTab === "started") return counts.started_entries;
+    if (currentTab === "completed") return counts.complete_entries;
+    if (currentTab === "screened_out") return counts.screened_out_entries;
+    if (currentTab === "quota_full") return counts.quota_full_entries;
+    if (currentTab === "fraud") return counts.fraud_entries;
+    if (currentTab === "terminate") return counts.terminate_entries;
+    if (currentTab === "security_term") return counts.security_term_entries;
     return 0;
   };
 
@@ -122,13 +125,16 @@ export default function DashboardPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-10"
+        className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-10"
       >
-        <StatCard title="Total Surveys" value={counts?.total_entries || 0} icon={<BarChart3 className="w-5 h-5 text-zinc-400" />} loading={!counts} href="/dashboard/all" delay={0.1} />
-        <StatCard title="Completed" value={counts?.complete_entries || 0} icon={<CheckCircle2 className="w-5 h-5 text-emerald-400" />} loading={!counts} href="/dashboard/completed" delay={0.2} />
-        <StatCard title="Terminated" value={counts?.terminate_entries || 0} icon={<XCircle className="w-5 h-5 text-red-400" />} loading={!counts} href="/dashboard/terminated" delay={0.3} />
-        <StatCard title="Quota Full" value={counts?.quota_full_entries || 0} icon={<AlertTriangle className="w-5 h-5 text-amber-400" />} loading={!counts} href="/dashboard/quota" delay={0.4} />
-        <StatCard title="Security Term" value={counts?.security_term_entries || 0} icon={<Activity className="w-5 h-5 text-indigo-400" />} loading={!counts} href="/dashboard/security" delay={0.5} />
+        <StatCard title="Total Clicks" value={counts?.total_entries || 0} icon={<BarChart3 className="w-5 h-5 text-zinc-400" />} loading={!counts} delay={0.1} />
+        <StatCard title="Started" value={counts?.started_entries || 0} icon={<Activity className="w-5 h-5 text-blue-400" />} loading={!counts} delay={0.2} />
+        <StatCard title="Completed" value={counts?.complete_entries || 0} icon={<CheckCircle2 className="w-5 h-5 text-emerald-400" />} loading={!counts} delay={0.3} />
+        <StatCard title="Screened Out" value={counts?.screened_out_entries || 0} icon={<XCircle className="w-5 h-5 text-orange-400" />} loading={!counts} delay={0.4} />
+        <StatCard title="Quota Full" value={counts?.quota_full_entries || 0} icon={<AlertTriangle className="w-5 h-5 text-amber-400" />} loading={!counts} delay={0.5} />
+        <StatCard title="Terminated" value={counts?.terminate_entries || 0} icon={<XCircle className="w-5 h-5 text-red-400" />} loading={!counts} delay={0.6} />
+        <StatCard title="Security Term" value={counts?.security_term_entries || 0} icon={<Activity className="w-5 h-5 text-indigo-400" />} loading={!counts} delay={0.7} />
+        <StatCard title="Fraud" value={counts?.fraud_entries || 0} icon={<XCircle className="w-5 h-5 text-pink-400" />} loading={!counts} delay={0.8} />
       </motion.div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">

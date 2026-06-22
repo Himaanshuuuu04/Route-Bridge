@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Settings, Trash2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Survey } from "@/app/store/apiSlice";
+import { Survey, Transaction } from "@/app/store/apiSlice";
 
 function getFlagEmoji(countryCode?: string) {
   if (!countryCode || countryCode === 'UN' || countryCode === 'LCL') return '🏳️';
@@ -29,16 +29,19 @@ function getFlagEmoji(countryCode?: string) {
 
 const getStatusBadge = (status: string) => {
   switch (status) {
-    case 'Complete': return <Badge className="bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border-emerald-500/20">Complete</Badge>;
-    case 'Terminate': return <Badge className="bg-red-500/10 text-red-400 hover:bg-red-500/20 border-red-500/20">Terminate</Badge>;
-    case 'Quota Full': return <Badge className="bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border-amber-500/20">Quota Full</Badge>;
-    case 'Security Term': return <Badge className="bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 border-indigo-500/20">Security</Badge>;
+    case 'started': return <Badge className="bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border-blue-500/20">Started</Badge>;
+    case 'completed': return <Badge className="bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border-emerald-500/20">Completed</Badge>;
+    case 'screened_out': return <Badge className="bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 border-orange-500/20">Screened Out</Badge>;
+    case 'quota_full': return <Badge className="bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border-amber-500/20">Quota Full</Badge>;
+    case 'fraud': return <Badge className="bg-pink-500/10 text-pink-400 hover:bg-pink-500/20 border-pink-500/20">Fraud</Badge>;
+    case 'terminate': return <Badge className="bg-red-500/10 text-red-400 hover:bg-red-500/20 border-red-500/20">Terminate</Badge>;
+    case 'security_term': return <Badge className="bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 border-indigo-500/20">Security</Badge>;
     default: return <Badge variant="secondary" className="bg-white/10 text-white">{status}</Badge>;
   }
 };
 
 interface SurveyTableProps {
-  surveys: Survey[];
+  surveys: any[];
   isLoading: boolean;
   page: number;
   limit: number;
@@ -75,10 +78,13 @@ export function SurveyTable({
             <Tabs value={currentTab} onValueChange={onTabChange} className="w-full sm:w-auto overflow-hidden">
               <TabsList className="bg-white/5 border border-white/10 p-1 rounded-full text-zinc-400 flex overflow-x-auto w-full sm:w-auto flex-nowrap max-w-full scrollbar-none">
                 <TabsTrigger value="All" className="rounded-full data-[state=active]:bg-white/10 data-[state=active]:text-white transition-all shrink-0">All</TabsTrigger>
-                <TabsTrigger value="Complete" className="rounded-full data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400 transition-all shrink-0">Complete</TabsTrigger>
-                <TabsTrigger value="Terminate" className="rounded-full data-[state=active]:bg-red-500/20 data-[state=active]:text-red-400 transition-all shrink-0">Terminate</TabsTrigger>
-                <TabsTrigger value="Quota Full" className="rounded-full data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 transition-all shrink-0">Quota</TabsTrigger>
-                <TabsTrigger value="Security Term" className="rounded-full data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-400 transition-all shrink-0">Security</TabsTrigger>
+                <TabsTrigger value="started" className="rounded-full data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400 transition-all shrink-0">Started</TabsTrigger>
+                <TabsTrigger value="completed" className="rounded-full data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400 transition-all shrink-0">Complete</TabsTrigger>
+                <TabsTrigger value="screened_out" className="rounded-full data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-400 transition-all shrink-0">Screen Out</TabsTrigger>
+                <TabsTrigger value="quota_full" className="rounded-full data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 transition-all shrink-0">Quota</TabsTrigger>
+                <TabsTrigger value="fraud" className="rounded-full data-[state=active]:bg-pink-500/20 data-[state=active]:text-pink-400 transition-all shrink-0">Fraud</TabsTrigger>
+                <TabsTrigger value="terminate" className="rounded-full data-[state=active]:bg-red-500/20 data-[state=active]:text-red-400 transition-all shrink-0">Terminate</TabsTrigger>
+                <TabsTrigger value="security_term" className="rounded-full data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-400 transition-all shrink-0">Security</TabsTrigger>
               </TabsList>
             </Tabs>
           )}
@@ -90,6 +96,8 @@ export function SurveyTable({
             <TableRow className="border-white/5 hover:bg-transparent">
               <TableHead className="pl-6 text-zinc-400 font-semibold py-4">Project ID</TableHead>
               <TableHead className="text-zinc-400 font-semibold">User ID</TableHead>
+              <TableHead className="hidden lg:table-cell text-zinc-400 font-semibold">Supplier</TableHead>
+              <TableHead className="hidden lg:table-cell text-zinc-400 font-semibold">Vendor</TableHead>
               <TableHead className="hidden sm:table-cell text-zinc-400 font-semibold">IP Address</TableHead>
               <TableHead className="hidden md:table-cell text-zinc-400 font-semibold">Country</TableHead>
               <TableHead className="text-zinc-400 font-semibold">Status</TableHead>
@@ -104,6 +112,8 @@ export function SurveyTable({
                   <TableRow key={`skeleton-${i}`} className="border-white/5">
                     <TableCell className="pl-6"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-28 bg-white/5 rounded-md" /></TableCell>
+                    <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
+                    <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
                     <TableCell className="hidden sm:table-cell"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
                     <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-20 bg-white/5 rounded-md" /></TableCell>
                     <TableCell><Skeleton className="h-6 w-24 rounded-full bg-white/5" /></TableCell>
@@ -127,8 +137,10 @@ export function SurveyTable({
                     transition={{ delay: index * 0.05 }}
                     className="group transition-colors border-white/5 hover:bg-white/[0.02]"
                   >
-                    <TableCell className="pl-6 font-bold text-white">{survey.pid}</TableCell>
-                    <TableCell className="text-zinc-400 font-medium">{survey.uid}</TableCell>
+                    <TableCell className="pl-6 font-bold text-white">{survey.projectId || survey.surveyId?.projectId || survey.pid}</TableCell>
+                    <TableCell className="text-zinc-400 font-medium">{survey.transactionToken || survey.uid}</TableCell>
+                    <TableCell className="hidden lg:table-cell text-zinc-300">{survey.surveyId?.supplierId?.name || "N/A"}</TableCell>
+                    <TableCell className="hidden lg:table-cell text-zinc-300">{survey.vendorId?.name || "N/A"}</TableCell>
                     <TableCell className="hidden sm:table-cell">
                       <span className="font-mono text-xs text-zinc-500 bg-black/50 px-2 py-1 rounded inline-block">
                         {survey.ipAddress}
@@ -162,10 +174,13 @@ export function SurveyTable({
                             </DropdownMenuSubTrigger>
                             <DropdownMenuPortal>
                               <DropdownMenuSubContent className="bg-[#09090b] border-white/10 text-white shadow-xl">
-                                <DropdownMenuItem className="focus:bg-emerald-500/20 focus:text-emerald-400" onClick={() => onUpdateStatus(survey._id, "Complete")}>Complete</DropdownMenuItem>
-                                <DropdownMenuItem className="focus:bg-red-500/20 focus:text-red-400" onClick={() => onUpdateStatus(survey._id, "Terminate")}>Terminate</DropdownMenuItem>
-                                <DropdownMenuItem className="focus:bg-amber-500/20 focus:text-amber-400" onClick={() => onUpdateStatus(survey._id, "Quota Full")}>Quota Full</DropdownMenuItem>
-                                <DropdownMenuItem className="focus:bg-indigo-500/20 focus:text-indigo-400" onClick={() => onUpdateStatus(survey._id, "Security Term")}>Security Term</DropdownMenuItem>
+                                <DropdownMenuItem className="focus:bg-blue-500/20 focus:text-blue-400" onClick={() => onUpdateStatus(survey._id, "started")}>Started</DropdownMenuItem>
+                                <DropdownMenuItem className="focus:bg-emerald-500/20 focus:text-emerald-400" onClick={() => onUpdateStatus(survey._id, "completed")}>Complete</DropdownMenuItem>
+                                <DropdownMenuItem className="focus:bg-orange-500/20 focus:text-orange-400" onClick={() => onUpdateStatus(survey._id, "screened_out")}>Screen Out</DropdownMenuItem>
+                                <DropdownMenuItem className="focus:bg-amber-500/20 focus:text-amber-400" onClick={() => onUpdateStatus(survey._id, "quota_full")}>Quota Full</DropdownMenuItem>
+                                <DropdownMenuItem className="focus:bg-pink-500/20 focus:text-pink-400" onClick={() => onUpdateStatus(survey._id, "fraud")}>Fraud</DropdownMenuItem>
+                                <DropdownMenuItem className="focus:bg-red-500/20 focus:text-red-400" onClick={() => onUpdateStatus(survey._id, "terminate")}>Terminate</DropdownMenuItem>
+                                <DropdownMenuItem className="focus:bg-indigo-500/20 focus:text-indigo-400" onClick={() => onUpdateStatus(survey._id, "security_term")}>Security Term</DropdownMenuItem>
                               </DropdownMenuSubContent>
                             </DropdownMenuPortal>
                           </DropdownMenuSub>

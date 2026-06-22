@@ -1,4 +1,3 @@
-import LegacyCallbackModel from "../models/legacycallback.mjs";
 import TransactionModel from "../models/transaction.model.mjs";
 import agenda from "../config/agenda.mjs";
 import { getCountryFromIp } from "../helpers/ip.mjs";
@@ -18,30 +17,26 @@ async function processLegacyBridge(status, req, res) {
         
         const geo = await getCountryFromIp(ip);
 
-        // 1. Legacy Action
-        await LegacyCallbackModel.create({
-            uid: uid,
-            pid: pid,
-            ipAddress: ip,
-            country: geo.country,
-            countryCode: geo.countryCode,
-            status: status
-        });
+        // Bridge Action (Merged)
+        let mappedStatus = 'completed';
+        if (status === 'Quota Full') mappedStatus = 'quota_full';
+        if (status === 'Terminate') mappedStatus = 'terminate';
+        if (status === 'Security Term') mappedStatus = 'security_term';
 
-        // 2. Bridge Action
-        const transaction = await TransactionModel.findOne({ transactionToken: uid }).sort({ createdAt: -1 });
+        const transaction = await TransactionModel.findOneAndUpdate(
+            { transactionToken: uid },
+            {
+                status: mappedStatus,
+                ipAddress: ip,
+                country: geo.country,
+                countryCode: geo.countryCode,
+                projectId: pid,
+                ...(mappedStatus === 'completed' && { completedAt: new Date() })
+            },
+            { new: true }
+        );
+
         if (transaction) {
-            let mappedStatus = 'completed';
-            if (status === 'Quota Full') mappedStatus = 'quota_full';
-            if (status === 'Terminate') mappedStatus = 'terminate';
-            if (status === 'Security Term') mappedStatus = 'security_term';
-            
-            transaction.status = mappedStatus;
-            if (mappedStatus === 'completed') {
-                transaction.completedAt = new Date();
-            }
-            await transaction.save();
-            
             // Fire propagate-webhook
             await agenda.now('propagate-webhook', { transactionId: transaction._id });
         }

@@ -56,7 +56,6 @@ export function DashboardSidebar() {
 
   const adminItems = [
     { name: "Manage Surveys", href: "/dashboard/surveys", icon: <ClipboardList className="mr-2 h-4 w-4 text-purple-400" /> },
-    { name: "Transactions", href: "/dashboard/transactions", icon: <ArrowRightLeft className="mr-2 h-4 w-4 text-sky-400" /> },
   ];
 
   return (

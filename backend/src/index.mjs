@@ -52,7 +52,6 @@ connectDB().then(() => {
 });
 import trafficRoutes from "./routes/traffic.routes.mjs";
 import screenerRoutes from "./routes/screener.routes.mjs";
-import webhookRoutes from "./routes/webhook.routes.mjs";
 import surveyAdminRoutes from "./routes/surveyAdmin.routes.mjs";
 
 // routes
@@ -61,7 +60,6 @@ app.use("/health", (req, res) => {
 });
 app.use("/r", trafficRoutes); // Module 2A
 app.use("/api/screener", screenerRoutes); // Module 2B
-app.use("/api/webhooks", webhookRoutes); // Module 2C
 app.use("/l", surveyRoutes); // Module 2D Legacy Bridge
 app.use("/api/user", userRouter);
 app.use("/api/dashboard", dashboardRouter, authMiddleware);
