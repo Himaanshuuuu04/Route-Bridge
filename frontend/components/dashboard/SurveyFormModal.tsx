@@ -47,7 +47,13 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
     status: "active",
   });
 
-  const [rules, setRules] = useState<{ key: string; value: string }[]>([]);
+  interface EligibilityRule {
+    question: string;
+    options: string[];
+    acceptedAnswers: string[];
+  }
+
+  const [rules, setRules] = useState<EligibilityRule[]>([]);
   const [vendorLinks, setVendorLinks] = useState<{ vendorId: string; quota: number; hash: string }[]>([]);
 
   const [newSupplierName, setNewSupplierName] = useState("");
@@ -70,8 +76,8 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
         status: surveyToEdit.status || "active",
       });
       
-      const rulesArr = surveyToEdit.eligibilityRules 
-        ? Object.entries(surveyToEdit.eligibilityRules).map(([key, value]) => ({ key, value }))
+      const rulesArr = Array.isArray(surveyToEdit.eligibilityRules) 
+        ? surveyToEdit.eligibilityRules
         : [];
       setRules(rulesArr);
       
@@ -164,12 +170,7 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const eligibilityRules: Record<string, string> = {};
-    rules.forEach(r => {
-      if (r.key.trim() && r.value.trim()) {
-        eligibilityRules[r.key.trim()] = r.value.trim();
-      }
-    });
+    const eligibilityRules = rules.filter(r => r.question.trim() && r.options.length > 0 && r.acceptedAnswers.length > 0);
 
     const payload = {
       ...formData,
@@ -398,10 +399,10 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                       type="button" 
                       variant="outline" 
                       size="sm" 
-                      onClick={() => setRules([...rules, { key: "", value: "" }])} 
+                      onClick={() => setRules([...rules, { question: "", options: [""], acceptedAnswers: [] }])} 
                       className="bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-zinc-200 hover:text-white transition-all gap-1.5 h-8"
                     >
-                      <Plus className="h-3.5 w-3.5 text-emerald-400" /> Add Parameter
+                      <Plus className="h-3.5 w-3.5 text-emerald-400" /> Add Question
                     </Button>
                   </div>
 
@@ -409,48 +410,112 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                     {rules.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-6 border border-dashed border-zinc-800 rounded-lg text-zinc-500 bg-zinc-900/10">
                         <AlertCircle className="h-5 w-5 mb-1.5 text-zinc-500" />
-                        <span className="text-xs font-medium">All parameters allowed</span>
-                        <span className="text-[10px] text-zinc-500">No requirements defined. All traffic will pass.</span>
+                        <span className="text-xs font-medium">No questions defined</span>
+                        <span className="text-[10px] text-zinc-500">All traffic will pass automatically.</span>
                       </div>
                     ) : (
-                      <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1 custom-scrollbar">
+                      <div className="space-y-4 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
                         <AnimatePresence initial={false}>
-                          {rules.map((rule, idx) => (
+                          {rules.map((rule, qIdx) => (
                             <motion.div 
-                              key={idx}
+                              key={qIdx}
                               initial={{ opacity: 0, y: -5 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, scale: 0.95 }}
-                              className="flex gap-2 items-center"
+                              className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4 space-y-3 relative"
                             >
-                              <Input 
-                                placeholder="Parameter Key (e.g., country)" 
-                                value={rule.key} 
-                                onChange={e => {
-                                  const n = [...rules]; n[idx].key = e.target.value; setRules(n);
-                                }}
-                                className="h-9 bg-zinc-900/40 border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-white placeholder:text-zinc-500"
-                              />
-                              <span className="text-zinc-600 font-mono text-sm select-none">==</span>
-                              <Input 
-                                placeholder="Required Value (e.g., US)" 
-                                value={rule.value} 
-                                onChange={e => {
-                                  const n = [...rules]; n[idx].value = e.target.value; setRules(n);
-                                }}
-                                className="h-9 bg-zinc-900/40 border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-white placeholder:text-zinc-500"
-                              />
                               <Button 
                                 type="button" 
                                 variant="ghost" 
                                 size="icon" 
-                                className="h-9 w-9 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg shrink-0" 
-                                onClick={() => {
-                                  setRules(rules.filter((_, i) => i !== idx));
-                                }}
+                                className="absolute right-2 top-2 h-7 w-7 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-md" 
+                                onClick={() => setRules(rules.filter((_, i) => i !== qIdx))}
                               >
-                                <X className="h-4 w-4" />
+                                <Trash2 className="h-4 w-4" />
                               </Button>
+
+                              <div className="pr-8">
+                                <label className="text-[10px] font-semibold text-zinc-400 uppercase">Question Text</label>
+                                <Input 
+                                  placeholder="e.g. What is your age?" 
+                                  value={rule.question} 
+                                  onChange={e => {
+                                    const n = [...rules]; n[qIdx].question = e.target.value; setRules(n);
+                                  }}
+                                  className="h-9 bg-zinc-950 border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-white placeholder:text-zinc-500 mt-1"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <label className="text-[10px] font-semibold text-zinc-400 uppercase">Options & Accepted Answers</label>
+                                  <Button 
+                                    type="button" 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    onClick={() => {
+                                      const n = [...rules]; n[qIdx].options.push(""); setRules(n);
+                                    }}
+                                    className="h-6 text-[10px] px-2 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
+                                  >
+                                    <Plus className="h-3 w-3 mr-1" /> Add Option
+                                  </Button>
+                                </div>
+                                <div className="space-y-2">
+                                  {rule.options.map((opt, optIdx) => (
+                                    <div key={optIdx} className="flex items-center gap-2">
+                                      <input 
+                                        type="checkbox" 
+                                        checked={rule.acceptedAnswers.includes(opt) && opt !== ""}
+                                        onChange={(e) => {
+                                          const n = [...rules];
+                                          if (e.target.checked && opt.trim() !== "") {
+                                            n[qIdx].acceptedAnswers.push(opt);
+                                          } else {
+                                            n[qIdx].acceptedAnswers = n[qIdx].acceptedAnswers.filter(a => a !== opt);
+                                          }
+                                          setRules(n);
+                                        }}
+                                        disabled={opt.trim() === ""}
+                                        className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-emerald-500 focus:ring-emerald-500/50 focus:ring-offset-zinc-950"
+                                        title="Mark as accepted answer"
+                                      />
+                                      <Input 
+                                        placeholder={`Option ${optIdx + 1}`} 
+                                        value={opt} 
+                                        onChange={e => {
+                                          const newVal = e.target.value;
+                                          const n = [...rules]; 
+                                          const oldVal = n[qIdx].options[optIdx];
+                                          n[qIdx].options[optIdx] = newVal;
+                                          // Update acceptedAnswers if the old value was selected
+                                          if (n[qIdx].acceptedAnswers.includes(oldVal)) {
+                                            n[qIdx].acceptedAnswers = n[qIdx].acceptedAnswers.map(a => a === oldVal ? newVal : a);
+                                          }
+                                          setRules(n);
+                                        }}
+                                        className="h-8 bg-zinc-950 border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-white placeholder:text-zinc-600 text-sm flex-1"
+                                      />
+                                      <Button 
+                                        type="button" 
+                                        variant="ghost" 
+                                        size="icon" 
+                                        className="h-8 w-8 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 shrink-0" 
+                                        onClick={() => {
+                                          const n = [...rules];
+                                          const removedOpt = n[qIdx].options[optIdx];
+                                          n[qIdx].options.splice(optIdx, 1);
+                                          n[qIdx].acceptedAnswers = n[qIdx].acceptedAnswers.filter(a => a !== removedOpt);
+                                          setRules(n);
+                                        }}
+                                        disabled={rule.options.length === 1}
+                                      >
+                                        <X className="h-3.5 w-3.5" />
+                                      </Button>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
                             </motion.div>
                           ))}
                         </AnimatePresence>

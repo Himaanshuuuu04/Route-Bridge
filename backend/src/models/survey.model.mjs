@@ -7,7 +7,11 @@ const surveySchema = new Schema({
     supplierId: { type: Schema.Types.ObjectId, ref: 'Supplier' },
     baseSupplierUrl: { type: String, required: true }, // e.g., https://supplier.com/survey?uid=[identifier]
     status: { type: String, enum: ['active', 'paused', 'closed'], default: 'active' },
-    eligibilityRules: { type: Schema.Types.Mixed }, // Stores required age limits, gender, etc.
+    eligibilityRules: [{
+        question: { type: String, required: true },
+        options: [{ type: String }],
+        acceptedAnswers: [{ type: String }]
+    }], // Stores MCQ format eligibility rules
     vendorLinks: [{
         vendorId: { type: Schema.Types.ObjectId, ref: 'Vendor' },
         hash: { type: String, unique: true, sparse: true, index: true },

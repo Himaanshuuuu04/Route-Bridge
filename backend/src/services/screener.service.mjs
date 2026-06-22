@@ -42,11 +42,12 @@ export const submitScreener = async ({ hash, vendor_rid, answers, ipAddress, ses
     }
 
     // Step 2: Evaluate Answers against eligibilityRules
-    // Simplified logic: match keys in eligibilityRules
+    // Logic: check if the user's selected option is included in the acceptedAnswers array
     let isQualified = true;
-    if (survey.eligibilityRules) {
-        for (const [key, expectedValue] of Object.entries(survey.eligibilityRules)) {
-            if (answers[key] !== expectedValue) {
+    if (survey.eligibilityRules && survey.eligibilityRules.length > 0) {
+        for (const rule of survey.eligibilityRules) {
+            const userAnswer = answers[rule.question];
+            if (!userAnswer || !rule.acceptedAnswers.includes(userAnswer)) {
                 isQualified = false;
                 break;
             }
