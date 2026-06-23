@@ -1,8 +1,7 @@
-"use client";
-
 import React from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
+import { DashboardNavbar } from "@/components/dashboard/DashboardNavbar";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -16,7 +15,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         <DashboardSidebar />
         
-        {children}
+        <div className="flex-1 flex flex-col overflow-hidden relative">
+          <DashboardNavbar />
+          {children}
+        </div>
       </div>
     </SidebarProvider>
   );

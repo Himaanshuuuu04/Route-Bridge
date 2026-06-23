@@ -89,35 +89,14 @@ export default function DashboardPage() {
 
   return (
     <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-10 relative z-10">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between mb-10"
-      >
-        <div className="flex items-center gap-4">
-          <SidebarTrigger className="text-white hover:bg-white/10 hover:text-white" />
-          <div>
-            <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-white">Dashboard Overview</h2>
-            <p className="text-zinc-400 mt-2 font-medium">Real-time metrics and survey insights.</p>
-          </div>
-        </div>
-        <Button 
-          variant="outline" 
-          size="icon" 
-          className="bg-white/5 border-white/10 hover:bg-white/10 text-white"
-          onClick={handleRefresh} 
-          disabled={isDataLoading}
-        >
-          <RefreshCw className={`h-4 w-4 ${isDataLoading ? 'animate-spin' : ''}`} />
-        </Button>
-      </motion.div>
-
       <DateFilter 
         startDate={startDate}
         endDate={endDate}
         onStartDateChange={setStartDate}
         onEndDateChange={setEndDate}
         onResetPage={() => setPage(1)}
+        onRefresh={handleRefresh}
+        isRefreshing={isDataLoading}
       />
 
       {/* Stats Grid */}

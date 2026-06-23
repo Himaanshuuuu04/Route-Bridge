@@ -65,11 +65,11 @@ export function DashboardSidebar() {
     <Sidebar collapsible="icon" variant="inset" className="bg-black/50 border-r border-white/5 backdrop-blur-xl">
       <SidebarHeader>
         <div className="flex items-center gap-3 p-4 justify-center">
-          <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
-            <BarChart3 className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 flex items-center justify-center  shrink-0">
+            <img src="/logo.webp" alt="logo" className="w-8 h-8 text-white" />
           </div>
           {!isCollapsed && (
-            <h1 className="text-xl font-bold tracking-tight text-white animate-in fade-in duration-200">Analytics</h1>
+            <h1 className="text-md font-bold tracking-tight text-white animate-in fade-in duration-200">Evo Global Insight</h1>
           )}
         </div>
       </SidebarHeader>

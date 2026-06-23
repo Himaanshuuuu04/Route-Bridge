@@ -32,8 +32,55 @@ const calSans = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Dashboard",
-  description: "Survey Dashboard",
+  title: {
+    default: "SurveyRouter - Intelligent Survey Redirects & Publisher Analytics",
+    template: "%s | SurveyRouter",
+  },
+  description: "A premium, secure survey routing and redirection platform. Seamlessly manage upstream panel URLs, configure custom screeners, prevent fraud, and view real-time publisher stats.",
+  keywords: [
+    "survey routing",
+    "screener redirects",
+    "market research router",
+    "survey traffic management",
+    "publisher dashboard",
+    "response tracking",
+    "survey callbacks",
+    "fraud prevention",
+  ],
+  authors: [{ name: "SurveyRouter" }],
+  creator: "SurveyRouter Team",
+  publisher: "SurveyRouter",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://dashboard.evoglobalinsight.com",
+    title: "SurveyRouter - Intelligent Survey Redirects & Publisher Analytics",
+    description: "Manage upstream panel URLs, custom screeners, and real-time publisher callback statistics in a single premium dashboard.",
+    siteName: "SurveyRouter",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "SurveyRouter Dashboard",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SurveyRouter - Intelligent Survey Redirects & Publisher Analytics",
+    description: "Intelligent survey routing platform and real-time analytics dashboard.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

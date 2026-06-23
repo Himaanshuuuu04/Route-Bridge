@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ArrowRight, BarChart3, Zap, Shield, LayoutDashboard, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { Navbar } from "@/components/Navbar";
 
 export default function LandingPage() {
   return (
@@ -14,35 +15,7 @@ export default function LandingPage() {
       </div>
 
       {/* Navigation */}
-      <motion.nav 
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-full fixed top-0 z-50 border-b border-white/5 bg-black/50 backdrop-blur-xl"
-      >
-        <div className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
-              <LayoutDashboard className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold tracking-tight">SurveyRouter</span>
-          </div>
-          <div className="flex items-center gap-6">
-            <Link 
-              href="/signin" 
-              className="text-sm font-medium text-zinc-400 hover:text-white transition-colors"
-            >
-              Sign in
-            </Link>
-            <Link 
-              href="/signup" 
-              className="text-sm font-medium px-5 py-2.5 bg-white text-black rounded-full hover:bg-zinc-200 hover:scale-105 active:scale-95 transition-all duration-200"
-            >
-              Get Started
-            </Link>
-          </div>
-        </div>
-      </motion.nav>
+      <Navbar />
 
       {/* Hero Section */}
       <main className="flex-1 flex flex-col items-center justify-center text-center px-6 pt-40 pb-20 md:py-48 max-w-5xl mx-auto relative z-10">

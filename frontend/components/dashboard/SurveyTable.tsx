@@ -90,73 +90,156 @@ export function SurveyTable({
           )}
         </div>
       </CardHeader>
-      <CardContent className="flex-1 p-0 overflow-x-auto">
-        <Table>
-          <TableHeader className="bg-white/[0.02]">
-            <TableRow className="border-white/5 hover:bg-transparent">
-              <TableHead className="pl-6 text-zinc-400 font-semibold py-4">Project ID</TableHead>
-              <TableHead className="text-zinc-400 font-semibold">User ID</TableHead>
-              <TableHead className="hidden lg:table-cell text-zinc-400 font-semibold">Supplier</TableHead>
-              <TableHead className="hidden lg:table-cell text-zinc-400 font-semibold">Vendor</TableHead>
-              <TableHead className="hidden sm:table-cell text-zinc-400 font-semibold">IP Address</TableHead>
-              <TableHead className="hidden md:table-cell text-zinc-400 font-semibold">Country</TableHead>
-              <TableHead className="text-zinc-400 font-semibold">Status</TableHead>
-              <TableHead className="hidden md:table-cell text-zinc-400 font-semibold">Date</TableHead>
-              <TableHead className="text-right pr-6 text-zinc-400 font-semibold">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <AnimatePresence mode="popLayout">
-              {isLoading ? (
-                Array.from({ length: limit }).map((_, i) => (
-                  <TableRow key={`skeleton-${i}`} className="border-white/5">
-                    <TableCell className="pl-6"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-28 bg-white/5 rounded-md" /></TableCell>
-                    <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
-                    <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
-                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
-                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-20 bg-white/5 rounded-md" /></TableCell>
-                    <TableCell><Skeleton className="h-6 w-24 rounded-full bg-white/5" /></TableCell>
-                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
-                    <TableCell className="text-right pr-6"><Skeleton className="h-8 w-8 ml-auto rounded-md bg-white/5" /></TableCell>
+      <CardContent className="flex-1 p-0">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
+          <Table>
+            <TableHeader className="bg-white/[0.02]">
+              <TableRow className="border-white/5 hover:bg-transparent">
+                <TableHead className="pl-6 text-zinc-400 font-semibold py-4">Project ID</TableHead>
+                <TableHead className="text-zinc-400 font-semibold">User ID</TableHead>
+                <TableHead className="hidden lg:table-cell text-zinc-400 font-semibold">Supplier</TableHead>
+                <TableHead className="hidden lg:table-cell text-zinc-400 font-semibold">Vendor</TableHead>
+                <TableHead className="hidden sm:table-cell text-zinc-400 font-semibold">IP Address</TableHead>
+                <TableHead className="hidden md:table-cell text-zinc-400 font-semibold">Country</TableHead>
+                <TableHead className="text-zinc-400 font-semibold">Status</TableHead>
+                <TableHead className="hidden md:table-cell text-zinc-400 font-semibold">Date</TableHead>
+                <TableHead className="text-right pr-6 text-zinc-400 font-semibold">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <AnimatePresence mode="popLayout">
+                {isLoading ? (
+                  Array.from({ length: limit }).map((_, i) => (
+                    <TableRow key={`skeleton-${i}`} className="border-white/5">
+                      <TableCell className="pl-6"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-28 bg-white/5 rounded-md" /></TableCell>
+                      <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
+                      <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
+                      <TableCell className="hidden sm:table-cell"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
+                      <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-20 bg-white/5 rounded-md" /></TableCell>
+                      <TableCell><Skeleton className="h-6 w-24 rounded-full bg-white/5" /></TableCell>
+                      <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
+                      <TableCell className="text-right pr-6"><Skeleton className="h-8 w-8 ml-auto rounded-md bg-white/5" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : surveys.length === 0 ? (
+                  <TableRow className="border-none">
+                    <TableCell colSpan={9} className="h-48 text-center text-zinc-500 font-medium">
+                      No surveys found in this category.
+                    </TableCell>
                   </TableRow>
-                ))
-              ) : surveys.length === 0 ? (
-                <TableRow className="border-none">
-                  <TableCell colSpan={7} className="h-48 text-center text-zinc-500 font-medium">
-                    No surveys found in this category.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                surveys.map((survey, index) => (
-                  <motion.tr 
-                    key={survey._id} 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="group transition-colors border-white/5 hover:bg-white/[0.02]"
-                  >
-                    <TableCell className="pl-6 font-bold text-white">{survey.projectId || survey.surveyId?.projectId || survey.pid}</TableCell>
-                    <TableCell className="text-zinc-400 font-medium">{survey.transactionToken || survey.uid}</TableCell>
-                    <TableCell className="hidden lg:table-cell text-zinc-300">{survey.surveyId?.supplierId?.name || "N/A"}</TableCell>
-                    <TableCell className="hidden lg:table-cell text-zinc-300">{survey.vendorId?.name || "N/A"}</TableCell>
-                    <TableCell className="hidden sm:table-cell">
-                      <span className="font-mono text-xs text-zinc-500 bg-black/50 px-2 py-1 rounded inline-block">
-                        {survey.ipAddress}
-                      </span>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      <span className="text-zinc-300 font-medium flex items-center gap-1.5">
-                        <span className="text-lg">{getFlagEmoji(survey.countryCode)}</span>
-                        <span>{survey.country || 'Unknown'}</span>
-                      </span>
-                    </TableCell>
-                    <TableCell>{getStatusBadge(survey.status)}</TableCell>
-                    <TableCell className="hidden md:table-cell text-zinc-400 font-medium">
-                      {new Date(survey.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                    </TableCell>
-                    <TableCell className="text-right pr-6">
+                ) : (
+                  surveys.map((survey, index) => (
+                    <motion.tr 
+                      key={survey._id} 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="group transition-colors border-white/5 hover:bg-white/[0.02]"
+                    >
+                      <TableCell className="pl-6 font-bold text-white">{survey.projectId || survey.surveyId?.projectId || survey.pid}</TableCell>
+                      <TableCell className="text-zinc-400 font-medium max-w-[160px] truncate">{survey.transactionToken || survey.uid}</TableCell>
+                      <TableCell className="hidden lg:table-cell text-zinc-300">{survey.surveyId?.supplierId?.name || "N/A"}</TableCell>
+                      <TableCell className="hidden lg:table-cell text-zinc-300">{survey.vendorId?.name || "N/A"}</TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        <span className="font-mono text-xs text-zinc-500 bg-black/50 px-2 py-1 rounded inline-block">
+                          {survey.ipAddress}
+                        </span>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <span className="text-zinc-300 font-medium flex items-center gap-1.5">
+                          <span className="text-lg">{getFlagEmoji(survey.countryCode)}</span>
+                          <span>{survey.country || 'Unknown'}</span>
+                        </span>
+                      </TableCell>
+                      <TableCell>{getStatusBadge(survey.status)}</TableCell>
+                      <TableCell className="hidden md:table-cell text-zinc-400 font-medium">
+                        {new Date(survey.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </TableCell>
+                      <TableCell className="text-right pr-6">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors">
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Open menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-[180px] bg-[#09090b] border-white/10 text-white shadow-xl">
+                            <DropdownMenuLabel className="text-zinc-400">Actions</DropdownMenuLabel>
+                            <DropdownMenuSeparator className="bg-white/10" />
+                            <DropdownMenuSub>
+                              <DropdownMenuSubTrigger className="focus:bg-white/10 focus:text-white">
+                                <Settings className="mr-2 h-4 w-4 text-zinc-400" />
+                                <span>Update Status</span>
+                              </DropdownMenuSubTrigger>
+                              <DropdownMenuPortal>
+                                <DropdownMenuSubContent className="bg-[#09090b] border-white/10 text-white shadow-xl">
+                                  <DropdownMenuItem className="focus:bg-blue-500/20 focus:text-blue-400" onClick={() => onUpdateStatus(survey._id, "started")}>Started</DropdownMenuItem>
+                                  <DropdownMenuItem className="focus:bg-emerald-500/20 focus:text-emerald-400" onClick={() => onUpdateStatus(survey._id, "completed")}>Complete</DropdownMenuItem>
+                                  <DropdownMenuItem className="focus:bg-orange-500/20 focus:text-orange-400" onClick={() => onUpdateStatus(survey._id, "screened_out")}>Screen Out</DropdownMenuItem>
+                                  <DropdownMenuItem className="focus:bg-amber-500/20 focus:text-amber-400" onClick={() => onUpdateStatus(survey._id, "quota_full")}>Quota Full</DropdownMenuItem>
+                                  <DropdownMenuItem className="focus:bg-pink-500/20 focus:text-pink-400" onClick={() => onUpdateStatus(survey._id, "fraud")}>Fraud</DropdownMenuItem>
+                                  <DropdownMenuItem className="focus:bg-red-500/20 focus:text-red-400" onClick={() => onUpdateStatus(survey._id, "terminate")}>Terminate</DropdownMenuItem>
+                                  <DropdownMenuItem className="focus:bg-indigo-500/20 focus:text-indigo-400" onClick={() => onUpdateStatus(survey._id, "security_term")}>Security Term</DropdownMenuItem>
+                                </DropdownMenuSubContent>
+                              </DropdownMenuPortal>
+                            </DropdownMenuSub>
+                            <DropdownMenuItem className="text-red-400 focus:bg-red-500/10 focus:text-red-400" onClick={() => onDelete(survey._id)}>
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              <span>Delete</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </motion.tr>
+                  ))
+                )}
+              </AnimatePresence>
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Mobile Cards List View */}
+        <div className="md:hidden divide-y divide-white/5">
+          <AnimatePresence mode="popLayout">
+            {isLoading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={`skeleton-card-${i}`} className="p-4 space-y-3 bg-black/10">
+                  <div className="flex items-center justify-between">
+                    <Skeleton className="h-5 w-24 bg-white/5" />
+                    <Skeleton className="h-6 w-16 bg-white/5 rounded-full" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Skeleton className="h-4 w-20 bg-white/5" />
+                    <Skeleton className="h-4 w-20 bg-white/5" />
+                  </div>
+                </div>
+              ))
+            ) : surveys.length === 0 ? (
+              <div className="p-8 text-center text-zinc-500 font-medium">
+                No surveys found in this category.
+              </div>
+            ) : (
+              surveys.map((survey, index) => (
+                <motion.div
+                  key={survey._id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="p-4 space-y-3 hover:bg-white/[0.01] transition-colors"
+                >
+                  {/* Card Title Header */}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-bold text-white text-sm truncate">
+                      {survey.projectId || survey.surveyId?.projectId || survey.pid}
+                    </span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {getStatusBadge(survey.status)}
+                      
+                      {/* Actions Dropdown */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors">
@@ -190,13 +273,48 @@ export function SurveyTable({
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
-                    </TableCell>
-                  </motion.tr>
-                ))
-              )}
-            </AnimatePresence>
-          </TableBody>
-        </Table>
+                    </div>
+                  </div>
+
+                  {/* Card Details Grid */}
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-3.5 text-xs border-t border-white/5 pt-3">
+                    <div>
+                      <span className="text-zinc-500 block text-[9px] uppercase font-bold tracking-wider mb-0.5">User ID</span>
+                      <span className="text-zinc-300 font-medium truncate block max-w-[130px]" title={survey.transactionToken || survey.uid}>
+                        {survey.transactionToken || survey.uid}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-zinc-500 block text-[9px] uppercase font-bold tracking-wider mb-0.5">IP Address</span>
+                      <span className="font-mono text-zinc-400">{survey.ipAddress || "N/A"}</span>
+                    </div>
+                    <div>
+                      <span className="text-zinc-500 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Supplier</span>
+                      <span className="text-zinc-300 truncate block max-w-[130px]">{survey.surveyId?.supplierId?.name || "N/A"}</span>
+                    </div>
+                    <div>
+                      <span className="text-zinc-500 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Vendor</span>
+                      <span className="text-zinc-300 truncate block max-w-[130px]">{survey.vendorId?.name || "N/A"}</span>
+                    </div>
+                    <div>
+                      <span className="text-zinc-500 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Country</span>
+                      <span className="text-zinc-300 flex items-center gap-1.5">
+                        <span className="text-base leading-none">{getFlagEmoji(survey.countryCode)}</span>
+                        <span className="truncate">{survey.country || "Unknown"}</span>
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-zinc-500 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Date</span>
+                      <span className="text-zinc-400">
+                        {new Date(survey.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))
+            )}
+          </AnimatePresence>
+        </div>
       </CardContent>
       
       {/* Pagination Controls */}

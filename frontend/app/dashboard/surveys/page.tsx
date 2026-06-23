@@ -5,6 +5,7 @@ import Link from "next/link";
 import { PlusCircle, Search, Edit2, Trash2, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/app/context/ToastContext";
 import { useGetAdminSurveysQuery, useDeleteAdminSurveyMutation, Survey } from "@/app/store/apiSlice";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,29 +51,14 @@ export default function SurveysPage() {
   );
 
   return (
-    <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-10 relative z-10">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8"
-      >
-        <div>
-          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-white">Surveys</h1>
-          <p className="text-zinc-400 mt-2 font-medium">Manage your upstream surveys and routing rules.</p>
-        </div>
-        <Button onClick={handleOpenCreate} className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white">
-          <PlusCircle className="h-4 w-4" />
-          Create Survey
-        </Button>
-      </motion.div>
-
+    <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-10 relative z-10">
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="flex items-center gap-2 mb-6"
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6"
       >
-        <div className="relative flex-1 max-w-sm">
+        <div className="relative flex-1 max-w-sm w-full">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
           <Input 
             placeholder="Search surveys by name or ID..." 
@@ -81,6 +67,11 @@ export default function SurveysPage() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
+
+        <Button onClick={handleOpenCreate} className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shrink-0 w-full sm:w-auto">
+          <PlusCircle className="h-4 w-4" />
+          Create Survey
+        </Button>
       </motion.div>
 
       <motion.div 

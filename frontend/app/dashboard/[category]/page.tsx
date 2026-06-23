@@ -100,52 +100,14 @@ export default function CategoryPage({ params }: PageProps) {
 
   return (
     <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-10 relative z-10">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col gap-4 mb-8"
-      >
-        <div className="flex items-center gap-3">
-          <SidebarTrigger className="text-white hover:bg-white/10 hover:text-white" />
-          <Link 
-            href="/dashboard" 
-            className="text-zinc-400 hover:text-white transition-colors flex items-center gap-1.5 text-sm font-semibold group"
-          >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            Back to Overview
-          </Link>
-        </div>
-        
-        <div className="flex items-center justify-between mt-2">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-white/5 rounded-2xl border border-white/10 shrink-0">
-              {config.icon}
-            </div>
-            <div>
-              <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-white">{config.title}</h2>
-              <p className="text-zinc-400 mt-2 font-medium">
-                Showing <span className="text-white font-semibold">{getTotalItems()}</span> total entries
-              </p>
-            </div>
-          </div>
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className="bg-white/5 border-white/10 hover:bg-white/10 text-white"
-            onClick={handleRefresh} 
-            disabled={isDataLoading}
-          >
-            <RefreshCw className={`h-4 w-4 ${isDataLoading ? 'animate-spin' : ''}`} />
-          </Button>
-        </div>
-      </motion.div>
-
       <DateFilter 
         startDate={startDate}
         endDate={endDate}
         onStartDateChange={setStartDate}
         onEndDateChange={setEndDate}
         onResetPage={() => setPage(1)}
+        onRefresh={handleRefresh}
+        isRefreshing={isDataLoading}
       />
 
       <motion.div 

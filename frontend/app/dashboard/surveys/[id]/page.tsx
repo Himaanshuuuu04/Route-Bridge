@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Check, CheckCircle2, Copy, Link as LinkIcon, Settings } from "lucide-react";
 import { useToast } from "@/app/context/ToastContext";
 import { useGetAdminSurveyByIdQuery } from "@/app/store/apiSlice";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,7 +34,7 @@ export default function SurveyDetailsPage({ params }: { params: Promise<{ id: st
 
   if (isLoading) {
     return (
-      <main className="flex-1 p-6 md:p-10">
+      <main className="flex-1 p-4 sm:p-6 md:p-10">
         <div className="space-y-6">
           <Skeleton className="h-8 w-48 bg-white/5" />
           <Skeleton className="h-32 w-full bg-white/5" />
@@ -45,7 +46,7 @@ export default function SurveyDetailsPage({ params }: { params: Promise<{ id: st
 
   if (!survey) {
     return (
-      <main className="flex-1 p-6 md:p-10 flex flex-col items-center justify-center py-20 text-zinc-500">
+      <main className="flex-1 p-4 sm:p-6 md:p-10 flex flex-col items-center justify-center py-20 text-zinc-500">
         <p>Survey not found.</p>
         <Button variant="link" asChild className="mt-4 text-emerald-400">
           <Link href="/dashboard/surveys"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Surveys</Link>
@@ -57,17 +58,20 @@ export default function SurveyDetailsPage({ params }: { params: Promise<{ id: st
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
   return (
-    <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-10 relative z-10">
+    <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-10 relative z-10">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col gap-6"
       >
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="outline" size="icon" asChild className="h-8 w-8 rounded-full bg-white/5 border-white/10 text-white hover:bg-white/10">
-              <Link href="/dashboard/surveys"><ArrowLeft className="h-4 w-4" /></Link>
-            </Button>
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-2">
+              <SidebarTrigger className="text-white hover:bg-white/10 hover:text-white hidden" />
+              <Button variant="outline" size="icon" asChild className="h-8 w-8 rounded-full bg-white/5 border-white/10 text-white hover:bg-white/10">
+                <Link href="/dashboard/surveys"><ArrowLeft className="h-4 w-4" /></Link>
+              </Button>
+            </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight flex items-center gap-3 text-white">
                 {survey.name}

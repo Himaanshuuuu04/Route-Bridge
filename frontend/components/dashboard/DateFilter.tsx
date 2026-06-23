@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Calendar } from "lucide-react";
+import { Calendar, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface DateFilterProps {
@@ -11,6 +11,8 @@ interface DateFilterProps {
   onStartDateChange: (date: string) => void;
   onEndDateChange: (date: string) => void;
   onResetPage: () => void;
+  onRefresh?: () => void;
+  isRefreshing?: boolean;
 }
 
 export function DateFilter({ 
@@ -18,7 +20,9 @@ export function DateFilter({
   endDate, 
   onStartDateChange, 
   onEndDateChange,
-  onResetPage
+  onResetPage,
+  onRefresh,
+  isRefreshing
 }: DateFilterProps) {
   return (
     <motion.div 
@@ -65,50 +69,68 @@ export function DateFilter({
       </div>
       
       {/* Quick Presets */}
-      <div className="md:ml-auto flex items-center gap-2">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => {
-            const today = new Date().toISOString().split('T')[0];
-            onStartDateChange(today);
-            onEndDateChange(today);
-            onResetPage();
-          }}
-          className="bg-white/5 border-white/10 text-xs hover:bg-white/10 text-white rounded-xl"
-        >
-          Today
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => {
-            const end = new Date();
-            const start = new Date();
-            start.setDate(end.getDate() - 7);
-            onStartDateChange(start.toISOString().split('T')[0]);
-            onEndDateChange(end.toISOString().split('T')[0]);
-            onResetPage();
-          }}
-          className="bg-white/5 border-white/10 text-xs hover:bg-white/10 text-white rounded-xl"
-        >
-          Last 7 Days
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => {
-            const end = new Date();
-            const start = new Date();
-            start.setDate(end.getDate() - 30);
-            onStartDateChange(start.toISOString().split('T')[0]);
-            onEndDateChange(end.toISOString().split('T')[0]);
-            onResetPage();
-          }}
-          className="bg-white/5 border-white/10 text-xs hover:bg-white/10 text-white rounded-xl"
-        >
-          Last 30 Days
-        </Button>
+      <div className="md:ml-auto flex items-center gap-2 w-full md:w-auto justify-between md:justify-start">
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => {
+              const today = new Date().toISOString().split('T')[0];
+              onStartDateChange(today);
+              onEndDateChange(today);
+              onResetPage();
+            }}
+            className="bg-white/5 border-white/10 text-xs hover:bg-white/10 text-white rounded-xl"
+          >
+            Today
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => {
+              const end = new Date();
+              const start = new Date();
+              start.setDate(end.getDate() - 7);
+              onStartDateChange(start.toISOString().split('T')[0]);
+              onEndDateChange(end.toISOString().split('T')[0]);
+              onResetPage();
+            }}
+            className="bg-white/5 border-white/10 text-xs hover:bg-white/10 text-white rounded-xl"
+          >
+            Last 7 Days
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => {
+              const end = new Date();
+              const start = new Date();
+              start.setDate(end.getDate() - 30);
+              onStartDateChange(start.toISOString().split('T')[0]);
+              onEndDateChange(end.toISOString().split('T')[0]);
+              onResetPage();
+            }}
+            className="bg-white/5 border-white/10 text-xs hover:bg-white/10 text-white rounded-xl"
+          >
+            Last 30 Days
+          </Button>
+        </div>
+
+        {onRefresh && (
+          <div className="flex items-center gap-2">
+            <div className="h-4 w-[1px] bg-white/10 hidden md:block mx-1" />
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={onRefresh}
+              disabled={isRefreshing}
+              className="bg-white/5 border-white/10 hover:bg-white/10 text-white rounded-xl h-8 w-8 shrink-0"
+              title="Refresh data"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
+        )}
       </div>
     </motion.div>
   );

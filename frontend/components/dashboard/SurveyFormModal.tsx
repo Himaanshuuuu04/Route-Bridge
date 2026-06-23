@@ -195,8 +195,11 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-6xl w-[95vw] sm:max-w-3xl md:max-w-4xl lg:max-w-6xl h-[85vh] max-h-[90vh] flex flex-col p-0 overflow-hidden bg-zinc-950 border border-zinc-800 text-white rounded-xl shadow-2xl">
-        <DialogHeader className="p-6 pb-4 border-b border-zinc-800 flex flex-row items-center justify-between">
+      <DialogContent 
+        className="max-w-6xl w-[95vw] sm:max-w-3xl md:max-w-4xl lg:max-w-6xl h-[85vh] max-h-[90vh] flex flex-col p-0 overflow-hidden bg-zinc-950 border border-zinc-800 text-white rounded-xl shadow-2xl"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
+        <DialogHeader className="p-4 sm:p-6 pb-4 border-b border-zinc-800 flex flex-row items-center justify-between">
           <div className="space-y-1">
             <DialogTitle className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-emerald-400" />
@@ -209,8 +212,8 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-6 lg:p-8 space-y-8 custom-scrollbar">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 custom-scrollbar">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
               
               {/* Left Column: General Configuration */}
               <div className="lg:col-span-5 space-y-6">
@@ -526,7 +529,7 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
 
                 {/* Vendor Distribution Panel */}
                 <div className="bg-zinc-900/20 border border-zinc-800/80 rounded-xl p-5 space-y-4">
-                  <div className="flex items-center justify-between border-b border-zinc-850 pb-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-850 pb-3">
                     <div className="space-y-0.5">
                       <h4 className="text-sm font-semibold tracking-wide uppercase text-zinc-200 flex items-center gap-2">
                         <LinkIcon className="h-4 w-4 text-violet-400" />
@@ -534,13 +537,13 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                       </h4>
                       <p className="text-xs text-zinc-400">Manage vendor entry quotas and tracking parameters.</p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <Button 
                         type="button" 
                         variant="outline" 
                         size="sm" 
                         onClick={() => setIsAddingVendor(!isAddingVendor)} 
-                        className={`bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-zinc-200 hover:text-white transition-all gap-1.5 h-8 ${isAddingVendor ? 'border-violet-500 text-violet-400 bg-violet-500/5' : ''}`}
+                        className={`bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-zinc-200 hover:text-white transition-all gap-1.5 h-8 text-xs ${isAddingVendor ? 'border-violet-500 text-violet-400 bg-violet-500/5' : ''}`}
                       >
                         <Plus className="h-3.5 w-3.5 text-violet-400" /> Create Vendor
                       </Button>
@@ -549,7 +552,7 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                         variant="outline" 
                         size="sm" 
                         onClick={() => setVendorLinks([...vendorLinks, { vendorId: "", quota: 0, hash: "" }])} 
-                        className="bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-zinc-200 hover:text-white transition-all gap-1.5 h-8"
+                        className="bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-zinc-200 hover:text-white transition-all gap-1.5 h-8 text-xs"
                       >
                         <Plus className="h-3.5 w-3.5 text-emerald-400" /> Link Vendor
                       </Button>
@@ -682,8 +685,8 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                         <span className="text-[10px] text-zinc-500">Link a vendor to generate secure routing links.</span>
                       </div>
                     ) : (
-                      <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1 custom-scrollbar">
-                        <div className="flex gap-2 px-1 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider select-none">
+                      <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
+                        <div className="hidden md:flex gap-2 px-1 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider select-none">
                           <div className="flex-[2.5]">Vendor Partner</div>
                           <div className="flex-1">Quota</div>
                           {surveyToEdit && <div className="flex-[1.5]">Hash ID</div>}
@@ -697,10 +700,11 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                               initial={{ opacity: 0, y: -5 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, scale: 0.95 }}
-                              className="flex gap-2 items-center"
+                              className="flex flex-col md:flex-row gap-3 md:gap-2 md:items-center p-3.5 pr-10 md:p-0 bg-zinc-900/30 md:bg-transparent rounded-lg border border-zinc-800/50 md:border-transparent relative"
                             >
                               {/* Vendor Selection */}
-                              <div className="flex-[2.5] min-w-0">
+                              <div className="flex-[2.5] min-w-0 space-y-1">
+                                <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider md:hidden">Vendor Partner</label>
                                 <Select 
                                   value={link.vendorId} 
                                   onValueChange={v => {
@@ -719,7 +723,8 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                               </div>
 
                               {/* Quota Input */}
-                              <div className="flex-1 min-w-[70px]">
+                              <div className="flex-1 min-w-0 md:min-w-[70px] space-y-1">
+                                <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider md:hidden">Quota</label>
                                 <Input 
                                   type="number" 
                                   min={0}
@@ -727,31 +732,34 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                                   onChange={e => {
                                     const n = [...vendorLinks]; n[idx].quota = Number(e.target.value); setVendorLinks(n);
                                   }}
-                                  className="h-9 bg-zinc-900/40 border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-white text-xs font-mono text-center"
+                                  className="h-9 bg-zinc-900/40 border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-white text-xs font-mono text-left md:text-center"
                                 />
                               </div>
 
                               {/* Secure Hash (Only when editing survey) */}
                               {surveyToEdit && (
-                                <div className="flex-[1.5] relative min-w-0 group/hash">
-                                  <Input 
-                                    value={link.hash || "Not Generated"} 
-                                    disabled 
-                                    className="h-9 font-mono text-[10px] bg-zinc-950/80 border-zinc-900 text-zinc-500 pr-7 truncate" 
-                                  />
-                                  {link.hash && (
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        navigator.clipboard.writeText(link.hash);
-                                        showToast("Hash copied!", "success");
-                                      }}
-                                      className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-zinc-500 hover:text-emerald-400 hover:bg-zinc-900 rounded opacity-0 group-hover/hash:opacity-100 transition-opacity"
-                                      title="Copy Hash to Clipboard"
-                                    >
-                                      <Copy className="h-3 w-3" />
-                                    </button>
-                                  )}
+                                <div className="flex-[1.5] min-w-0 space-y-1">
+                                  <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider md:hidden">Hash ID</label>
+                                  <div className="relative group/hash">
+                                    <Input 
+                                      value={link.hash || "Not Generated"} 
+                                      disabled 
+                                      className="h-9 font-mono text-[10px] bg-zinc-950/80 border-zinc-900 text-zinc-500 pr-7 truncate" 
+                                    />
+                                    {link.hash && (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          navigator.clipboard.writeText(link.hash);
+                                          showToast("Hash copied!", "success");
+                                        }}
+                                        className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-zinc-500 hover:text-emerald-400 hover:bg-zinc-900 rounded opacity-100 md:opacity-0 md:group-hover/hash:opacity-100 transition-opacity"
+                                        title="Copy Hash to Clipboard"
+                                      >
+                                        <Copy className="h-3 w-3" />
+                                      </button>
+                                    )}
+                                  </div>
                                 </div>
                               )}
 
@@ -760,7 +768,7 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                                 type="button" 
                                 variant="ghost" 
                                 size="icon" 
-                                className="h-9 w-9 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg shrink-0" 
+                                className="absolute right-2 top-2 md:relative md:right-0 md:top-0 h-8 w-8 md:h-9 md:w-9 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg shrink-0" 
                                 onClick={() => {
                                   setVendorLinks(vendorLinks.filter((_, i) => i !== idx));
                                 }}
@@ -779,23 +787,31 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
 
             </div>
           </div>
-
-          <DialogFooter className="p-6 border-t border-zinc-800 bg-zinc-950/80 flex items-center justify-end gap-3 mt-0">
+          <DialogFooter className="p-4 sm:p-6 border-t border-zinc-800 bg-zinc-950/80 flex flex-col sm:flex-row items-center justify-end gap-3 mt-0">
             <Button 
               type="button" 
               variant="outline" 
               onClick={onClose} 
-              className="bg-zinc-900 border-zinc-800 hover:bg-zinc-850 text-zinc-300 hover:text-white h-10 px-5 transition-all"
+              className="bg-zinc-900 border-zinc-800 hover:bg-zinc-850 text-zinc-300 hover:text-white h-10 px-5 transition-all w-full sm:w-auto"
             >
               Cancel
             </Button>
             <Button 
               type="submit" 
               disabled={isCreating || isUpdating} 
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium h-10 px-6 transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-950/20 active:scale-95"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium h-10 px-5 transition-all w-full sm:w-auto"
             >
-              <Save className="h-4 w-4" />
-              {surveyToEdit ? "Save Changes" : "Create Survey"}
+              {isCreating || isUpdating ? (
+                <span className="flex items-center gap-2">
+                  <span className="animate-spin h-4 w-4 border-2 border-white/20 border-t-white rounded-full" />
+                  Saving...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <Save className="h-4 w-4" />
+                  {surveyToEdit ? "Save Changes" : "Create Survey"}
+                </span>
+              )}
             </Button>
           </DialogFooter>
         </form>
