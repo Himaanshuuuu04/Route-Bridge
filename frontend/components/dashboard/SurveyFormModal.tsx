@@ -65,6 +65,9 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
   const [newVendorSecurityTermUrl, setNewVendorSecurityTermUrl] = useState("");
   const [isAddingVendor, setIsAddingVendor] = useState(false);
 
+  const [ipFiltering, setIpFiltering] = useState(false);
+  const [allowedCountries, setAllowedCountries] = useState("");
+
   useEffect(() => {
     if (surveyToEdit) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -75,6 +78,8 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
         baseSupplierUrl: surveyToEdit.baseSupplierUrl || "",
         status: surveyToEdit.status || "active",
       });
+      setIpFiltering(surveyToEdit.ipFiltering || false);
+      setAllowedCountries((surveyToEdit.allowedCountries || []).join(", "));
       
       const rulesArr = Array.isArray(surveyToEdit.eligibilityRules) 
         ? surveyToEdit.eligibilityRules
@@ -100,6 +105,8 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
         baseSupplierUrl: "",
         status: "active",
       });
+      setIpFiltering(false);
+      setAllowedCountries("");
       setRules([]);
       setVendorLinks([]);
     }
@@ -174,6 +181,8 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
 
     const payload = {
       ...formData,
+      ipFiltering,
+      allowedCountries: allowedCountries.split(',').map(s => s.trim()).filter(s => s),
       eligibilityRules,
       vendorLinks: vendorLinks.filter(vl => vl.vendorId)
     };
@@ -381,6 +390,51 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                         Include <code className="bg-blue-500/10 px-1 py-0.5 rounded text-blue-300 border border-blue-500/10">[identifier]</code> where the redirect token should be injected.
                       </p>
                     </div>
+                  </div>
+
+                  {/* IP Filtering Configuration */}
+                  <div className="space-y-4 pt-4 border-t border-zinc-800">
+                    <div className="flex items-center gap-2 pb-2">
+                      <span className="p-1 rounded bg-blue-500/10 text-blue-400">
+                        <Globe className="h-4 w-4" />
+                      </span>
+                      <h3 className="text-sm font-semibold tracking-wide uppercase text-zinc-300">Region Control</h3>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 cursor-pointer" htmlFor="ipFiltering">
+                        Enable IP Filtering
+                      </label>
+                      <input 
+                        id="ipFiltering"
+                        type="checkbox" 
+                        checked={ipFiltering}
+                        onChange={(e) => setIpFiltering(e.target.checked)}
+                        className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-blue-500 focus:ring-blue-500/50 cursor-pointer"
+                      />
+                    </div>
+
+                    <AnimatePresence>
+                      {ipFiltering && (
+                        <motion.div 
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="space-y-2 overflow-hidden"
+                        >
+                          <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                            Allowed Country Codes
+                          </label>
+                          <Input 
+                            value={allowedCountries} 
+                            onChange={e => setAllowedCountries(e.target.value)}
+                            placeholder="e.g. US, IN, GB" 
+                            className="h-10 bg-zinc-900/50 border-zinc-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 text-white placeholder:text-zinc-500 transition-all font-mono"
+                          />
+                          <p className="text-[10px] text-zinc-500">Comma-separated country codes (ISO 3166-1 alpha-2)</p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
               </div>

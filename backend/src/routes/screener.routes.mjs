@@ -1,12 +1,40 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler';
+import crypto from 'crypto'; // Not strictly needed but keeping it safe if used later
 import jwt from 'jsonwebtoken';
 import { getScreenerConfig, submitScreener } from '../services/screener.service.mjs';
+import SurveyModel from '../models/survey.model.mjs';
+import { getCountryFromIp } from '../helpers/ip.mjs';
 
 const router = express.Router();
 
 router.get('/config/:hash', asyncHandler(async (req, res) => {
     const { hash } = req.params;
+    
+    // Fetch survey to check IP filtering
+    const survey = await SurveyModel.findOne({ 'vendorLinks.hash': hash, status: 'active' });
+    if (!survey) {
+        return res.status(404).json({ message: 'Survey not found or inactive' });
+    }
+
+    // IP Filtering Check
+    if (survey.ipFiltering) {
+        let ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        if (ipAddress && ipAddress.includes(',')) {
+            ipAddress = ipAddress.split(',')[0].trim();
+        }
+        
+        const geo = await getCountryFromIp(ipAddress);
+        const allowed = survey.allowedCountries || [];
+        
+        // Match country code
+        if (!allowed.includes(geo.countryCode)) {
+            return res.json({
+                status: 'rejected',
+                message: 'Sorry, your region is not eligible for this survey.'
+            });
+        }
+    }
     
     // Check if they have a token in cookies or Authorization header
     const cookieName = `screener_token_${hash}`;

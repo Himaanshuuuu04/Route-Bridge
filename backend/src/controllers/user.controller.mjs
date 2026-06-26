@@ -70,24 +70,43 @@ export async function verifyOtp(req, res) {
 }
 
 
-export async function signUp(req, res) {
+export async function addUser(req, res) {
     try {
-        console.log(req.body);
-       
         const { email, name } = req.body;
         if (!email || !name) {
-            return res.status(400).json({ message: "Bad Request" });
+            return res.status(400).json({ message: "Bad Request: email and name are required" });
         }
         const user = await UserModel.findOne({ email: email });
         if (user) {
-            return res.status(409).json({ message: "User already exists, please login" });
+            return res.status(409).json({ message: "User already exists" });
         }
         const newUser = new UserModel({
             email,
             name,
+            surveyAdmin: false // default to regular user
         });
         await newUser.save();
-        return res.status(200).json({ message: "User created successfully" });
+        return res.status(201).json({ message: "User created successfully", user: newUser });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+export async function deleteUser(req, res) {
+    try {
+        const { id } = req.params;
+        
+        if (req.user.id === id) {
+            return res.status(400).json({ message: "You cannot delete your own account" });
+        }
+
+        const user = await UserModel.findByIdAndDelete(id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        return res.status(200).json({ message: "User deleted successfully", user });
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Internal Server Error" });
@@ -107,6 +126,51 @@ export async function logout(req, res) {
         }
         res.clearCookie("token", cookieOptions);
         return res.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+export async function getMe(req, res) {
+    try {
+        const user = await UserModel.findById(req.user.id).select("-otp -otpExpiry");
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        return res.status(200).json(user);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+export async function getUsers(req, res) {
+    try {
+        const users = await UserModel.find().select("-otp -otpExpiry").sort({ createdAt: -1 });
+        return res.status(200).json(users);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+export async function toggleAdminStatus(req, res) {
+    try {
+        const { id } = req.params;
+        const user = await UserModel.findById(id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        if (req.user.id === id) {
+            return res.status(400).json({ message: "You cannot change your own admin status" });
+        }
+
+        user.surveyAdmin = !user.surveyAdmin;
+        await user.save();
+        
+        return res.status(200).json({ message: "User admin status updated successfully", user });
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Internal Server Error" });

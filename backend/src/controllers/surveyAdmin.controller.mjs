@@ -87,7 +87,7 @@ export async function getSurveyById(req, res) {
 
 export async function createSurvey(req, res) {
     try {
-        const { name, projectId, supplierId, baseSupplierUrl, status, eligibilityRules, vendorLinks } = req.body;
+        const { name, projectId, supplierId, baseSupplierUrl, status, eligibilityRules, vendorLinks, ipFiltering, allowedCountries } = req.body;
         
         // Ensure vendor links have unique hashes
         const processedVendorLinks = (vendorLinks || []).map(link => {
@@ -103,6 +103,8 @@ export async function createSurvey(req, res) {
             supplierId,
             baseSupplierUrl,
             status,
+            ipFiltering,
+            allowedCountries,
             eligibilityRules,
             vendorLinks: processedVendorLinks
         });
@@ -123,7 +125,7 @@ export async function createSurvey(req, res) {
 export async function updateSurvey(req, res) {
     try {
         const { id } = req.params;
-        const { name, projectId, supplierId, baseSupplierUrl, status, eligibilityRules, vendorLinks } = req.body;
+        const { name, projectId, supplierId, baseSupplierUrl, status, eligibilityRules, vendorLinks, ipFiltering, allowedCountries } = req.body;
         
         const processedVendorLinks = (vendorLinks || []).map(link => {
             return {
@@ -134,7 +136,7 @@ export async function updateSurvey(req, res) {
 
         const updatedSurvey = await SurveyModel.findByIdAndUpdate(
             id,
-            { name, projectId, supplierId, baseSupplierUrl, status, eligibilityRules, vendorLinks: processedVendorLinks },
+            { name, projectId, supplierId, baseSupplierUrl, status, eligibilityRules, vendorLinks: processedVendorLinks, ipFiltering, allowedCountries },
             { new: true }
         ).populate('supplierId').populate('vendorLinks.vendorId');
 

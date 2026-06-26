@@ -7,6 +7,8 @@ const surveySchema = new Schema({
     supplierId: { type: Schema.Types.ObjectId, ref: 'Supplier' },
     baseSupplierUrl: { type: String, required: true }, // e.g., https://supplier.com/survey?uid=[identifier]
     status: { type: String, enum: ['active', 'paused', 'closed'], default: 'active' },
+    ipFiltering: { type: Boolean, default: false },
+    allowedCountries: [{ type: String }],
     eligibilityRules: [{
         question: { type: String, required: true },
         options: [{ type: String }],

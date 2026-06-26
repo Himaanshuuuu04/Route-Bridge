@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { PlusCircle, Search, Edit2, Trash2, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/app/context/ToastContext";
-import { useGetAdminSurveysQuery, useDeleteAdminSurveyMutation, Survey } from "@/app/store/apiSlice";
+import { useGetAdminSurveysQuery, useDeleteAdminSurveyMutation, Survey, useGetMeQuery } from "@/app/store/apiSlice";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 import { Button } from "@/components/ui/button";
@@ -18,12 +18,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function SurveysPage() {
   const { showToast } = useToast();
-  const { data: surveys = [], isLoading } = useGetAdminSurveysQuery();
+  const { data: user, isLoading: isUserLoading } = useGetMeQuery();
+  const { data: surveys = [], isLoading } = useGetAdminSurveysQuery(undefined, {
+    skip: !user?.surveyAdmin,
+  });
   const [deleteSurvey] = useDeleteAdminSurveyMutation();
 
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSurvey, setEditingSurvey] = useState<Survey | null>(null);
+
+  if (!isUserLoading && !user?.surveyAdmin) {
+    return (
+      <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-10 relative z-10 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-white mb-2">Access Denied</h2>
+          <p className="text-zinc-400">You must be a superadmin to view this page.</p>
+        </div>
+      </main>
+    );
+  }
 
   const handleOpenCreate = () => {
     setEditingSurvey(null);

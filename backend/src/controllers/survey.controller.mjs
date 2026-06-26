@@ -24,22 +24,30 @@ async function processLegacyBridge(status, req, res) {
         if (status === 'Terminate') mappedStatus = 'terminate';
         if (status === 'Security Term') mappedStatus = 'security_term';
 
-        const transaction = await TransactionModel.findOneAndUpdate(
-            { transactionToken: uid },
-            {
-                status: mappedStatus,
-                ipAddress: ip,
-                country: geo.country,
-                countryCode: geo.countryCode,
-                projectId: pid,
-                ...(mappedStatus === 'completed' && { completedAt: new Date() })
-            },
-            { new: true, upsert: true }
-        );
+        let transaction = await TransactionModel.findOne({ transactionToken: uid });
 
         if (transaction) {
-            // Fire propagate-webhook
-            await agenda.now('propagate-webhook', { transactionId: transaction._id });
+            const isUpdatable = transaction.status === 'started';
+            const isIpMatch = transaction.ipAddress === ip;
+
+            if (isUpdatable && isIpMatch) {
+                transaction = await TransactionModel.findOneAndUpdate(
+                    { transactionToken: uid },
+                    {
+                        status: mappedStatus,
+                        country: geo.country,
+                        countryCode: geo.countryCode,
+                        projectId: pid,
+                        ...(mappedStatus === 'completed' && { completedAt: new Date() })
+                    },
+                    { new: true }
+                );
+
+                if (transaction) {
+                    // Fire propagate-webhook
+                    await agenda.now('propagate-webhook', { transactionId: transaction._id });
+                }
+            }
         }
 
         const transactionCreatedAt = transaction ? transaction.createdAt : new Date();

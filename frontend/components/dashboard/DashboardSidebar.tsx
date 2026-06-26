@@ -16,7 +16,7 @@ import {
   useSidebar
 } from "@/components/ui/sidebar";
 import { useToast } from "@/app/context/ToastContext";
-import { useLogoutMutation } from "@/app/store/apiSlice";
+import { useLogoutMutation, useGetMeQuery } from "@/app/store/apiSlice";
 import { 
   LogOut, 
   LayoutDashboard, 
@@ -35,6 +35,7 @@ export function DashboardSidebar() {
   const router = useRouter();
   const { showToast } = useToast();
   const [logout] = useLogoutMutation();
+  const { data: user, isLoading: isUserLoading } = useGetMeQuery();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
@@ -59,6 +60,7 @@ export function DashboardSidebar() {
 
   const adminItems = [
     { name: "Manage Surveys", href: "/dashboard/surveys", icon: <ClipboardList className="mr-2 h-4 w-4 text-purple-400" /> },
+    { name: "Manage Users", href: "/dashboard/users", icon: <Settings className="mr-2 h-4 w-4 text-emerald-400" /> },
   ];
 
   return (
@@ -99,35 +101,37 @@ export function DashboardSidebar() {
           </SidebarMenu>
         </SidebarGroup>
 
-        <SidebarGroup>
-          {!isCollapsed && (
-            <div className="px-4 py-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1 mt-2 animate-in fade-in duration-200">
-              Administration
-            </div>
-          )}
-          <SidebarMenu className="gap-1">
-            {adminItems.map((item) => (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={pathname === item.href || pathname.startsWith(`${item.href}/`)} 
-                  tooltip={item.name} 
-                  className={cn(
-                    "font-medium transition-all duration-200",
-                    pathname === item.href || pathname.startsWith(`${item.href}/`)
-                      ? "bg-white/10 text-white hover:bg-white/20 hover:text-white font-semibold" 
-                      : "text-zinc-400 hover:bg-white/5 hover:text-white"
-                  )}
-                >
-                  <Link href={item.href}>
-                    {item.icon}
-                    <span>{item.name}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
+        {!isUserLoading && user?.surveyAdmin && (
+          <SidebarGroup>
+            {!isCollapsed && (
+              <div className="px-4 py-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1 mt-2 animate-in fade-in duration-200">
+                Administration
+              </div>
+            )}
+            <SidebarMenu className="gap-1">
+              {adminItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={pathname === item.href || pathname.startsWith(`${item.href}/`)} 
+                    tooltip={item.name} 
+                    className={cn(
+                      "font-medium transition-all duration-200",
+                      pathname === item.href || pathname.startsWith(`${item.href}/`)
+                        ? "bg-white/10 text-white hover:bg-white/20 hover:text-white font-semibold" 
+                        : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                    )}
+                  >
+                    <Link href={item.href}>
+                      {item.icon}
+                      <span>{item.name}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroup>
+        )}
       </SidebarContent>
       <SidebarFooter>
          <SidebarMenu>

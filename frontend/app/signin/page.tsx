@@ -132,12 +132,6 @@ export default function SignInPage() {
           </form>
         )}
 
-        <p className="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
-          Don't have an account?{" "}
-          <Link href="/signup" className="text-zinc-900 dark:text-zinc-100 font-medium hover:underline">
-            Sign up
-          </Link>
-        </p>
       </div>
     </div>
   );

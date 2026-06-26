@@ -78,6 +78,8 @@ export interface Survey {
   eligibilityRules?: EligibilityRule[];
   vendorLinks?: any[];
   status: string;
+  ipFiltering?: boolean;
+  allowedCountries?: string[];
   ipAddress?: string;
   country?: string;
   countryCode?: string;
@@ -116,21 +118,51 @@ export interface Transaction {
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: axiosBaseQuery(),
-  tagTypes: ['Surveys', 'Counts', 'Suppliers', 'Vendors', 'Transactions', 'AdminSurveys'],
+  tagTypes: ['Surveys', 'Counts', 'Suppliers', 'Vendors', 'Transactions', 'AdminSurveys', 'AdminUsers'],
   endpoints: (builder) => ({
     getCounts: builder.query<SurveyCount, { startDate?: string; endDate?: string }>({
-      query: (params) => ({
-        url: '/api/dashboard/getcount',
-        method: 'GET',
-        params: {
-          ...(params.startDate && { startDate: params.startDate }),
-          ...(params.endDate && { endDate: params.endDate }),
-        },
-      }),
+      query: (params) => {
+        let formattedStartDate = params.startDate;
+        let formattedEndDate = params.endDate;
+        if (params.startDate) {
+          const localStart = new Date(params.startDate + "T00:00:00");
+          if (!isNaN(localStart.getTime())) {
+            formattedStartDate = localStart.toISOString();
+          }
+        }
+        if (params.endDate) {
+          const localEnd = new Date(params.endDate + "T23:59:59.999");
+          if (!isNaN(localEnd.getTime())) {
+            formattedEndDate = localEnd.toISOString();
+          }
+        }
+        return {
+          url: '/api/dashboard/getcount',
+          method: 'GET',
+          params: {
+            ...(formattedStartDate && { startDate: formattedStartDate }),
+            ...(formattedEndDate && { endDate: formattedEndDate }),
+          },
+        };
+      },
       providesTags: ['Counts'],
     }),
     getSurveys: builder.query<Survey[], { category: string; page: number; limit: number; startDate?: string; endDate?: string }>({
       query: ({ category, page, limit, startDate, endDate }) => {
+        let formattedStartDate = startDate;
+        let formattedEndDate = endDate;
+        if (startDate) {
+          const localStart = new Date(startDate + "T00:00:00");
+          if (!isNaN(localStart.getTime())) {
+            formattedStartDate = localStart.toISOString();
+          }
+        }
+        if (endDate) {
+          const localEnd = new Date(endDate + "T23:59:59.999");
+          if (!isNaN(localEnd.getTime())) {
+            formattedEndDate = localEnd.toISOString();
+          }
+        }
         return {
           url: '/api/dashboard/getRecentSurveys',
           method: 'GET',
@@ -138,8 +170,8 @@ export const apiSlice = createApi({
             page,
             limit,
             status: category,
-            ...(startDate && { startDate }),
-            ...(endDate && { endDate }),
+            ...(formattedStartDate && { startDate: formattedStartDate }),
+            ...(formattedEndDate && { endDate: formattedEndDate }),
           },
         };
       },
@@ -218,6 +250,25 @@ export const apiSlice = createApi({
       query: (id) => ({ url: `/api/admin/surveys/transactions/${id}`, method: 'DELETE' }),
       invalidatesTags: ['Transactions'],
     }),
+    getMe: builder.query<{ _id: string; email: string; name: string; surveyAdmin: boolean }, void>({
+      query: () => ({ url: '/api/user/me', method: 'GET' }),
+    }),
+    getAdminUsers: builder.query<{ _id: string; email: string; name: string; surveyAdmin: boolean; createdAt: string }[], void>({
+      query: () => ({ url: '/api/user/admin/users', method: 'GET' }),
+      providesTags: ['AdminUsers'] as any,
+    }),
+    toggleUserAdminStatus: builder.mutation<{ message: string; user: any }, string>({
+      query: (id) => ({ url: `/api/user/admin/users/${id}/toggle-admin`, method: 'PUT' }),
+      invalidatesTags: ['AdminUsers'] as any,
+    }),
+    createAdminUser: builder.mutation<{ message: string; user: any }, { name: string; email: string }>({
+      query: (data) => ({ url: '/api/user/admin/users', method: 'POST', data }),
+      invalidatesTags: ['AdminUsers'] as any,
+    }),
+    deleteAdminUser: builder.mutation<{ message: string; user: any }, string>({
+      query: (id) => ({ url: `/api/user/admin/users/${id}`, method: 'DELETE' }),
+      invalidatesTags: ['AdminUsers'] as any,
+    }),
   }),
 });
 
@@ -240,4 +291,9 @@ export const {
   useDeleteVendorMutation,
   useGetTransactionsQuery,
   useDeleteTransactionMutation,
+  useGetMeQuery,
+  useGetAdminUsersQuery,
+  useToggleUserAdminStatusMutation,
+  useCreateAdminUserMutation,
+  useDeleteAdminUserMutation,
 } = apiSlice;

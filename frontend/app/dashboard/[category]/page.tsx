@@ -18,10 +18,10 @@ interface PageProps {
 
 const categoryMap: Record<string, { tabName: string; title: string; icon: React.ReactNode }> = {
   all: { tabName: "All", title: "All Surveys", icon: <BarChart3 className="w-8 h-8 text-zinc-400" /> },
-  completed: { tabName: "Complete", title: "Completed Surveys", icon: <CheckCircle2 className="w-8 h-8 text-emerald-400" /> },
-  terminated: { tabName: "Terminate", title: "Terminated Surveys", icon: <XCircle className="w-8 h-8 text-red-400" /> },
-  quota: { tabName: "Quota Full", title: "Quota Full Surveys", icon: <AlertTriangle className="w-8 h-8 text-amber-400" /> },
-  security: { tabName: "Security Term", title: "Security Terminated", icon: <Activity className="w-8 h-8 text-indigo-400" /> }
+  completed: { tabName: "completed", title: "Completed Surveys", icon: <CheckCircle2 className="w-8 h-8 text-emerald-400" /> },
+  terminated: { tabName: "terminate", title: "Terminated Surveys", icon: <XCircle className="w-8 h-8 text-red-400" /> },
+  quota: { tabName: "quota_full", title: "Quota Full Surveys", icon: <AlertTriangle className="w-8 h-8 text-amber-400" /> },
+  security: { tabName: "security_term", title: "Security Terminated", icon: <Activity className="w-8 h-8 text-indigo-400" /> }
 };
 
 export default function CategoryPage({ params }: PageProps) {
@@ -76,10 +76,10 @@ export default function CategoryPage({ params }: PageProps) {
   const getTotalItems = () => {
     if (!counts) return 0;
     if (config.tabName === "All") return counts.total_entries;
-    if (config.tabName === "Complete") return counts.complete_entries;
-    if (config.tabName === "Terminate") return counts.terminate_entries;
-    if (config.tabName === "Quota Full") return counts.quota_full_entries;
-    if (config.tabName === "Security Term") return counts.security_term_entries;
+    if (config.tabName === "completed") return counts.complete_entries;
+    if (config.tabName === "terminate") return counts.terminate_entries;
+    if (config.tabName === "quota_full") return counts.quota_full_entries;
+    if (config.tabName === "security_term") return counts.security_term_entries;
     return 0;
   };
 

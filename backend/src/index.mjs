@@ -65,7 +65,9 @@ app.use("/i", surveyRoutes); // Support "/i" alias for legacy routes
 
 app.use("/api/user", userRouter);
 app.use("/api/dashboard", dashboardRouter, authMiddleware);
-app.use("/api/admin/surveys", authMiddleware, surveyAdminRoutes);
+
+import adminMiddleware from "./middleware/admin.middleware.mjs";
+app.use("/api/admin/surveys", authMiddleware, adminMiddleware, surveyAdminRoutes);
 
 // =========================================================================
 // MOCK ROUTES FOR END-TO-END TESTING
@@ -130,17 +132,6 @@ app.get('/mock-vendor-callback/terminate', handleMockVendorCallback('Terminate')
 app.get('/mock-vendor-callback/quotafull', handleMockVendorCallback('Quota Full'));
 app.get('/mock-vendor-callback/securityterm', handleMockVendorCallback('Security Term'));
 
-// error handling
-app.use((err, req, res, next) => {
-    const status = err.status || 500;
-    const message = err.message || "Internal Server Error";
-    res.status(status).json({
-        success: false,
-        status,
-        message
-    });
-});
-
 // 404 handler
 app.use((req, res, next) => {
     const error = new Error("Not Found");
@@ -148,7 +139,7 @@ app.use((req, res, next) => {
     next(error);
 });
 
-
+// error handling
 app.use((err, req, res, next) => {
     const status = err.status || 500;
     const message = err.message || "Internal Server Error";

@@ -6,7 +6,7 @@ export function proxy(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
   const { pathname } = request.nextUrl;
 
-  const publicRoutes = ['/', '/signin', '/signup'];
+  const publicRoutes = ['/', '/signin'];
   const isPublicRoute = publicRoutes.includes(pathname);
   
   // All other routes are protected (screener is excluded by matcher)

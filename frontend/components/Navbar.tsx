@@ -57,7 +57,7 @@ export function Navbar() {
               Sign in
             </Link>
             <Link
-              href="/signup"
+              href="/signin"
               className="text-sm font-medium px-5 py-2.5 bg-white text-black rounded-full hover:bg-zinc-200 hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-1.5"
             >
               Get Started
@@ -109,7 +109,7 @@ export function Navbar() {
                   Sign in
                 </Link>
                 <Link
-                  href="/signup"
+                  href="/signin"
                   onClick={() => setIsOpen(false)}
                   className="w-full text-center py-3 text-sm font-semibold bg-emerald-500 hover:bg-emerald-400 text-black rounded-full transition-colors flex items-center justify-center gap-1.5"
                 >

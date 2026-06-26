@@ -7,14 +7,18 @@ function buildDateFilter(req) {
         if (req.query.startDate) {
             const start = new Date(req.query.startDate);
             if (!isNaN(start.getTime())) {
-                start.setUTCHours(0, 0, 0, 0);
+                if (typeof req.query.startDate === 'string' && !req.query.startDate.includes('T')) {
+                    start.setUTCHours(0, 0, 0, 0);
+                }
                 filter.createdAt.$gte = start;
             }
         }
         if (req.query.endDate) {
             const end = new Date(req.query.endDate);
             if (!isNaN(end.getTime())) {
-                end.setUTCHours(23, 59, 59, 999);
+                if (typeof req.query.endDate === 'string' && !req.query.endDate.includes('T')) {
+                    end.setUTCHours(23, 59, 59, 999);
+                }
                 filter.createdAt.$lte = end;
             }
         }
@@ -107,7 +111,13 @@ export async function getRecentSurveys(req, res) {
         const filter = buildDateFilter(req);
         
         if (req.query.status && req.query.status !== 'All') {
-            filter.status = req.query.status;
+            let statusVal = req.query.status;
+            if (statusVal === 'Complete' || statusVal === 'completed') statusVal = 'completed';
+            else if (statusVal === 'Terminate' || statusVal === 'terminate') statusVal = 'terminate';
+            else if (statusVal === 'Quota Full' || statusVal === 'quota_full') statusVal = 'quota_full';
+            else if (statusVal === 'Security Term' || statusVal === 'security_term') statusVal = 'security_term';
+            else if (statusVal === 'Screen Out' || statusVal === 'screened_out') statusVal = 'screened_out';
+            filter.status = statusVal;
         }
 
         const surveys = await TransactionModel.find(filter)

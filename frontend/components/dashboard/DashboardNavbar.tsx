@@ -5,11 +5,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { Bell, LogOut, User, Settings, LayoutDashboard, Menu } from "lucide-react";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { useToast } from "@/app/context/ToastContext";
-import { useLogoutMutation } from "@/app/store/apiSlice";
+import { useLogoutMutation, useGetMeQuery } from "@/app/store/apiSlice";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -23,6 +22,7 @@ export function DashboardNavbar() {
   const router = useRouter();
   const { showToast } = useToast();
   const [logout] = useLogoutMutation();
+  const { data: user } = useGetMeQuery();
   const { toggleSidebar } = useSidebar();
 
   const handleLogout = async () => {
@@ -56,6 +56,16 @@ export function DashboardNavbar() {
     };
     
     return categoryMap[page] || page.charAt(0).toUpperCase() + page.slice(1);
+  };
+
+  const getInitials = () => {
+    if (!user?.name) return "U";
+    return user.name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   return (
@@ -101,7 +111,7 @@ export function DashboardNavbar() {
               <Avatar className="h-8.5 w-8.5">
                 <AvatarImage src="" alt="User profile" />
                 <AvatarFallback className="bg-zinc-850 text-white font-semibold text-xs">
-                  AD
+                  {getInitials()}
                 </AvatarFallback>
               </Avatar>
             </Button>
@@ -109,21 +119,10 @@ export function DashboardNavbar() {
           <DropdownMenuContent className="w-56 bg-zinc-950 border-zinc-800 text-white" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-semibold leading-none text-white">Administrator</p>
-                <p className="text-xs leading-none text-zinc-400">admin@surveyrouter.com</p>
+                <p className="text-sm font-semibold leading-none text-white">{user?.name || "Loading..."}</p>
+                <p className="text-xs leading-none text-zinc-400">{user?.email || ""}</p>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-zinc-800" />
-            <DropdownMenuGroup>
-              <DropdownMenuItem className="focus:bg-zinc-900 focus:text-white cursor-pointer gap-2">
-                <User className="h-4 w-4 text-zinc-400" />
-                <span>Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="focus:bg-zinc-900 focus:text-white cursor-pointer gap-2">
-                <Settings className="h-4 w-4 text-zinc-400" />
-                <span>Settings</span>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
             <DropdownMenuSeparator className="bg-zinc-800" />
             <DropdownMenuItem 
               onClick={handleLogout}

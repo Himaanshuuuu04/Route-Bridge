@@ -55,10 +55,10 @@ export default function LandingPage() {
           className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
         >
           <Link 
-            href="/signup" 
+            href="/signin" 
             className="w-full sm:w-auto px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-black rounded-full font-bold transition-all flex items-center justify-center gap-2 group hover:shadow-[0_0_30px_rgba(16,185,129,0.3)]"
           >
-            Start Routing Free
+            Get Started
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Link>
           <Link 
