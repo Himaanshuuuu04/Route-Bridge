@@ -1,7 +1,66 @@
 import TransactionModel from "../models/transaction.model.mjs";
+import SurveyModel from "../models/survey.model.mjs";
 import agenda from "../config/agenda.mjs";
 import { getCountryFromIp } from "../helpers/ip.mjs";
 import { renderSurveyTemplate } from "../helpers/template.mjs";
+
+async function handleRegisteredProject(uid, pid, ip, geo, mappedStatus, transaction) {
+    // Rule: Exists? No -> Ignore
+    if (!transaction) {
+        return null;
+    }
+
+    // Rule: Status==started? No -> Ignore
+    if (transaction.status !== 'started') {
+        return transaction;
+    }
+
+    // Rule: Status==started? Yes -> perform IP validation
+    if (transaction.ipAddress !== ip) {
+        // IP doesn't match -> ignore
+        return transaction;
+    }
+
+    // Rule: Update transaction, update projectId, update country, schedule webhook
+    const updatedTransaction = await TransactionModel.findOneAndUpdate(
+        { transactionToken: uid },
+        {
+            status: mappedStatus,
+            country: geo.country,
+            countryCode: geo.countryCode,
+            projectId: pid,
+            ...(mappedStatus === 'completed' && { completedAt: new Date() })
+        },
+        { new: true }
+    );
+
+    if (updatedTransaction) {
+        await agenda.now('propagate-webhook', { transactionId: updatedTransaction._id });
+    }
+
+    return updatedTransaction;
+}
+
+async function handleUnregisteredProject(uid, pid, ip, geo, mappedStatus, transaction) {
+    // Rule: Exists? Yes -> Ignore
+    if (transaction) {
+        return transaction;
+    }
+
+    // Rule: Exists? No -> Accept (Create new transaction)
+    const newTransaction = new TransactionModel({
+        transactionToken: uid,
+        projectId: pid,
+        ipAddress: ip,
+        country: geo.country,
+        countryCode: geo.countryCode,
+        status: mappedStatus,
+        ...(mappedStatus === 'completed' && { completedAt: new Date() })
+    });
+    
+    await newTransaction.save();
+    return newTransaction;
+}
 
 async function processLegacyBridge(status, req, res) {
     try {
@@ -24,33 +83,22 @@ async function processLegacyBridge(status, req, res) {
         if (status === 'Terminate') mappedStatus = 'terminate';
         if (status === 'Security Term') mappedStatus = 'security_term';
 
+        // Find existing user/txn
         let transaction = await TransactionModel.findOne({ transactionToken: uid });
+        
+        // Is project registered?
+        const survey = await SurveyModel.findOne({ projectId: pid });
+        const isRegistered = !!survey;
 
-        if (transaction) {
-            const isUpdatable = transaction.status === 'started';
-            const isIpMatch = transaction.ipAddress === ip;
-
-            if (isUpdatable && isIpMatch) {
-                transaction = await TransactionModel.findOneAndUpdate(
-                    { transactionToken: uid },
-                    {
-                        status: mappedStatus,
-                        country: geo.country,
-                        countryCode: geo.countryCode,
-                        projectId: pid,
-                        ...(mappedStatus === 'completed' && { completedAt: new Date() })
-                    },
-                    { new: true }
-                );
-
-                if (transaction) {
-                    // Fire propagate-webhook
-                    await agenda.now('propagate-webhook', { transactionId: transaction._id });
-                }
-            }
+        let finalTransaction;
+        if (isRegistered) {
+            finalTransaction = await handleRegisteredProject(uid, pid, ip, geo, mappedStatus, transaction);
+        } else {
+            finalTransaction = await handleUnregisteredProject(uid, pid, ip, geo, mappedStatus, transaction);
         }
 
-        const transactionCreatedAt = transaction ? transaction.createdAt : new Date();
+        const referenceTransaction = finalTransaction || transaction;
+        const transactionCreatedAt = referenceTransaction ? referenceTransaction.createdAt : new Date();
         const html = renderSurveyTemplate(status, pid, uid, ip, transactionCreatedAt);
         res.setHeader('Content-Type', 'text/html');
         return res.status(200).send(html);
