@@ -45,8 +45,8 @@ export default function UsersPage() {
     return (
       <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-10 relative z-10 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">Access Denied</h2>
-          <p className="text-zinc-400">You must be a superadmin to view this page.</p>
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">Access Denied</h2>
+          <p className="text-slate-500">You must be a superadmin to view this page.</p>
         </div>
       </main>
     );
@@ -120,44 +120,44 @@ export default function UsersPage() {
         transition={{ delay: 0.1 }}
         className="w-full max-w-5xl mx-auto"
       >
-        <Card className="bg-black/40 border-white/10 backdrop-blur-xl shadow-2xl flex flex-col h-full w-full overflow-hidden">
-          <CardHeader className="pb-6 border-b border-white/5 flex flex-row items-center justify-between">
-            <CardTitle className="text-xl font-bold text-white flex items-center gap-2">
-              <User className="h-5 w-5 text-emerald-400" /> Manage Users
+        <Card className="bg-white border-slate-200/80 shadow-xs rounded-2xl flex flex-col h-full w-full overflow-hidden">
+          <CardHeader className="pb-6 border-b border-slate-100 flex flex-row items-center justify-between">
+            <CardTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
+              <User className="h-5 w-5 text-emerald-600" /> Manage Users
             </CardTitle>
             <Button 
               onClick={() => setIsAddUserOpen(true)}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white font-medium"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs rounded-xl"
             >
               <Plus className="mr-2 h-4 w-4" /> Add User
             </Button>
           </CardHeader>
           <CardContent className="flex-1 p-0 overflow-x-auto">
             <Table>
-              <TableHeader className="bg-white/[0.02]">
-                <TableRow className="border-white/5 hover:bg-transparent">
-                  <TableHead className="font-semibold text-zinc-400 pl-6 py-4">Name</TableHead>
-                  <TableHead className="font-semibold text-zinc-400">Email</TableHead>
-                  <TableHead className="font-semibold text-zinc-400">Role</TableHead>
-                  <TableHead className="font-semibold text-zinc-400">Joined</TableHead>
-                  <TableHead className="font-semibold text-zinc-400 text-right pr-6">Actions</TableHead>
+              <TableHeader className="bg-slate-50/80">
+                <TableRow className="border-slate-100 hover:bg-transparent">
+                  <TableHead className="font-semibold text-slate-600 pl-6 py-4">Name</TableHead>
+                  <TableHead className="font-semibold text-slate-600">Email</TableHead>
+                  <TableHead className="font-semibold text-slate-600">Role</TableHead>
+                  <TableHead className="font-semibold text-slate-600">Joined</TableHead>
+                  <TableHead className="font-semibold text-slate-600 text-right pr-6">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 <AnimatePresence mode="popLayout">
                   {isLoading ? (
                     Array.from({ length: 5 }).map((_, i) => (
-                      <TableRow key={`skeleton-${i}`} className="border-white/5">
-                        <TableCell className="pl-6"><Skeleton className="h-5 w-32 bg-white/5 rounded-md" /></TableCell>
-                        <TableCell><Skeleton className="h-5 w-48 bg-white/5 rounded-md" /></TableCell>
-                        <TableCell><Skeleton className="h-6 w-24 bg-white/5 rounded-full" /></TableCell>
-                        <TableCell><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
-                        <TableCell className="text-right pr-6"><Skeleton className="h-8 w-24 ml-auto bg-white/5 rounded-md" /></TableCell>
+                      <TableRow key={`skeleton-${i}`} className="border-slate-100">
+                        <TableCell className="pl-6"><Skeleton className="h-5 w-32 bg-slate-100 rounded-md" /></TableCell>
+                        <TableCell><Skeleton className="h-5 w-48 bg-slate-100 rounded-md" /></TableCell>
+                        <TableCell><Skeleton className="h-6 w-24 bg-slate-100 rounded-full" /></TableCell>
+                        <TableCell><Skeleton className="h-5 w-24 bg-slate-100 rounded-md" /></TableCell>
+                        <TableCell className="text-right pr-6"><Skeleton className="h-8 w-24 ml-auto bg-slate-100 rounded-md" /></TableCell>
                       </TableRow>
                     ))
                   ) : users.length === 0 ? (
                     <TableRow className="border-none">
-                      <TableCell colSpan={5} className="h-32 text-center text-zinc-500 font-medium">
+                      <TableCell colSpan={5} className="h-32 text-center text-slate-500 font-medium">
                         No users found.
                       </TableCell>
                     </TableRow>
@@ -174,24 +174,24 @@ export default function UsersPage() {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          className="group transition-colors border-white/5 hover:bg-white/[0.02]"
+                          className="group transition-colors border-slate-100 hover:bg-slate-50/60"
                         >
-                          <TableCell className="font-medium text-white pl-6">
-                            {user.name} {isSelf && <span className="text-zinc-500 text-xs ml-2">(You)</span>}
+                          <TableCell className="font-medium text-slate-900 pl-6">
+                            {user.name} {isSelf && <span className="text-slate-400 text-xs ml-2 font-normal">(You)</span>}
                           </TableCell>
-                          <TableCell className="text-zinc-400">{user.email}</TableCell>
+                          <TableCell className="text-slate-600">{user.email}</TableCell>
                           <TableCell>
                             {user.surveyAdmin ? (
-                              <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                              <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
                                 <Shield className="mr-1 h-3 w-3" /> Superadmin
                               </div>
                             ) : (
-                              <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-zinc-500/10 text-zinc-400 border border-zinc-500/20">
+                              <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
                                 <User className="mr-1 h-3 w-3" /> User
                               </div>
                             )}
                           </TableCell>
-                          <TableCell className="text-sm text-zinc-400">
+                          <TableCell className="text-sm text-slate-500">
                             {new Date(user.createdAt).toLocaleDateString()}
                           </TableCell>
                           <TableCell className="text-right pr-6">
@@ -201,12 +201,16 @@ export default function UsersPage() {
                                 size="sm" 
                                 disabled={isSelf || isToggling || isDeleting}
                                 onClick={() => handleToggleAdmin(user._id, user.surveyAdmin)}
-                                className={`h-8 border-white/10 ${user.surveyAdmin ? 'hover:bg-amber-500/20 hover:text-amber-400 hover:border-amber-500/30 text-amber-400/80 bg-amber-500/5' : 'hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/30 text-emerald-400/80 bg-emerald-500/5'}`}
+                                className={`h-8 rounded-lg shadow-xs font-medium ${
+                                  user.surveyAdmin 
+                                    ? 'border-amber-200 text-amber-700 bg-amber-50 hover:bg-amber-100 hover:text-amber-800' 
+                                    : 'border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 hover:text-emerald-800'
+                                }`}
                               >
                                 {isToggling ? <Loader2 className="h-4 w-4 animate-spin" /> : user.surveyAdmin ? (
-                                  <><ShieldAlert className="mr-2 h-3.5 w-3.5" /> Revoke</>
+                                  <><ShieldAlert className="mr-1.5 h-3.5 w-3.5" /> Revoke</>
                                 ) : (
-                                  <><Check className="mr-2 h-3.5 w-3.5" /> Make Admin</>
+                                  <><Check className="mr-1.5 h-3.5 w-3.5" /> Make Admin</>
                                 )}
                               </Button>
                               <Button
@@ -214,7 +218,7 @@ export default function UsersPage() {
                                 size="sm"
                                 disabled={isSelf || isToggling || isDeleting}
                                 onClick={() => handleDeleteUser(user._id)}
-                                className="h-8 border-white/10 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 text-red-400/80 bg-red-500/5 px-2"
+                                className="h-8 border-rose-200 text-rose-700 bg-rose-50 hover:bg-rose-100 hover:text-rose-800 px-2 rounded-lg shadow-xs"
                                 title="Delete User"
                               >
                                 {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
@@ -233,24 +237,24 @@ export default function UsersPage() {
       </motion.div>
 
       <Dialog open={isAddUserOpen} onOpenChange={setIsAddUserOpen}>
-        <DialogContent className="bg-zinc-950 border border-white/10 text-white sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Add New User</DialogTitle>
+        <DialogContent className="bg-white border border-slate-200 text-slate-900 sm:max-w-md rounded-2xl shadow-2xl p-6">
+          <DialogHeader className="pb-2 border-b border-slate-100">
+            <DialogTitle className="text-xl font-bold text-slate-900">Add New User</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleAddUser} className="space-y-4 py-4">
+          <form onSubmit={handleAddUser} className="space-y-4 py-3">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-zinc-400">Full Name</Label>
+              <Label htmlFor="name" className="text-slate-700 text-xs font-semibold uppercase tracking-wider">Full Name</Label>
               <Input 
                 id="name"
                 value={newUserName}
                 onChange={(e) => setNewUserName(e.target.value)}
                 placeholder="John Doe"
                 required
-                className="bg-black/50 border-white/10 text-white focus-visible:ring-emerald-500"
+                className="bg-slate-50/60 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus-visible:ring-emerald-500 rounded-xl h-10"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-zinc-400">Email Address</Label>
+              <Label htmlFor="email" className="text-slate-700 text-xs font-semibold uppercase tracking-wider">Email Address</Label>
               <Input 
                 id="email"
                 type="email"
@@ -258,14 +262,14 @@ export default function UsersPage() {
                 onChange={(e) => setNewUserEmail(e.target.value)}
                 placeholder="john@example.com"
                 required
-                className="bg-black/50 border-white/10 text-white focus-visible:ring-emerald-500"
+                className="bg-slate-50/60 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus-visible:ring-emerald-500 rounded-xl h-10"
               />
             </div>
-            <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsAddUserOpen(false)} className="border-white/10 bg-transparent text-white hover:bg-white/5">
+            <DialogFooter className="pt-4 border-t border-slate-100 flex items-center justify-end gap-2">
+              <Button type="button" variant="outline" onClick={() => setIsAddUserOpen(false)} className="border-slate-200 bg-white text-slate-700 hover:bg-slate-100 rounded-xl shadow-xs">
                 Cancel
               </Button>
-              <Button type="submit" disabled={isAdding} className="bg-emerald-500 hover:bg-emerald-600 text-white">
+              <Button type="submit" disabled={isAdding} className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-xs font-medium">
                 {isAdding ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Adding...</> : 'Add User'}
               </Button>
             </DialogFooter>

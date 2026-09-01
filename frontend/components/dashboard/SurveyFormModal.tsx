@@ -205,16 +205,16 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent 
-        className="max-w-6xl w-[95vw] sm:max-w-3xl md:max-w-4xl lg:max-w-6xl h-[85vh] max-h-[90vh] flex flex-col p-0 overflow-hidden bg-zinc-950 border border-zinc-800 text-white rounded-xl shadow-2xl"
+        className="max-w-6xl w-[95vw] sm:max-w-3xl md:max-w-4xl lg:max-w-6xl h-[85vh] max-h-[90vh] flex flex-col p-0 overflow-hidden bg-white border border-slate-200 text-slate-900 rounded-2xl shadow-2xl"
         onInteractOutside={(e) => e.preventDefault()}
       >
-        <DialogHeader className="p-4 sm:p-6 pb-4 border-b border-zinc-800 flex flex-row items-center justify-between">
+        <DialogHeader className="p-4 sm:p-6 pb-4 border-b border-slate-100 flex flex-row items-center justify-between bg-slate-50/50">
           <div className="space-y-1">
-            <DialogTitle className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-emerald-400" />
+            <DialogTitle className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-emerald-600" />
               {surveyToEdit ? "Edit Survey Details" : "Configure New Survey"}
             </DialogTitle>
-            <DialogDescription className="text-zinc-400 text-sm">
+            <DialogDescription className="text-slate-500 text-sm">
               Configure your routing paths, target audience rules, and vendor quotas.
             </DialogDescription>
           </div>
@@ -227,57 +227,57 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
               {/* Left Column: General Configuration */}
               <div className="lg:col-span-5 space-y-6">
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 border-b border-zinc-800 pb-2">
-                    <span className="p-1 rounded bg-emerald-500/10 text-emerald-400">
+                  <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
+                    <span className="p-1 rounded-md bg-emerald-50 text-emerald-700">
                       <Settings className="h-4 w-4" />
                     </span>
-                    <h3 className="text-sm font-semibold tracking-wide uppercase text-zinc-300">General Information</h3>
+                    <h3 className="text-sm font-semibold tracking-wide uppercase text-slate-700">General Information</h3>
                   </div>
 
                   {/* Survey Name */}
                   <div className="space-y-2">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-                      <FileText className="h-3.5 w-3.5 text-zinc-500" />
-                      Survey Name <span className="text-emerald-400">*</span>
+                    <label className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                      <FileText className="h-3.5 w-3.5 text-slate-400" />
+                      Survey Name <span className="text-emerald-600">*</span>
                     </label>
                     <Input 
                       required 
                       value={formData.name} 
                       onChange={e => setFormData({ ...formData, name: e.target.value })}
                       placeholder="e.g. US Tech Decision Makers B2B" 
-                      className="h-10 bg-zinc-900/50 border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-white placeholder:text-zinc-500 transition-all"
+                      className="h-10 bg-slate-50/60 border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-slate-900 placeholder:text-slate-400 transition-all rounded-xl"
                     />
                   </div>
 
                   {/* Project ID */}
                   <div className="space-y-2">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-                      <FolderGit2 className="h-3.5 w-3.5 text-zinc-500" />
-                      Project ID <span className="text-emerald-400">*</span>
+                    <label className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                      <FolderGit2 className="h-3.5 w-3.5 text-slate-400" />
+                      Project ID <span className="text-emerald-600">*</span>
                     </label>
                     <Input 
                       required 
                       value={formData.projectId} 
                       onChange={e => setFormData({ ...formData, projectId: e.target.value })}
                       placeholder="e.g. PROJ-2026-X" 
-                      className="h-10 bg-zinc-900/50 border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-white placeholder:text-zinc-500 transition-all font-mono"
+                      className="h-10 bg-slate-50/60 border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-slate-900 placeholder:text-slate-400 transition-all font-mono rounded-xl"
                     />
                   </div>
 
                   {/* Supplier Selection */}
                   <div className="space-y-2">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-                      <Building2 className="h-3.5 w-3.5 text-zinc-500" />
+                    <label className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                      <Building2 className="h-3.5 w-3.5 text-slate-400" />
                       Supplier Partner
                     </label>
                     <div className="flex gap-2">
                       <Select value={formData.supplierId} onValueChange={v => setFormData({ ...formData, supplierId: v })}>
-                        <SelectTrigger className="h-10 w-full bg-zinc-900/50 border-zinc-800 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition-all">
+                        <SelectTrigger className="h-10 w-full bg-slate-50/60 border-slate-200 text-slate-900 focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition-all rounded-xl">
                           <SelectValue placeholder="Choose a supplier" />
                         </SelectTrigger>
-                        <SelectContent className="bg-zinc-950 border-zinc-800 text-white">
+                        <SelectContent className="bg-white border-slate-200 text-slate-900 shadow-xl rounded-xl">
                           {suppliers.map(sup => (
-                            <SelectItem key={sup._id} value={sup._id} className="focus:bg-zinc-900 focus:text-white cursor-pointer">{sup.name}</SelectItem>
+                            <SelectItem key={sup._id} value={sup._id} className="focus:bg-slate-100 focus:text-slate-900 cursor-pointer">{sup.name}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -287,7 +287,7 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                         size="icon" 
                         onClick={() => setIsAddingSupplier(!isAddingSupplier)} 
                         title="Add New Supplier" 
-                        className={`h-10 w-10 bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800 text-zinc-300 hover:text-white transition-all ${isAddingSupplier ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5' : ''}`}
+                        className={`h-10 w-10 bg-slate-50/60 border-slate-200 hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-all rounded-xl ${isAddingSupplier ? 'border-emerald-500 text-emerald-600 bg-emerald-50' : ''}`}
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
@@ -300,10 +300,10 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
-                          className="overflow-hidden bg-emerald-950/20 border border-emerald-500/20 rounded-lg p-3 mt-2 space-y-2"
+                          className="overflow-hidden bg-emerald-50/60 border border-emerald-200 rounded-xl p-3 mt-2 space-y-2.5"
                         >
-                          <div className="text-xs font-semibold text-emerald-400 flex items-center gap-1">
-                            <PlusCircle className="h-3 w-3" /> Create New Supplier
+                          <div className="text-xs font-semibold text-emerald-700 flex items-center gap-1">
+                            <PlusCircle className="h-3.5 w-3.5" /> Create New Supplier
                           </div>
                           <div className="flex gap-2">
                             <Input 
@@ -311,22 +311,22 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                               value={newSupplierName} 
                               onChange={e => setNewSupplierName(e.target.value)} 
                               autoFocus
-                              className="h-9 bg-zinc-950 border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-white"
+                              className="h-9 bg-white border-slate-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-slate-900 placeholder:text-slate-400 text-xs rounded-lg"
                             />
-                            <Button type="button" size="sm" onClick={handleCreateSupplier} className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium">Save</Button>
-                            <Button type="button" size="sm" variant="ghost" onClick={() => { setIsAddingSupplier(false); setNewSupplierName(""); }} className="text-zinc-400 hover:text-white hover:bg-zinc-900"><X className="h-4 w-4" /></Button>
+                            <Button type="button" size="sm" onClick={handleCreateSupplier} className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs rounded-lg shadow-xs">Save</Button>
+                            <Button type="button" size="sm" variant="ghost" onClick={() => { setIsAddingSupplier(false); setNewSupplierName(""); }} className="text-slate-400 hover:text-slate-700 hover:bg-emerald-100/50 rounded-lg"><X className="h-4 w-4" /></Button>
                           </div>
                           
                           {suppliers.length > 0 && (
-                            <div className="pt-2 border-t border-emerald-500/10 space-y-1 max-h-[140px] overflow-y-auto custom-scrollbar">
-                              <div className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1 select-none">Existing Suppliers</div>
+                            <div className="pt-2 border-t border-emerald-200/60 space-y-1 max-h-[140px] overflow-y-auto custom-scrollbar">
+                              <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1 select-none">Existing Suppliers</div>
                               {suppliers.map(sup => (
-                                <div key={sup._id} className="flex items-center justify-between text-xs py-1 px-1.5 rounded hover:bg-zinc-900/50 group/sup">
-                                  <span className="text-zinc-300 truncate">{sup.name}</span>
+                                <div key={sup._id} className="flex items-center justify-between text-xs py-1 px-2 rounded-md hover:bg-emerald-100/50 group/sup">
+                                  <span className="text-slate-700 truncate">{sup.name}</span>
                                   <button 
                                     type="button" 
                                     onClick={() => handleDeleteSupplier(sup._id)}
-                                    className="text-zinc-500 hover:text-red-400 transition-colors opacity-0 group-hover/sup:opacity-100 p-0.5"
+                                    className="text-slate-400 hover:text-rose-600 transition-colors opacity-0 group-hover/sup:opacity-100 p-0.5"
                                     title={`Delete ${sup.name}`}
                                   >
                                     <Trash2 className="h-3.5 w-3.5" />
@@ -342,28 +342,28 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
 
                   {/* Status Selection */}
                   <div className="space-y-2">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-                      <Activity className="h-3.5 w-3.5 text-zinc-500" />
+                    <label className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                      <Activity className="h-3.5 w-3.5 text-slate-400" />
                       Status
                     </label>
                     <Select value={formData.status} onValueChange={v => setFormData({ ...formData, status: v })}>
-                      <SelectTrigger className="h-10 bg-zinc-900/50 border-zinc-800 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition-all">
+                      <SelectTrigger className="h-10 bg-slate-50/60 border-slate-200 text-slate-900 focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition-all rounded-xl">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-zinc-950 border-zinc-800 text-white">
-                        <SelectItem value="active" className="focus:bg-zinc-900 focus:text-white cursor-pointer">
+                      <SelectContent className="bg-white border-slate-200 text-slate-900 shadow-xl rounded-xl">
+                        <SelectItem value="active" className="focus:bg-slate-100 focus:text-slate-900 cursor-pointer">
                           <span className="flex items-center gap-2">
-                            <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-glow" /> Active
+                            <span className="h-2 w-2 rounded-full bg-emerald-500" /> Active
                           </span>
                         </SelectItem>
-                        <SelectItem value="paused" className="focus:bg-zinc-900 focus:text-white cursor-pointer">
+                        <SelectItem value="paused" className="focus:bg-slate-100 focus:text-slate-900 cursor-pointer">
                           <span className="flex items-center gap-2">
-                            <span className="h-2 w-2 rounded-full bg-amber-500 shadow-glow" /> Paused
+                            <span className="h-2 w-2 rounded-full bg-amber-500" /> Paused
                           </span>
                         </SelectItem>
-                        <SelectItem value="closed" className="focus:bg-zinc-900 focus:text-white cursor-pointer">
+                        <SelectItem value="closed" className="focus:bg-slate-100 focus:text-slate-900 cursor-pointer">
                           <span className="flex items-center gap-2">
-                            <span className="h-2 w-2 rounded-full bg-red-500 shadow-glow" /> Closed
+                            <span className="h-2 w-2 rounded-full bg-rose-500" /> Closed
                           </span>
                         </SelectItem>
                       </SelectContent>
@@ -372,9 +372,9 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
 
                   {/* Base Supplier URL */}
                   <div className="space-y-2">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-                      <Globe className="h-3.5 w-3.5 text-zinc-500" />
-                      Base Supplier URL <span className="text-emerald-400">*</span>
+                    <label className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                      <Globe className="h-3.5 w-3.5 text-slate-400" />
+                      Base Supplier URL <span className="text-emerald-600">*</span>
                     </label>
                     <textarea 
                       required 
@@ -382,27 +382,27 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                       onChange={e => setFormData({ ...formData, baseSupplierUrl: e.target.value })}
                       placeholder="e.g. https://supplier-portal.com/survey/start?pid=XYZ&uid=[identifier]" 
                       rows={3}
-                      className="w-full text-sm p-3 bg-zinc-900/50 border border-zinc-800 rounded-md focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-white placeholder:text-zinc-500 transition-all font-mono resize-none focus:outline-none"
+                      className="w-full text-sm p-3 bg-slate-50/60 border border-slate-200 rounded-xl focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-slate-900 placeholder:text-slate-400 transition-all font-mono resize-none focus:outline-none"
                     />
-                    <div className="flex gap-2 items-start bg-blue-500/5 border border-blue-500/20 p-2.5 rounded-lg text-xs text-blue-400">
+                    <div className="flex gap-2 items-start bg-blue-50 border border-blue-200 p-2.5 rounded-xl text-xs text-blue-700">
                       <span className="font-semibold select-none mt-0.5">ℹ</span>
                       <p className="leading-normal">
-                        Include <code className="bg-blue-500/10 px-1 py-0.5 rounded text-blue-300 border border-blue-500/10">[identifier]</code> where the redirect token should be injected.
+                        Include <code className="bg-blue-100 px-1 py-0.5 rounded text-blue-800 border border-blue-200 font-mono">[identifier]</code> where the redirect token should be injected.
                       </p>
                     </div>
                   </div>
 
                   {/* IP Filtering Configuration */}
-                  <div className="space-y-4 pt-4 border-t border-zinc-800">
-                    <div className="flex items-center gap-2 pb-2">
-                      <span className="p-1 rounded bg-blue-500/10 text-blue-400">
+                  <div className="space-y-4 pt-4 border-t border-slate-100">
+                    <div className="flex items-center gap-2 pb-1">
+                      <span className="p-1 rounded-md bg-blue-50 text-blue-600">
                         <Globe className="h-4 w-4" />
                       </span>
-                      <h3 className="text-sm font-semibold tracking-wide uppercase text-zinc-300">Region Control</h3>
+                      <h3 className="text-sm font-semibold tracking-wide uppercase text-slate-700">Region Control</h3>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 cursor-pointer" htmlFor="ipFiltering">
+                      <label className="text-xs font-semibold uppercase tracking-wider text-slate-600 cursor-pointer" htmlFor="ipFiltering">
                         Enable IP Filtering
                       </label>
                       <input 
@@ -410,7 +410,7 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                         type="checkbox" 
                         checked={ipFiltering}
                         onChange={(e) => setIpFiltering(e.target.checked)}
-                        className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-blue-500 focus:ring-blue-500/50 cursor-pointer"
+                        className="h-4 w-4 rounded border-slate-300 bg-white text-blue-600 focus:ring-blue-500/50 cursor-pointer"
                       />
                     </div>
 
@@ -422,16 +422,16 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                           exit={{ opacity: 0, height: 0 }}
                           className="space-y-2 overflow-hidden"
                         >
-                          <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                          <label className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
                             Allowed Country Codes
                           </label>
                           <Input 
                             value={allowedCountries} 
                             onChange={e => setAllowedCountries(e.target.value)}
                             placeholder="e.g. US, IN, GB" 
-                            className="h-10 bg-zinc-900/50 border-zinc-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 text-white placeholder:text-zinc-500 transition-all font-mono"
+                            className="h-10 bg-slate-50/60 border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 text-slate-900 placeholder:text-slate-400 transition-all font-mono rounded-xl"
                           />
-                          <p className="text-[10px] text-zinc-500">Comma-separated country codes (ISO 3166-1 alpha-2)</p>
+                          <p className="text-[10px] text-slate-500">Comma-separated country codes (ISO 3166-1 alpha-2)</p>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -443,32 +443,32 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
               <div className="lg:col-span-7 space-y-6">
                 
                 {/* Eligibility Rules Panel */}
-                <div className="bg-zinc-900/20 border border-zinc-800/80 rounded-xl p-5 space-y-4">
-                  <div className="flex items-center justify-between border-b border-zinc-850 pb-3">
+                <div className="bg-slate-50/60 border border-slate-200/80 rounded-2xl p-5 space-y-4">
+                  <div className="flex items-center justify-between border-b border-slate-200/60 pb-3">
                     <div className="space-y-0.5">
-                      <h4 className="text-sm font-semibold tracking-wide uppercase text-zinc-200 flex items-center gap-2">
-                        <Settings className="h-4 w-4 text-emerald-400" />
+                      <h4 className="text-sm font-semibold tracking-wide uppercase text-slate-800 flex items-center gap-2">
+                        <Settings className="h-4 w-4 text-emerald-600" />
                         Eligibility Rules
                       </h4>
-                      <p className="text-xs text-zinc-400">Incoming parameters that respondents must match.</p>
+                      <p className="text-xs text-slate-500">Incoming parameters that respondents must match.</p>
                     </div>
                     <Button 
                       type="button" 
                       variant="outline" 
                       size="sm" 
                       onClick={() => setRules([...rules, { question: "", options: [""], acceptedAnswers: [] }])} 
-                      className="bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-zinc-200 hover:text-white transition-all gap-1.5 h-8"
+                      className="bg-white border-slate-200 hover:bg-slate-50 text-slate-700 hover:text-slate-900 transition-all gap-1.5 h-8 rounded-lg shadow-xs"
                     >
-                      <Plus className="h-3.5 w-3.5 text-emerald-400" /> Add Question
+                      <Plus className="h-3.5 w-3.5 text-emerald-600" /> Add Question
                     </Button>
                   </div>
 
                   <div className="min-h-[80px]">
                     {rules.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center py-6 border border-dashed border-zinc-800 rounded-lg text-zinc-500 bg-zinc-900/10">
-                        <AlertCircle className="h-5 w-5 mb-1.5 text-zinc-500" />
-                        <span className="text-xs font-medium">No questions defined</span>
-                        <span className="text-[10px] text-zinc-500">All traffic will pass automatically.</span>
+                      <div className="flex flex-col items-center justify-center py-6 border border-dashed border-slate-200 rounded-xl text-slate-500 bg-white/50">
+                        <AlertCircle className="h-5 w-5 mb-1.5 text-slate-400" />
+                        <span className="text-xs font-medium text-slate-700">No questions defined</span>
+                        <span className="text-[10px] text-slate-400">All traffic will pass automatically.</span>
                       </div>
                     ) : (
                       <div className="space-y-4 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
@@ -479,33 +479,33 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                               initial={{ opacity: 0, y: -5 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, scale: 0.95 }}
-                              className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4 space-y-3 relative"
+                              className="bg-white border border-slate-200 rounded-xl p-4 space-y-3 relative shadow-xs"
                             >
                               <Button 
                                 type="button" 
                                 variant="ghost" 
                                 size="icon" 
-                                className="absolute right-2 top-2 h-7 w-7 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-md" 
+                                className="absolute right-2 top-2 h-7 w-7 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md" 
                                 onClick={() => setRules(rules.filter((_, i) => i !== qIdx))}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
 
                               <div className="pr-8">
-                                <label className="text-[10px] font-semibold text-zinc-400 uppercase">Question Text</label>
+                                <label className="text-[10px] font-semibold text-slate-500 uppercase">Question Text</label>
                                 <Input 
                                   placeholder="e.g. What is your age?" 
                                   value={rule.question} 
                                   onChange={e => {
                                     const n = [...rules]; n[qIdx].question = e.target.value; setRules(n);
                                   }}
-                                  className="h-9 bg-zinc-950 border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-white placeholder:text-zinc-500 mt-1"
+                                  className="h-9 bg-slate-50/60 border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-slate-900 placeholder:text-slate-400 mt-1 rounded-lg"
                                 />
                               </div>
 
                               <div className="space-y-2">
                                 <div className="flex items-center justify-between">
-                                  <label className="text-[10px] font-semibold text-zinc-400 uppercase">Options & Accepted Answers</label>
+                                  <label className="text-[10px] font-semibold text-slate-500 uppercase">Options & Accepted Answers</label>
                                   <Button 
                                     type="button" 
                                     variant="ghost" 
@@ -513,7 +513,7 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                                     onClick={() => {
                                       const n = [...rules]; n[qIdx].options.push(""); setRules(n);
                                     }}
-                                    className="h-6 text-[10px] px-2 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
+                                    className="h-6 text-[10px] px-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-md"
                                   >
                                     <Plus className="h-3 w-3 mr-1" /> Add Option
                                   </Button>
@@ -534,7 +534,7 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                                           setRules(n);
                                         }}
                                         disabled={opt.trim() === ""}
-                                        className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-emerald-500 focus:ring-emerald-500/50 focus:ring-offset-zinc-950"
+                                        className="h-4 w-4 rounded border-slate-300 bg-white text-emerald-600 focus:ring-emerald-500/50 cursor-pointer"
                                         title="Mark as accepted answer"
                                       />
                                       <Input 
@@ -551,13 +551,13 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                                           }
                                           setRules(n);
                                         }}
-                                        className="h-8 bg-zinc-950 border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-white placeholder:text-zinc-600 text-sm flex-1"
+                                        className="h-8 bg-slate-50/60 border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-slate-900 placeholder:text-slate-400 text-sm flex-1 rounded-lg"
                                       />
                                       <Button 
                                         type="button" 
                                         variant="ghost" 
                                         size="icon" 
-                                        className="h-8 w-8 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 shrink-0" 
+                                        className="h-8 w-8 text-slate-400 hover:text-rose-600 hover:bg-rose-50 shrink-0 rounded-lg" 
                                         onClick={() => {
                                           const n = [...rules];
                                           const removedOpt = n[qIdx].options[optIdx];
@@ -582,14 +582,14 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                 </div>
 
                 {/* Vendor Distribution Panel */}
-                <div className="bg-zinc-900/20 border border-zinc-800/80 rounded-xl p-5 space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-850 pb-3">
+                <div className="bg-slate-50/60 border border-slate-200/80 rounded-2xl p-5 space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/60 pb-3">
                     <div className="space-y-0.5">
-                      <h4 className="text-sm font-semibold tracking-wide uppercase text-zinc-200 flex items-center gap-2">
-                        <LinkIcon className="h-4 w-4 text-violet-400" />
+                      <h4 className="text-sm font-semibold tracking-wide uppercase text-slate-800 flex items-center gap-2">
+                        <LinkIcon className="h-4 w-4 text-violet-600" />
                         Vendor Routing Links
                       </h4>
-                      <p className="text-xs text-zinc-400">Manage vendor entry quotas and tracking parameters.</p>
+                      <p className="text-xs text-slate-500">Manage vendor entry quotas and tracking parameters.</p>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <Button 
@@ -597,18 +597,18 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                         variant="outline" 
                         size="sm" 
                         onClick={() => setIsAddingVendor(!isAddingVendor)} 
-                        className={`bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-zinc-200 hover:text-white transition-all gap-1.5 h-8 text-xs ${isAddingVendor ? 'border-violet-500 text-violet-400 bg-violet-500/5' : ''}`}
+                        className={`bg-white border-slate-200 hover:bg-slate-50 text-slate-700 hover:text-slate-900 transition-all gap-1.5 h-8 text-xs rounded-lg shadow-xs ${isAddingVendor ? 'border-violet-500 text-violet-600 bg-violet-50' : ''}`}
                       >
-                        <Plus className="h-3.5 w-3.5 text-violet-400" /> Create Vendor
+                        <Plus className="h-3.5 w-3.5 text-violet-600" /> Create Vendor
                       </Button>
                       <Button 
                         type="button" 
                         variant="outline" 
                         size="sm" 
                         onClick={() => setVendorLinks([...vendorLinks, { vendorId: "", quota: 0, hash: "" }])} 
-                        className="bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-zinc-200 hover:text-white transition-all gap-1.5 h-8 text-xs"
+                        className="bg-white border-slate-200 hover:bg-slate-50 text-slate-700 hover:text-slate-900 transition-all gap-1.5 h-8 text-xs rounded-lg shadow-xs"
                       >
-                        <Plus className="h-3.5 w-3.5 text-emerald-400" /> Link Vendor
+                        <Plus className="h-3.5 w-3.5 text-emerald-600" /> Link Vendor
                       </Button>
                     </div>
                   </div>
@@ -620,61 +620,61 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="overflow-hidden bg-violet-950/20 border border-violet-500/20 rounded-lg p-4 space-y-3"
+                        className="overflow-hidden bg-violet-50/60 border border-violet-200 rounded-xl p-4 space-y-3"
                       >
-                        <div className="text-xs font-semibold text-violet-400 flex items-center gap-1">
+                        <div className="text-xs font-semibold text-violet-700 flex items-center gap-1">
                           <PlusCircle className="h-3.5 w-3.5" /> Configure & Save New Vendor
                         </div>
                         <div className="space-y-3">
                           <div className="space-y-1">
-                            <label className="text-[10px] font-semibold text-zinc-400 uppercase">Vendor Name</label>
+                            <label className="text-[10px] font-semibold text-slate-500 uppercase">Vendor Name</label>
                             <Input 
                               placeholder="e.g. Dynata UK" 
                               value={newVendorName} 
                               onChange={e => setNewVendorName(e.target.value)} 
-                              className="h-9 bg-zinc-950 border-zinc-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 text-white placeholder:text-zinc-500 text-xs"
+                              className="h-9 bg-white border-slate-200 focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 text-slate-900 placeholder:text-slate-400 text-xs rounded-lg"
                             />
                           </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div className="space-y-1">
-                              <label className="text-[10px] font-semibold text-emerald-400 uppercase">Complete URL</label>
+                              <label className="text-[10px] font-semibold text-emerald-700 uppercase">Complete URL</label>
                               <Input 
                                 placeholder="https://client.com/complete?uid={{vendor_rid}}" 
                                 value={newVendorCompleteUrl} 
                                 onChange={e => setNewVendorCompleteUrl(e.target.value)} 
-                                className="h-9 bg-zinc-950 border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-white placeholder:text-zinc-500 text-xs"
+                                className="h-9 bg-white border-slate-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-slate-900 placeholder:text-slate-400 text-xs rounded-lg"
                               />
                             </div>
                             <div className="space-y-1">
-                              <label className="text-[10px] font-semibold text-red-400 uppercase">Terminate URL</label>
+                              <label className="text-[10px] font-semibold text-rose-700 uppercase">Terminate URL</label>
                               <Input 
                                 placeholder="https://client.com/term?uid={{vendor_rid}}" 
                                 value={newVendorTerminateUrl} 
                                 onChange={e => setNewVendorTerminateUrl(e.target.value)} 
-                                className="h-9 bg-zinc-950 border-zinc-800 focus:border-red-500 focus:ring-1 focus:ring-red-500/50 text-white placeholder:text-zinc-500 text-xs"
+                                className="h-9 bg-white border-slate-200 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/50 text-slate-900 placeholder:text-slate-400 text-xs rounded-lg"
                               />
                             </div>
                             <div className="space-y-1">
-                              <label className="text-[10px] font-semibold text-amber-400 uppercase">Quota Full URL</label>
+                              <label className="text-[10px] font-semibold text-amber-700 uppercase">Quota Full URL</label>
                               <Input 
                                 placeholder="https://client.com/quota?uid={{vendor_rid}}" 
                                 value={newVendorQuotaFullUrl} 
                                 onChange={e => setNewVendorQuotaFullUrl(e.target.value)} 
-                                className="h-9 bg-zinc-950 border-zinc-800 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/50 text-white placeholder:text-zinc-500 text-xs"
+                                className="h-9 bg-white border-slate-200 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/50 text-slate-900 placeholder:text-slate-400 text-xs rounded-lg"
                               />
                             </div>
                             <div className="space-y-1">
-                              <label className="text-[10px] font-semibold text-blue-400 uppercase">Security Term URL</label>
+                              <label className="text-[10px] font-semibold text-blue-700 uppercase">Security Term URL</label>
                               <Input 
                                 placeholder="https://client.com/security?uid={{vendor_rid}}" 
                                 value={newVendorSecurityTermUrl} 
                                 onChange={e => setNewVendorSecurityTermUrl(e.target.value)} 
-                                className="h-9 bg-zinc-950 border-zinc-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 text-white placeholder:text-zinc-500 text-xs"
+                                className="h-9 bg-white border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 text-slate-900 placeholder:text-slate-400 text-xs rounded-lg"
                               />
                             </div>
                           </div>
                         </div>
-                        <div className="flex justify-end gap-2 pt-1.5 border-t border-violet-500/10">
+                        <div className="flex justify-end gap-2 pt-1.5 border-t border-violet-200/60">
                           <Button 
                             type="button" 
                             variant="ghost" 
@@ -687,7 +687,7 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                               setNewVendorQuotaFullUrl("");
                               setNewVendorSecurityTermUrl("");
                             }} 
-                            className="text-zinc-400 hover:text-white hover:bg-zinc-900 text-xs h-8"
+                            className="text-slate-500 hover:text-slate-900 hover:bg-violet-100/50 text-xs h-8 rounded-lg"
                           >
                             Cancel
                           </Button>
@@ -695,22 +695,22 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                             type="button" 
                             size="sm" 
                             onClick={handleCreateVendor} 
-                            className="bg-violet-600 hover:bg-violet-700 text-white font-medium text-xs h-8"
+                            className="bg-violet-600 hover:bg-violet-700 text-white font-medium text-xs h-8 rounded-lg shadow-xs"
                           >
                             Save Vendor
                           </Button>
                         </div>
 
                         {vendors.length > 0 && (
-                          <div className="pt-3 border-t border-violet-500/10 space-y-1 max-h-[140px] overflow-y-auto custom-scrollbar">
-                            <div className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1 select-none">Existing Vendors</div>
+                          <div className="pt-3 border-t border-violet-200/60 space-y-1 max-h-[140px] overflow-y-auto custom-scrollbar">
+                            <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1 select-none">Existing Vendors</div>
                             {vendors.map(v => (
-                              <div key={v._id} className="flex items-center justify-between text-xs py-1 px-1.5 rounded hover:bg-zinc-900/50 group/v">
+                              <div key={v._id} className="flex items-center justify-between text-xs py-1 px-2 rounded-md hover:bg-violet-100/50 group/v">
                                 <div className="flex flex-col min-w-0">
-                                  <span className="text-zinc-300 truncate font-medium">{v.name}</span>
+                                  <span className="text-slate-700 truncate font-medium">{v.name}</span>
                                   <div className="flex gap-1 mt-0.5">
                                     {v.completeUrl && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" title="Complete URL" />}
-                                    {v.terminateUrl && <span className="h-1.5 w-1.5 rounded-full bg-red-500" title="Terminate URL" />}
+                                    {v.terminateUrl && <span className="h-1.5 w-1.5 rounded-full bg-rose-500" title="Terminate URL" />}
                                     {v.quotaFullUrl && <span className="h-1.5 w-1.5 rounded-full bg-amber-500" title="Quota Full URL" />}
                                     {v.securityTermUrl && <span className="h-1.5 w-1.5 rounded-full bg-blue-500" title="Security Term URL" />}
                                   </div>
@@ -718,7 +718,7 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                                 <button 
                                   type="button" 
                                   onClick={() => handleDeleteVendor(v._id)}
-                                  className="text-zinc-500 hover:text-red-400 transition-colors opacity-0 group-hover/v:opacity-100 p-0.5 shrink-0 ml-2"
+                                  className="text-slate-400 hover:text-rose-600 transition-colors opacity-0 group-hover/v:opacity-100 p-0.5 shrink-0 ml-2"
                                   title={`Delete ${v.name}`}
                                 >
                                   <Trash2 className="h-3.5 w-3.5" />
@@ -733,14 +733,14 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
 
                   <div className="min-h-[100px]">
                     {vendorLinks.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center py-8 border border-dashed border-zinc-800 rounded-lg text-zinc-500 bg-zinc-900/10">
-                        <LinkIcon className="h-5 w-5 mb-1.5 text-zinc-650" />
-                        <span className="text-xs font-medium">No vendors linked</span>
-                        <span className="text-[10px] text-zinc-500">Link a vendor to generate secure routing links.</span>
+                      <div className="flex flex-col items-center justify-center py-8 border border-dashed border-slate-200 rounded-xl text-slate-500 bg-white/50">
+                        <LinkIcon className="h-5 w-5 mb-1.5 text-slate-400" />
+                        <span className="text-xs font-medium text-slate-700">No vendors linked</span>
+                        <span className="text-[10px] text-slate-400">Link a vendor to generate secure routing links.</span>
                       </div>
                     ) : (
                       <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
-                        <div className="hidden md:flex gap-2 px-1 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider select-none">
+                        <div className="hidden md:flex gap-2 px-1 text-[10px] font-semibold text-slate-500 uppercase tracking-wider select-none">
                           <div className="flex-[2.5]">Vendor Partner</div>
                           <div className="flex-1">Quota</div>
                           {surveyToEdit && <div className="flex-[1.5]">Hash ID</div>}
@@ -754,23 +754,23 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                               initial={{ opacity: 0, y: -5 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, scale: 0.95 }}
-                              className="flex flex-col md:flex-row gap-3 md:gap-2 md:items-center p-3.5 pr-10 md:p-0 bg-zinc-900/30 md:bg-transparent rounded-lg border border-zinc-800/50 md:border-transparent relative"
+                              className="flex flex-col md:flex-row gap-3 md:gap-2 md:items-center p-3.5 pr-10 md:p-0 bg-white md:bg-transparent rounded-xl border border-slate-200 md:border-transparent relative shadow-xs md:shadow-none"
                             >
                               {/* Vendor Selection */}
                               <div className="flex-[2.5] min-w-0 space-y-1">
-                                <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider md:hidden">Vendor Partner</label>
+                                <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider md:hidden">Vendor Partner</label>
                                 <Select 
                                   value={link.vendorId} 
                                   onValueChange={v => {
                                     const n = [...vendorLinks]; n[idx].vendorId = v; setVendorLinks(n);
                                   }}
                                 >
-                                  <SelectTrigger className="h-9 bg-zinc-900/40 border-zinc-800 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-xs transition-all">
+                                  <SelectTrigger className="h-9 bg-slate-50/60 md:bg-white border-slate-200 text-slate-900 focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-xs transition-all rounded-lg">
                                     <SelectValue placeholder="Select Vendor" />
                                   </SelectTrigger>
-                                  <SelectContent className="bg-zinc-950 border-zinc-800 text-white">
+                                  <SelectContent className="bg-white border-slate-200 text-slate-900 shadow-xl rounded-xl">
                                     {vendors.map(v => (
-                                      <SelectItem key={v._id} value={v._id} className="focus:bg-zinc-900 focus:text-white cursor-pointer text-xs">{v.name}</SelectItem>
+                                      <SelectItem key={v._id} value={v._id} className="focus:bg-slate-100 focus:text-slate-900 cursor-pointer text-xs">{v.name}</SelectItem>
                                     ))}
                                   </SelectContent>
                                 </Select>
@@ -778,7 +778,7 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
 
                               {/* Quota Input */}
                               <div className="flex-1 min-w-0 md:min-w-[70px] space-y-1">
-                                <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider md:hidden">Quota</label>
+                                <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider md:hidden">Quota</label>
                                 <Input 
                                   type="number" 
                                   min={0}
@@ -786,19 +786,19 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                                   onChange={e => {
                                     const n = [...vendorLinks]; n[idx].quota = Number(e.target.value); setVendorLinks(n);
                                   }}
-                                  className="h-9 bg-zinc-900/40 border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-white text-xs font-mono text-left md:text-center"
+                                  className="h-9 bg-slate-50/60 md:bg-white border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 text-slate-900 text-xs font-mono text-left md:text-center rounded-lg"
                                 />
                               </div>
 
                               {/* Secure Hash (Only when editing survey) */}
                               {surveyToEdit && (
                                 <div className="flex-[1.5] min-w-0 space-y-1">
-                                  <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider md:hidden">Hash ID</label>
+                                  <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider md:hidden">Hash ID</label>
                                   <div className="relative group/hash">
                                     <Input 
                                       value={link.hash || "Not Generated"} 
                                       disabled 
-                                      className="h-9 font-mono text-[10px] bg-zinc-950/80 border-zinc-900 text-zinc-500 pr-7 truncate" 
+                                      className="h-9 font-mono text-[10px] bg-slate-100 border-slate-200 text-slate-500 pr-7 truncate rounded-lg" 
                                     />
                                     {link.hash && (
                                       <button
@@ -807,7 +807,7 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                                           navigator.clipboard.writeText(link.hash);
                                           showToast("Hash copied!", "success");
                                         }}
-                                        className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-zinc-500 hover:text-emerald-400 hover:bg-zinc-900 rounded opacity-100 md:opacity-0 md:group-hover/hash:opacity-100 transition-opacity"
+                                        className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-emerald-600 hover:bg-slate-200 rounded opacity-100 md:opacity-0 md:group-hover/hash:opacity-100 transition-opacity"
                                         title="Copy Hash to Clipboard"
                                       >
                                         <Copy className="h-3 w-3" />
@@ -822,7 +822,7 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
                                 type="button" 
                                 variant="ghost" 
                                 size="icon" 
-                                className="absolute right-2 top-2 md:relative md:right-0 md:top-0 h-8 w-8 md:h-9 md:w-9 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg shrink-0" 
+                                className="absolute right-2 top-2 md:relative md:right-0 md:top-0 h-8 w-8 md:h-9 md:w-9 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg shrink-0" 
                                 onClick={() => {
                                   setVendorLinks(vendorLinks.filter((_, i) => i !== idx));
                                 }}
@@ -841,19 +841,19 @@ export function SurveyFormModal({ isOpen, onClose, surveyToEdit }: SurveyFormMod
 
             </div>
           </div>
-          <DialogFooter className="p-4 sm:p-6 border-t border-zinc-800 bg-zinc-950/80 flex flex-col sm:flex-row items-center justify-end gap-3 mt-0">
+          <DialogFooter className="p-4 sm:p-6 border-t border-slate-100 bg-slate-50/80 flex flex-col sm:flex-row items-center justify-end gap-3 mt-0">
             <Button 
               type="button" 
               variant="outline" 
               onClick={onClose} 
-              className="bg-zinc-900 border-zinc-800 hover:bg-zinc-850 text-zinc-300 hover:text-white h-10 px-5 transition-all w-full sm:w-auto"
+              className="bg-white border-slate-200 hover:bg-slate-100 text-slate-700 h-10 px-5 transition-all w-full sm:w-auto shadow-xs rounded-xl"
             >
               Cancel
             </Button>
             <Button 
               type="submit" 
               disabled={isCreating || isUpdating} 
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium h-10 px-5 transition-all w-full sm:w-auto"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium h-10 px-5 transition-all w-full sm:w-auto shadow-xs rounded-xl"
             >
               {isCreating || isUpdating ? (
                 <span className="flex items-center gap-2">

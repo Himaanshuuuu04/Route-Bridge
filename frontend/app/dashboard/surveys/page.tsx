@@ -5,8 +5,6 @@ import Link from "next/link";
 import { PlusCircle, Search, Edit2, Trash2, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/app/context/ToastContext";
 import { useGetAdminSurveysQuery, useDeleteAdminSurveyMutation, Survey, useGetMeQuery } from "@/app/store/apiSlice";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -32,8 +30,8 @@ export default function SurveysPage() {
     return (
       <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-10 relative z-10 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">Access Denied</h2>
-          <p className="text-zinc-400">You must be a superadmin to view this page.</p>
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">Access Denied</h2>
+          <p className="text-slate-500">You must be a superadmin to view this page.</p>
         </div>
       </main>
     );
@@ -73,16 +71,16 @@ export default function SurveysPage() {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6"
       >
         <div className="relative flex-1 max-w-sm w-full">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
           <Input 
             placeholder="Search surveys by name or ID..." 
-            className="pl-9 bg-black/40 border-white/10 text-white backdrop-blur-xl" 
+            className="pl-9 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-emerald-500 rounded-xl shadow-xs" 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
-        <Button onClick={handleOpenCreate} className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shrink-0 w-full sm:w-auto">
+        <Button onClick={handleOpenCreate} className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shrink-0 w-full sm:w-auto font-medium shadow-xs rounded-xl">
           <PlusCircle className="h-4 w-4" />
           Create Survey
         </Button>
@@ -94,38 +92,38 @@ export default function SurveysPage() {
         transition={{ delay: 0.2 }}
         className="w-full"
       >
-        <Card className="bg-black/40 border-white/10 backdrop-blur-xl shadow-2xl flex flex-col h-full w-full overflow-hidden">
-          <CardHeader className="pb-6 border-b border-white/5">
-            <CardTitle className="text-xl font-bold text-white">Survey Listing</CardTitle>
+        <Card className="bg-white border-slate-200/80 shadow-xs rounded-2xl flex flex-col h-full w-full overflow-hidden">
+          <CardHeader className="pb-6 border-b border-slate-100">
+            <CardTitle className="text-xl font-bold text-slate-900">Survey Listing</CardTitle>
           </CardHeader>
           <CardContent className="flex-1 p-0 overflow-x-auto">
             <Table>
-              <TableHeader className="bg-white/[0.02]">
-                <TableRow className="border-white/5 hover:bg-transparent">
-                  <TableHead className="font-semibold text-zinc-400 pl-6 py-4">Survey Name</TableHead>
-                  <TableHead className="font-semibold text-zinc-400">Project ID</TableHead>
-                  <TableHead className="font-semibold text-zinc-400 hidden sm:table-cell">Supplier</TableHead>
-                  <TableHead className="font-semibold text-zinc-400">Status</TableHead>
-                  <TableHead className="font-semibold text-zinc-400 hidden md:table-cell">Created</TableHead>
-                  <TableHead className="font-semibold text-zinc-400 text-right pr-6">Actions</TableHead>
+              <TableHeader className="bg-slate-50/80">
+                <TableRow className="border-slate-100 hover:bg-transparent">
+                  <TableHead className="font-semibold text-slate-600 pl-6 py-4">Survey Name</TableHead>
+                  <TableHead className="font-semibold text-slate-600">Project ID</TableHead>
+                  <TableHead className="font-semibold text-slate-600 hidden sm:table-cell">Supplier</TableHead>
+                  <TableHead className="font-semibold text-slate-600">Status</TableHead>
+                  <TableHead className="font-semibold text-slate-600 hidden md:table-cell">Created</TableHead>
+                  <TableHead className="font-semibold text-slate-600 text-right pr-6">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 <AnimatePresence mode="popLayout">
                   {isLoading ? (
                     Array.from({ length: 5 }).map((_, i) => (
-                      <TableRow key={`skeleton-${i}`} className="border-white/5">
-                        <TableCell className="pl-6"><Skeleton className="h-5 w-32 bg-white/5 rounded-md" /></TableCell>
-                        <TableCell><Skeleton className="h-5 w-20 bg-white/5 rounded-md" /></TableCell>
-                        <TableCell className="hidden sm:table-cell"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
-                        <TableCell><Skeleton className="h-6 w-16 bg-white/5 rounded-full" /></TableCell>
-                        <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
-                        <TableCell className="text-right pr-6"><Skeleton className="h-8 w-24 ml-auto bg-white/5 rounded-md" /></TableCell>
+                      <TableRow key={`skeleton-${i}`} className="border-slate-100">
+                        <TableCell className="pl-6"><Skeleton className="h-5 w-32 bg-slate-100 rounded-md" /></TableCell>
+                        <TableCell><Skeleton className="h-5 w-20 bg-slate-100 rounded-md" /></TableCell>
+                        <TableCell className="hidden sm:table-cell"><Skeleton className="h-5 w-24 bg-slate-100 rounded-md" /></TableCell>
+                        <TableCell><Skeleton className="h-6 w-16 bg-slate-100 rounded-full" /></TableCell>
+                        <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-24 bg-slate-100 rounded-md" /></TableCell>
+                        <TableCell className="text-right pr-6"><Skeleton className="h-8 w-24 ml-auto bg-slate-100 rounded-md" /></TableCell>
                       </TableRow>
                     ))
                   ) : filteredSurveys.length === 0 ? (
                     <TableRow className="border-none">
-                      <TableCell colSpan={6} className="h-32 text-center text-zinc-500 font-medium">
+                      <TableCell colSpan={6} className="h-32 text-center text-slate-500 font-medium">
                         No surveys found.
                       </TableCell>
                     </TableRow>
@@ -137,38 +135,38 @@ export default function SurveysPage() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
                         transition={{ delay: index * 0.05 }}
-                        className="group transition-colors border-white/5 hover:bg-white/[0.02]"
+                        className="group transition-colors border-slate-100 hover:bg-slate-50/60"
                       >
-                        <TableCell className="font-medium text-white pl-6">
+                        <TableCell className="font-medium text-slate-900 pl-6">
                           {survey.name}
                         </TableCell>
-                        <TableCell className="font-mono text-sm text-zinc-400">{survey.projectId}</TableCell>
-                        <TableCell className="hidden sm:table-cell text-zinc-400">
-                          {survey.supplierId?.name || <span className="text-zinc-600 italic">None</span>}
+                        <TableCell className="font-mono text-sm text-slate-600">{survey.projectId}</TableCell>
+                        <TableCell className="hidden sm:table-cell text-slate-600">
+                          {survey.supplierId?.name || <span className="text-slate-400 italic">None</span>}
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline" className={
-                            survey.status === 'active' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
-                            survey.status === 'paused' ? "bg-amber-500/10 text-amber-400 border-amber-500/20" :
-                            "bg-white/10 text-zinc-400 border-white/20"
+                            survey.status === 'active' ? "bg-emerald-50 text-emerald-700 border-emerald-200 font-medium" :
+                            survey.status === 'paused' ? "bg-amber-50 text-amber-700 border-amber-200 font-medium" :
+                            "bg-slate-100 text-slate-700 border-slate-200 font-medium"
                           }>
                             {survey.status.charAt(0).toUpperCase() + survey.status.slice(1)}
                           </Badge>
                         </TableCell>
-                        <TableCell className="hidden md:table-cell text-sm text-zinc-400">
+                        <TableCell className="hidden md:table-cell text-sm text-slate-500">
                           {new Date(survey.createdAt).toLocaleDateString()}
                         </TableCell>
                         <TableCell className="text-right pr-6">
-                          <div className="flex justify-end gap-2">
-                            <Button variant="ghost" size="icon" title="View Links" asChild className="h-8 w-8 text-zinc-400 hover:text-indigo-400 hover:bg-indigo-500/10">
+                          <div className="flex justify-end gap-1.5">
+                            <Button variant="ghost" size="icon" title="View Links" asChild className="h-8 w-8 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">
                               <Link href={`/dashboard/surveys/${survey._id}`}>
                                 <LinkIcon className="h-4 w-4" />
                               </Link>
                             </Button>
-                            <Button variant="ghost" size="icon" title="Edit" onClick={() => handleOpenEdit(survey)} className="h-8 w-8 text-zinc-400 hover:text-blue-400 hover:bg-blue-500/10">
+                            <Button variant="ghost" size="icon" title="Edit" onClick={() => handleOpenEdit(survey)} className="h-8 w-8 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
                               <Edit2 className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="icon" title="Delete" onClick={() => handleDelete(survey._id)} className="h-8 w-8 text-zinc-400 hover:text-red-400 hover:bg-red-500/10">
+                            <Button variant="ghost" size="icon" title="Delete" onClick={() => handleDelete(survey._id)} className="h-8 w-8 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg">
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
