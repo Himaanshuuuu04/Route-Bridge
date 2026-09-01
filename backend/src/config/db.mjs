@@ -11,11 +11,7 @@ const uri = process.env.MONGODB_URI;
 
 export default async function connectDB() {
     try {
-        await mongoose.connect(uri, {
-            tls: true,
-            tlsCertificateKeyFile: './mongo.pem',
-            authMechanism: 'MONGODB-X509'
-        });
+        await mongoose.connect(uri);
         console.log("MongoDB Connected");
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
