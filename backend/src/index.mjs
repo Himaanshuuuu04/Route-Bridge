@@ -44,11 +44,12 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan('dev')); 
 app.use(express.static(path.join(__dirname, "../public")));
-import { initAgenda } from "./config/agenda.mjs";
 import mongoose from "mongoose";
+import redisConnection from "./config/redis.mjs";
+import "./config/bullmq.mjs"; // Initializes the workers
 
 connectDB().then(() => {
-    initAgenda(mongoose.connection);
+    console.log("MongoDB Connected");
 });
 import trafficRoutes from "./routes/traffic.routes.mjs";
 import screenerRoutes from "./routes/screener.routes.mjs";

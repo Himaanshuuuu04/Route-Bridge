@@ -1,6 +1,6 @@
 import TransactionModel from "../models/transaction.model.mjs";
 import SurveyModel from "../models/survey.model.mjs";
-import agenda from "../config/agenda.mjs";
+import { webhookQueue, dashboardCacheQueue } from "../config/bullmq.mjs";
 import { getCountryFromIp } from "../helpers/ip.mjs";
 import { renderSurveyTemplate } from "../helpers/template.mjs";
 
@@ -35,7 +35,8 @@ async function handleRegisteredProject(uid, pid, ip, geo, mappedStatus, transact
     );
 
     if (updatedTransaction) {
-        await agenda.now('propagate-webhook', { transactionId: updatedTransaction._id });
+        await webhookQueue.add('fire', { transactionId: updatedTransaction._id });
+        await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
     }
 
     return updatedTransaction;
@@ -59,6 +60,7 @@ async function handleUnregisteredProject(uid, pid, ip, geo, mappedStatus, transa
     });
     
     await newTransaction.save();
+    await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
     return newTransaction;
 }
 

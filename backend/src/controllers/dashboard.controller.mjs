@@ -1,4 +1,6 @@
 import TransactionModel from "../models/transaction.model.mjs";
+import redisConnection from "../config/redis.mjs";
+import { dashboardCacheQueue } from "../config/bullmq.mjs";
 
 function buildDateFilter(req) {
     const filter = {};
@@ -32,6 +34,15 @@ function buildDateFilter(req) {
 export async function getSurveyCount(req, res) {
     try {
         const filter = buildDateFilter(req);
+
+        // Try reading from cache if no custom date filters are applied
+        if (Object.keys(filter).length === 0) {
+            const cachedData = await redisConnection.get('dashboard:stats:default');
+            if (cachedData) {
+                return res.status(200).json(JSON.parse(cachedData));
+            }
+        }
+
         const total_entries = await TransactionModel.countDocuments(filter);
         const complete_entries = await TransactionModel.countDocuments({ ...filter, status: "completed" });
         const terminate_entries = await TransactionModel.countDocuments({ ...filter, status: "terminate" });
@@ -86,7 +97,7 @@ export async function getSurveyCount(req, res) {
             return formatted;
         });
 
-        return res.status(200).json({
+        const dashboardData = {
             total_entries,
             complete_entries,
             terminate_entries,
@@ -96,7 +107,14 @@ export async function getSurveyCount(req, res) {
             screened_out_entries,
             fraud_entries,
             timeline
-        });
+        };
+
+        // Seed the cache in the background if it was empty for a default request
+        if (Object.keys(filter).length === 0) {
+            await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
+        }
+
+        return res.status(200).json(dashboardData);
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Internal Server Error" });
