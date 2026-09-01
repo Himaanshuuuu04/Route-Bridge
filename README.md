@@ -7,7 +7,7 @@ The **Survey Redirector** is a full-stack, secure traffic routing and redirectio
 
 ### Core Components
 *   **Frontend (Next.js)**: Provides an administrative dashboard to manage suppliers, vendors, surveys, and transactions. It also hosts the **Screener Page** where respondents answer demographic questions.
-*   **Backend (Node.js & Express & MongoDB)**: Manages authentication (via passwordless Email OTP + JWT cookies), traffic routing, eligibility screening, webhooks/redirect outcomes, and asynchronous job processing (using **Agenda.js**) to propagate outcomes back to vendors.
+*   **Backend (Node.js & Express & MongoDB)**: Manages authentication (via passwordless Email OTP + JWT cookies), traffic routing, eligibility screening, webhooks/redirect outcomes, Redis caching for fast user profiles and dashboard metrics, and asynchronous background queues using **BullMQ & Redis** (`webhookQueue`, `dashboardCacheQueue`, `emailQueue`) to propagate outcomes back to vendors.
 
 ---
 
@@ -25,7 +25,7 @@ graph TD
     F -->|4. Replaces [identifier] with Transaction Token| G[Supplier Platform]
     G -->|5. Complete, Terminate, or Quota Full| H[Callback/Redirect /l/* or /api/webhooks]
     H -->|6. Updates Transaction Status| I(Backend Webhook Service)
-    I -->|7. Schedules Asynchronous Job| J[Agenda Job: propagate-webhook]
+    I -->|7. Enqueues Webhook Job| J[BullMQ Worker: webhook.worker]
     J -->|8. HTTP GET with macros resolved| K[Vendor Postback URL]
 ```
 
@@ -34,15 +34,15 @@ graph TD
 *   **Purpose:** The entry point distributed to a **Vendor** to send respondents into a specific survey. 
     *   `:hash`: A unique lookup hash mapped to a survey's specific vendor configuration.
     *   `vendor_rid`: The unique respondent ID provided by the vendor to track individual completions.
-*   **Redirect Logic:** The controller ([traffic.routes.mjs](file:///c:/Users/Himanshu/Desktop/Freelance/survey-redirector/backend/src/routes/traffic.routes.mjs)) verifies that the survey is `active` and redirects the user (302) to the screener:
+*   **Redirect Logic:** The controller ([traffic.service.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/services/traffic.service.mjs)) verifies that the survey is `active` and redirects the user (302) to the screener:
     `http://<frontend-domain>/screener/:hash?vendor_rid=<vendor_respondent_id>`
 
 ### Step 2: Demographics Screener (Eligibility Check)
-*   **Screener UI:** The frontend ([screener/[hash]/page.tsx](file:///c:/Users/Himanshu/Desktop/Freelance/survey-redirector/frontend/app/screener/%5Bhash%5D/page.tsx)) displays input fields (e.g. age, gender) defined in the survey's `eligibilityRules`.
+*   **Screener UI:** The frontend displays input fields defined in the survey's `eligibilityRules`.
 *   **Repeat Visit Check:** The frontend checks for a cookie or localStorage token (`screener_token_<hash>`). If the respondent has already qualified previously, they are automatically forwarded to the survey, preventing repeated screener submissions.
 *   **Submission (`POST /api/screener/submit`):**
     *   **If unqualified (Screened Out):** A transaction is recorded with status `'screened_out'`, and the respondent is shown a rejection message.
-    *   **If qualified:** A transaction is recorded in MongoDB ([transaction.model.mjs](file:///c:/Users/Himanshu/Desktop/Freelance/survey-redirector/backend/src/models/transaction.model.mjs)) with status `'started'`. The **Transaction Token** is set directly to the `vendor_rid` (with a fallback to a generated UUID if missing).
+    *   **If qualified:** A transaction is recorded in MongoDB ([transaction.model.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/models/transaction.model.mjs)) with status `'started'`. The **Transaction Token** is set directly to the `vendor_rid` (with a fallback to a generated UUID if missing).
 
 ### Step 3: Forwarding to Upstream Supplier (Supplier Survey Link)
 *   **Generated Link Format:** Replaces the `[identifier]` placeholder in the survey's `baseSupplierUrl` with the `transactionToken` (which is the exact `vendor_rid`).
@@ -58,16 +58,15 @@ When the respondent completes or exits the survey, the upstream supplier redirec
     *   **Terminate (Screen Out):** `/l/terminate?uid=<transactionToken>&pid=<projectId>`
     *   **Quota Full:** `/l/quotafull?uid=<transactionToken>&pid=<projectId>`
     *   **Security Terminated:** `/l/securityterm?uid=<transactionToken>&pid=<projectId>`
+    *   *Note:* `/i/*` is also supported as a legacy alias for `/l/*`.
 *   **2. Server-to-Server Webhooks:**
     *   **Webhook Route:** `POST /api/webhooks/supplier/:supplierId`
-*   **Action:** The backend finds the most recently created transaction matching the `uid` (sorted by `createdAt: -1` to safely support duplicate vendor IDs). It then updates the matching transaction status to `completed`, `terminate`, `quota_full`, or `security_term`, logs the entry, and schedules a propagation event.
+*   **Action:** The backend finds the matching transaction by `transactionToken` (or `uid`), updates the transaction status to `completed`, `terminate`, `quota_full`, or `security_term`, enqueues a `webhookQueue` job in BullMQ, and enqueues a `dashboardCacheQueue` job to rebuild analytics caches.
 
 ### Step 5: Downstream Vendor Propagation (Postback callback to Vendor)
-*   **Asynchronous Job:** Using `agenda.js` ([agenda.mjs](file:///c:/Users/Himanshu/Desktop/Freelance/survey-redirector/backend/src/config/agenda.mjs)), the backend processes a `propagate-webhook` job.
-*   **Vendor Link / Macro Replacement:** The system loads the vendor's configured `postbackUrl` (e.g. `https://api.vendor.com/postback?id={{vendor_rid}}&status={{status}}`) and replaces:
-    *   `{{vendor_rid}}` $\rightarrow$ `transaction.vendorRid` (the original respondent ID sent in Step 1).
-    *   `{{status}}` $\rightarrow$ Mapped transaction outcome (e.g. `completed`, `terminate`, `quota_full`).
-*   **Action:** The backend fires an HTTP GET request to this postback URL to credit the vendor and close the transaction loop.
+*   **Asynchronous Worker:** Using **BullMQ** ([webhook.worker.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/workers/webhook.worker.mjs)), the backend processes queued postback jobs.
+*   **Vendor Link / Macro Replacement:** The system loads the vendor's configured postback URL or status-specific URL (`completeUrl`, `terminateUrl`, `quotaFullUrl`, `securityTermUrl`) and replaces macros such as `{{vendor_rid}}` and `{{status}}`.
+*   **Action:** The worker sends an HTTP GET request to this postback URL to credit the vendor and close the transaction loop.
 
 ---
 

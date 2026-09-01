@@ -1,14 +1,16 @@
 # Survey Redirector - Backend API Documentation
 
-This document describes the API endpoints, authentication mechanisms, and database models for the Survey Redirector backend application.
+This document describes the API endpoints, authentication & authorization mechanisms, database models, Redis caching strategy, and background BullMQ workers for the Survey Redirector backend application.
 
 ---
 
-## Base Configuration
+## Base Infrastructure & Configuration
 
-- **Default Port:** Defined in `.env` (`process.env.PORT`).
-- **Database:** MongoDB (connection established via `config/db.mjs`).
-- **Global Error Handling:** All internal errors return a standard JSON structure:
+- **Default Port:** Defined in `.env` (`process.env.PORT`, default `5000`).
+- **Database:** MongoDB (connected via [config/db.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/config/db.mjs)).
+- **Caching:** Redis connection (configured via [config/redis.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/config/redis.mjs)).
+- **Background Queues:** BullMQ queues powered by Redis ([config/bullmq.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/config/bullmq.mjs)).
+- **Global Error & 404 Handling:** Handled in [middleware/error.middleware.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/middleware/error.middleware.mjs). Standard JSON structure:
   ```json
   {
     "success": false,
@@ -16,19 +18,23 @@ This document describes the API endpoints, authentication mechanisms, and databa
     "message": "Internal Server Error"
   }
   ```
-- **404 Handler:** Accessing non-existing routes returns a `404 Not Found` response.
 
 ---
 
 ## Authentication & Middleware
 
-### Authentication Middleware (`authMiddleware`)
-- **Location:** [auth.middleware.mjs](file:///c:/Users/Himanshu/Desktop/Freelance/survey-redirector/backend/src/middleware/auth.middleware.mjs)
-- **Mechanism:** Reads the JWT token from the incoming request cookies (`cookies.token`).
-- **Verification:** Verifies the token using `process.env.JWT_SECRET`. If valid, it decodes the payload, attaches it to `req.user`, and passes execution to the next handler.
+### 1. Authentication Middleware (`authMiddleware`)
+- **Location:** [auth.middleware.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/middleware/auth.middleware.mjs)
+- **Mechanism:** Reads the JWT token from incoming request cookies (`cookies.token`).
+- **Redis Profile Caching:** Uses Redis key `user:<id>` to cache decoded user objects for 1 hour, minimizing database queries on high-traffic requests.
 - **Failures:** 
   - If no token is provided: Returns `401 Unauthorized`.
-  - If token verification fails or database error occurs: Returns `500 Internal Server Error`.
+  - If token is invalid or expired: Returns `401 Unauthorized` and clears invalid cookie.
+
+### 2. Admin Middleware (`adminMiddleware`)
+- **Location:** [admin.middleware.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/middleware/admin.middleware.mjs)
+- **Mechanism:** Verifies that the authenticated user (`req.user`) has `surveyAdmin: true`.
+- **Failures:** Returns `403 Forbidden` if the user is not a survey administrator.
 
 ---
 
@@ -36,11 +42,10 @@ This document describes the API endpoints, authentication mechanisms, and databa
 
 ### 1. User Authentication Routes
 - **Base Path:** `/api/user`
-- **Route Definitions:** [user.routes.mjs](file:///c:/Users/Himanshu/Desktop/Freelance/survey-redirector/backend/src/routes/user.routes.mjs)
+- **Route File:** [user.routes.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/routes/user.routes.mjs)
 
 #### A. User Sign Up
 - **Endpoint:** `POST /api/user/signUp`
-- **Controller:** `signUp` in [user.controller.mjs](file:///c:/Users/Himanshu/Desktop/Freelance/survey-redirector/backend/src/controllers/user.controller.mjs)
 - **Request Body:**
   ```json
   {
@@ -49,198 +54,215 @@ This document describes the API endpoints, authentication mechanisms, and databa
   }
   ```
 - **Responses:**
-  - `200 OK`: User created successfully.
-    ```json
-    { "message": "User created successfully" }
-    ```
-  - `400 Bad Request`: If `email` or `name` is missing.
-    ```json
-    { "message": "Bad Request" }
-    ```
-  - `409 Conflict`: If the user already exists.
-    ```json
-    { "message": "User already exists, please login" }
-    ```
-  - `500 Internal Server Error`
+  - `200 OK`: `{"message": "User created successfully"}`
+  - `400 Bad Request`: Missing `email` or `name`.
+  - `409 Conflict`: User already exists.
 
 #### B. User Sign In (Send OTP)
 - **Endpoint:** `POST /api/user/signIn`
-- **Controller:** `signIn` in [user.controller.mjs](file:///c:/Users/Himanshu/Desktop/Freelance/survey-redirector/backend/src/controllers/user.controller.mjs)
-- **Request Body:**
-  ```json
-  {
-    "email": "user@example.com"
-  }
-  ```
+- **Request Body:** `{"email": "user@example.com"}`
+- **Action:** Generates a 6-digit OTP (valid for 10 minutes), saves it to DB, and enqueues an email dispatch job via `emailQueue`.
 - **Responses:**
-  - `200 OK`: OTP generated, saved to DB (valid for 10 minutes), and sent via mail.
-    ```json
-    { "message": "OTP sent successfully" }
-    ```
-  - `400 Bad Request`: If `email` is missing.
-  - `404 Not Found`: If the user does not exist.
-    ```json
-    { "message": "User not found, please sign up first" }
-    ```
-  - `500 Internal Server Error`
+  - `200 OK`: `{"message": "OTP sent successfully"}`
+  - `404 Not Found`: User not found.
 
 #### C. Verify OTP
 - **Endpoint:** `POST /api/user/verifyOtp`
-- **Controller:** `verifyOtp` in [user.controller.mjs](file:///c:/Users/Himanshu/Desktop/Freelance/survey-redirector/backend/src/controllers/user.controller.mjs)
-- **Request Body:**
-  ```json
-  {
-    "email": "user@example.com",
-    "otp": "123456"
-  }
-  ```
+- **Request Body:** `{"email": "user@example.com", "otp": "123456"}`
+- **Action:** Validates OTP and issues a JWT token set in an `httpOnly` cookie (`token`).
 - **Responses:**
-  - `200 OK`: OTP verified successfully. Sets a `token` cookie.
-    ```json
-    { "message": "OTP verified successfully" }
-    ```
-    *Cookie Details:*
-    - Name: `token`
-    - Value: JWT (expires in 3 days)
-    - Attributes: `httpOnly: true`, `secure` (in production), `sameSite` (`strict` in production, `lax` in development).
-  - `400 Bad Request`: If `email` or `otp` is missing.
-  - `404 Not Found`: User not found.
-  - `401 Unauthorized`: Invalid OTP or OTP expired.
-  - `500 Internal Server Error`
+  - `200 OK`: `{"message": "OTP verified successfully"}`
+  - `401 Unauthorized`: Invalid or expired OTP.
 
 ---
 
-### 2. Survey Callback Webhooks (Typeform Redirects)
-- **Base Path:** `/l`
-- **Route Definitions:** [survey.routes.mjs](file:///c:/Users/Himanshu/Desktop/Freelance/survey-redirector/backend/src/routes/survey.routes.mjs)
+### 2. Traffic Routing
+- **Base Path:** `/r`
+- **Route File:** [traffic.routes.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/routes/traffic.routes.mjs)
+- **Service:** [traffic.service.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/services/traffic.service.mjs)
 - **Access:** Public
-- **Common Parameters:** All endpoints accept parameters either via `POST` or `GET` requests and expect query string variables:
-  - `uid` (User ID/Respondent ID)
-  - `pid` (Project ID/Survey ID)
 
-#### A. Complete Survey Callback
-- **Endpoint:** `GET /l/complete` or `POST /l/complete`
-- **Controller:** `completeSurvey` in [survey.controller.mjs](file:///c:/Users/Himanshu/Desktop/Freelance/survey-redirector/backend/src/controllers/survey.controller.mjs)
-- **Action:** Creates a new survey entry with `status: "Complete"` and logs the requester's IP address.
-- **Responses:**
-  - `200 OK`: `{"message": "Survey updated successfully"}`
-  - `400 Bad Request`: Missing `uid` or `pid`.
-
-#### B. Terminate Survey Callback
-- **Endpoint:** `GET /l/terminate` or `POST /l/terminate`
-- **Controller:** `terminateSurvey` in [survey.controller.mjs](file:///c:/Users/Himanshu/Desktop/Freelance/survey-redirector/backend/src/controllers/survey.controller.mjs)
-- **Action:** Creates a new survey entry with `status: "Terminate"` and logs the requester's IP address.
-- **Responses:**
-  - `200 OK`: `{"message": "Survey updated successfully"}`
-  - `400 Bad Request`: Missing `uid` or `pid`.
-
-#### C. Quota Full Callback
-- **Endpoint:** `GET /l/quotafull` or `POST /l/quotafull`
-- **Controller:** `quotafullSurvey` in [survey.controller.mjs](file:///c:/Users/Himanshu/Desktop/Freelance/survey-redirector/backend/src/controllers/survey.controller.mjs)
-- **Action:** Creates a new survey entry with `status: "Quota Full"` and logs the requester's IP address.
-- **Responses:**
-  - `200 OK`: `{"message": "Survey updated successfully"}`
-  - `400 Bad Request`: Missing `uid` or `pid`.
-
-#### D. Security Terminated Callback
-- **Endpoint:** `GET /l/securityterm` or `POST /l/securityterm`
-- **Controller:** `securitytermSurvey` in [survey.controller.mjs](file:///c:/Users/Himanshu/Desktop/Freelance/survey-redirector/backend/src/controllers/survey.controller.mjs)
-- **Action:** Creates a new survey entry with `status: "Security Term"` and logs the requester's IP address.
-- **Responses:**
-  - `200 OK`: `{"message": "Survey updated successfully"}`
-  - `400 Bad Request`: Missing `uid` or `pid`.
+#### A. Redirect Entry Point
+- **Endpoint:** `GET /r/:hash?vendor_rid=<respondent_id>`
+- **Action:** Looks up the active survey matching the vendor `:hash`. Returns a 302 redirect to the frontend screener page:
+  `http://<frontend-domain>/screener/:hash?vendor_rid=<vendor_rid>`
 
 ---
 
-### 3. Dashboard Routes
-- **Base Path:** `/api/dashboard`
-- **Route Definitions:** [dashboard.routes.mjs](file:///c:/Users/Himanshu/Desktop/Freelance/survey-redirector/backend/src/routes/dashboard.routes.mjs)
-- **Access:** Protected by `authMiddleware` (Requires valid authentication cookie).
-- **Pagination parameters (for survey list endpoints):**
-  - `page` (Query param, default `1`)
-  - `limit` (Query param, default `50`)
+### 3. Demographics Screener
+- **Base Path:** `/api/screener`
+- **Route File:** [screener.routes.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/routes/screener.routes.mjs)
+- **Service:** [screener.service.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/services/screener.service.mjs)
 
-#### A. Get Survey Counts
-- **Endpoint:** `GET /api/dashboard/getcount`
-- **Controller:** `getSurveyCount`
-- **Action:** Counts documents in DB globally and per status type.
-- **Response:**
-  ```json
-  {
-    "total_entries": 125,
-    "complete_entries": 60,
-    "terminate_entries": 35,
-    "quota_full_entries": 20,
-    "security_term_entries": 10
-  }
-  ```
+#### A. Get Screener Configuration & Check Eligibility
+- **Endpoint:** `GET /api/screener/config/:hash`
+- **Action:** 
+  1. Validates survey active status and optional IP geolocation filtering (`allowedCountries`).
+  2. Evaluates existing `screener_token_<hash>` JWT cookie if present to allow qualified users to bypass screener on repeat visits.
+- **Response:** Returns `eligibilityRules` question array or qualification/rejection status.
 
-#### B. Get Recent Surveys (All statuses)
-- **Endpoint:** `GET /api/dashboard/getRecentSurveys`
-- **Controller:** `getRecentSurveys`
-- **Response:** Array of Survey documents sorted by `createdAt` descending.
-
-#### C. Get Completed Surveys
-- **Endpoint:** `GET /api/dashboard/getCompletedSurveys`
-- **Controller:** `getCompletedSurveys`
-- **Response:** Array of Survey documents where `status: "Complete"`.
-
-#### D. Get Terminated Surveys
-- **Endpoint:** `GET /api/dashboard/getTerminatedSurveys`
-- **Controller:** `getTerminatedSurveys`
-- **Response:** Array of Survey documents where `status: "Terminate"`.
-
-#### E. Get Quota Full Surveys
-- **Endpoint:** `GET /api/dashboard/getQuotaFullSurveys`
-- **Controller:** `getQuotaFullSurveys`
-- **Response:** Array of Survey documents where `status: "Quota Full"`.
-
-#### F. Get Security Terminated Surveys
-- **Endpoint:** `GET /api/dashboard/getSecurityTermSurveys`
-- **Controller:** `getSecurityTermSurveys`
-- **Response:** Array of Survey documents where `status: "Security Term"`.
-
-#### G. Remove Survey
-- **Endpoint:** `DELETE /api/dashboard/remove/:id`
-- **Controller:** `removeSurvey`
-- **Responses:**
-  - `200 OK`: Returns the deleted Survey document.
-  - `400 Bad Request`: If ID is missing.
-  - `404 Not Found`: If Survey not found.
-
-#### H. Update Survey Status
-- **Endpoint:** `PUT /api/dashboard/update/:id`
-- **Controller:** `updateSurvey`
+#### B. Submit Screener Answers
+- **Endpoint:** `POST /api/screener/submit`
 - **Request Body:**
   ```json
   {
-    "status": "Complete"
+    "hash": "abc123hash",
+    "vendor_rid": "VENDOR_RID_123",
+    "answers": {
+      "Age": "25-34",
+      "Gender": "Male"
+    }
   }
   ```
-- **Responses:**
-  - `200 OK`: Returns the updated Survey document.
-  - `400 Bad Request`: If ID or status is missing.
-  - `404 Not Found`: If Survey not found.
+- **Action:** Evaluates answers against survey rules. Creates a `Transaction` record (status: `'started'` if qualified, `'screened_out'` if failed). Sets a 30-day JWT cookie `screener_token_<hash>` and enqueues a cache rebuild job.
+
+---
+
+### 4. Survey Callback Outcomes (Legacy Bridge & Alias)
+- **Base Paths:** `/l` and `/i`
+- **Route File:** [survey.routes.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/routes/survey.routes.mjs)
+- **Controller:** [survey.controller.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/controllers/survey.controller.mjs)
+- **Access:** Public (GET / POST)
+
+#### Endpoints
+- `GET/POST /l/complete` (Alias: `/i/complete`) $\rightarrow$ Status: `completed`
+- `GET/POST /l/terminate` (Alias: `/i/terminate`) $\rightarrow$ Status: `terminate`
+- `GET/POST /l/quotafull` (Alias: `/i/quotafull`) $\rightarrow$ Status: `quota_full`
+- `GET/POST /l/securityterm` (Alias: `/i/securityterm`) $\rightarrow$ Status: `security_term`
+
+#### Common Query Parameters
+- `uid`: Transaction token / Vendor respondent ID.
+- `pid`: Project ID / Survey identifier.
+
+#### Action
+Updates the matching `Transaction` record status, enqueues vendor postback execution to `webhookQueue`, and enqueues analytics cache update to `dashboardCacheQueue`.
+
+---
+
+### 5. Survey Administration Routes
+- **Base Path:** `/api/admin/surveys`
+- **Route File:** [surveyAdmin.routes.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/routes/surveyAdmin.routes.mjs)
+- **Controller:** [surveyAdmin.controller.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/controllers/surveyAdmin.controller.mjs)
+- **Access:** Protected (`authMiddleware` + `adminMiddleware`)
+
+#### Endpoints
+- **Suppliers:**
+  - `GET /suppliers`: List suppliers.
+  - `POST /suppliers`: Create supplier (`name`, `postbackUrl`).
+  - `DELETE /suppliers/:id`: Delete supplier.
+- **Vendors:**
+  - `GET /vendors`: List vendors.
+  - `POST /vendors`: Create vendor (`name`, `completeUrl`, `terminateUrl`, `quotaFullUrl`, `securityTermUrl`).
+  - `DELETE /vendors/:id`: Delete vendor.
+- **Transactions:**
+  - `GET /transactions`: Paginated list of transactions with optional search by `transactionToken` or `vendorRid`.
+  - `DELETE /transactions/:id`: Remove transaction record and rebuild dashboard cache.
+- **Surveys:**
+  - `GET /`: List all surveys with populated supplier and vendor details.
+  - `POST /`: Create survey (`name`, `projectId`, `supplierId`, `baseSupplierUrl`, `ipFiltering`, `allowedCountries`, `eligibilityRules`, `vendorLinks`).
+  - `GET /:id`: Get survey details by ID.
+  - `PUT /:id`: Update survey configuration.
+  - `DELETE /:id`: Delete survey.
+
+---
+
+### 6. Dashboard Analytics Routes
+- **Base Path:** `/api/dashboard`
+- **Route File:** [dashboard.routes.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/routes/dashboard.routes.mjs)
+- **Controller:** [dashboard.controller.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/controllers/dashboard.controller.mjs)
+- **Access:** Protected (`authMiddleware`)
+
+#### Endpoints
+- `GET /api/dashboard/getcount`: Total and status-wise transaction counts (cached in Redis as `dashboard:stats`).
+- `GET /api/dashboard/getRecentSurveys`: Recent transactions list (cached in Redis as `dashboard:recent`).
+- `GET /api/dashboard/getCompletedSurveys`: Filter transactions where status is `completed`.
+- `GET /api/dashboard/getTerminatedSurveys`: Filter transactions where status is `terminate`.
+- `GET /api/dashboard/getQuotaFullSurveys`: Filter transactions where status is `quota_full`.
+- `GET /api/dashboard/getSecurityTermSurveys`: Filter transactions where status is `security_term`.
+- `DELETE /api/dashboard/remove/:id`: Remove transaction.
+- `PUT /api/dashboard/update/:id`: Manually update transaction status.
+
+---
+
+### 7. Mock Endpoints (End-to-End Testing)
+- **Base Path:** `/`
+- **Route File:** [mock.routes.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/routes/mock.routes.mjs)
+
+#### Endpoints
+- `GET /mock-supplier`: Simulates an upstream survey landing page with buttons for Complete, Terminate, Quota Full, and Security Term callbacks.
+- `GET /mock-vendor-callback/complete`: Simulates downstream vendor receiving a completion postback.
+- `GET /mock-vendor-callback/terminate`: Simulates vendor receiving a terminate postback.
+- `GET /mock-vendor-callback/quotafull`: Simulates vendor receiving a quota full postback.
+- `GET /mock-vendor-callback/securityterm`: Simulates vendor receiving a security term postback.
 
 ---
 
 ## Data Models
 
-### User Model (`User`)
-- **Schema Reference:** [user.mjs](file:///c:/Users/Himanshu/Desktop/Freelance/survey-redirector/backend/src/models/user.mjs)
+### 1. User Model (`User`)
+- **Schema File:** [user.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/models/user.mjs)
 - **Fields:**
   - `email` (String, required, unique)
   - `name` (String, required)
   - `otp` (String, optional)
   - `otpExpiry` (Date, optional)
   - `surveyAdmin` (Boolean, default: `false`)
-  - `createdAt` / `updatedAt` (automatic timestamps)
 
-### Survey Model (`Survey`)
-- **Schema Reference:** [survey.mjs](file:///c:/Users/Himanshu/Desktop/Freelance/survey-redirector/backend/src/models/survey.mjs)
+### 2. Survey Model (`Survey`)
+- **Schema File:** [survey.model.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/models/survey.model.mjs)
 - **Fields:**
-  - `ipAddress` (String, required)
-  - `status` (String, required, Enum: `['Security Term', 'Quota Full', 'Terminate', 'Complete']`, default: `'Terminate'`)
-  - `pid` (String, required)
-  - `uid` (String, required)
-  - `createdAt` / `updatedAt` (automatic timestamps)
+  - `name` (String, required)
+  - `projectId` (String, required)
+  - `supplierId` (ObjectId, ref: `Supplier`)
+  - `baseSupplierUrl` (String, required, contains `[identifier]` macro)
+  - `status` (Enum: `['active', 'paused', 'closed']`, default: `'active'`)
+  - `ipFiltering` (Boolean, default: `false`)
+  - `allowedCountries` (Array of Strings)
+  - `eligibilityRules` (Array of `{ question, options, acceptedAnswers }`)
+  - `vendorLinks` (Array of `{ vendorId, hash, quota }`)
+
+### 3. Transaction Model (`Transaction`)
+- **Schema File:** [transaction.model.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/models/transaction.model.mjs)
+- **Fields:**
+  - `transactionToken` (String, required, indexed)
+  - `projectId` (String, indexed)
+  - `serial` (Number, auto-incrementing per project)
+  - `surveyId` (ObjectId, ref: `Survey`)
+  - `vendorId` (ObjectId, ref: `Vendor`)
+  - `vendorRid` (String)
+  - `ipAddress` (String)
+  - `country` / `countryCode` (String)
+  - `status` (Enum: `['started', 'completed', 'screened_out', 'quota_full', 'fraud', 'terminate', 'security_term']`)
+  - `startedAt` / `completedAt` (Date)
+
+### 4. Supplier Model (`Supplier`)
+- **Schema File:** [supplier.model.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/models/supplier.model.mjs)
+- **Fields:**
+  - `name` (String, required)
+  - `postbackUrl` (String, optional)
+  - `isActive` (Boolean, default: `true`)
+
+### 5. Vendor Model (`Vendor`)
+- **Schema File:** [vendor.model.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/models/vendor.model.mjs)
+- **Fields:**
+  - `name` (String, required)
+  - `completeUrl` / `terminateUrl` / `quotaFullUrl` / `securityTermUrl` (String, optional)
+  - `isActive` (Boolean, default: `true`)
+
+---
+
+## Background Workers & Queues (BullMQ)
+
+The backend processes asynchronous jobs using **BullMQ** queues backed by Redis ([config/bullmq.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/config/bullmq.mjs)):
+
+1. **Webhook Worker (`webhookQueue`)**
+   - **File:** [webhook.worker.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/workers/webhook.worker.mjs)
+   - **Function:** Dispatches postback requests to downstream vendors when a transaction status updates. Replaces macros (`{{vendor_rid}}`, `{{status}}`) in configured URLs and fires an HTTP GET request.
+
+2. **Dashboard Cache Worker (`dashboardCacheQueue`)**
+   - **File:** [dashboardCache.worker.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/workers/dashboardCache.worker.mjs)
+   - **Function:** Asynchronously recalculates and pre-warms Redis caches (`dashboard:stats`, `dashboard:recent`, and status lists). Triggered whenever transactions are created, modified, or deleted.
+
+3. **Email Worker (`emailQueue`)**
+   - **File:** [email.worker.mjs](file:///home/himanshu/Desktop/survey-redirector/backend/src/workers/email.worker.mjs)
+   - **Function:** Handles asynchronous sending of transactional emails (e.g. login OTPs).
