@@ -34,48 +34,60 @@ function buildDateFilter(req) {
 export async function getSurveyCount(req, res) {
     try {
         const filter = buildDateFilter(req);
+        const isDefault = Object.keys(filter).length === 0;
 
         // Try reading from cache if no custom date filters are applied
-        if (Object.keys(filter).length === 0) {
+        if (isDefault) {
             const cachedData = await redisConnection.get('dashboard:stats:default');
             if (cachedData) {
                 return res.status(200).json(JSON.parse(cachedData));
             }
         }
 
-        const total_entries = await TransactionModel.countDocuments(filter);
-        const complete_entries = await TransactionModel.countDocuments({ ...filter, status: "completed" });
-        const terminate_entries = await TransactionModel.countDocuments({ ...filter, status: "terminate" });
-        const quota_full_entries = await TransactionModel.countDocuments({ ...filter, status: "quota_full" });
-        const security_term_entries = await TransactionModel.countDocuments({ ...filter, status: "security_term" });
-        const started_entries = await TransactionModel.countDocuments({ ...filter, status: "started" });
-        const screened_out_entries = await TransactionModel.countDocuments({ ...filter, status: "screened_out" });
-        const fraud_entries = await TransactionModel.countDocuments({ ...filter, status: "fraud" });
-
-        // Aggregate entries count grouped by date and status
-        const timelineData = await TransactionModel.aggregate([
-            { $match: filter },
-            {
-                $group: {
-                    _id: {
-                        date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-                        status: "$status"
-                    },
-                    count: { $sum: 1 }
-                }
-            },
-            {
-                $group: {
-                    _id: "$_id.date",
-                    statuses: {
-                        $push: {
-                            status: "$_id.status",
-                            count: "$count"
+        // Parallelize MongoDB count and aggregate queries
+        const [
+            total_entries,
+            complete_entries,
+            terminate_entries,
+            quota_full_entries,
+            security_term_entries,
+            started_entries,
+            screened_out_entries,
+            fraud_entries,
+            timelineData
+        ] = await Promise.all([
+            TransactionModel.countDocuments(filter),
+            TransactionModel.countDocuments({ ...filter, status: "completed" }),
+            TransactionModel.countDocuments({ ...filter, status: "terminate" }),
+            TransactionModel.countDocuments({ ...filter, status: "quota_full" }),
+            TransactionModel.countDocuments({ ...filter, status: "security_term" }),
+            TransactionModel.countDocuments({ ...filter, status: "started" }),
+            TransactionModel.countDocuments({ ...filter, status: "screened_out" }),
+            TransactionModel.countDocuments({ ...filter, status: "fraud" }),
+            TransactionModel.aggregate([
+                { $match: filter },
+                {
+                    $group: {
+                        _id: {
+                            date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                            status: "$status"
+                        },
+                        count: { $sum: 1 }
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$_id.date",
+                        statuses: {
+                            $push: {
+                                status: "$_id.status",
+                                count: "$count"
+                            }
                         }
                     }
-                }
-            },
-            { $sort: { _id: 1 } }
+                },
+                { $sort: { _id: 1 } }
+            ])
         ]);
 
         const timeline = timelineData.map(item => {
@@ -109,8 +121,8 @@ export async function getSurveyCount(req, res) {
             timeline
         };
 
-        // Seed the cache in the background if it was empty for a default request
-        if (Object.keys(filter).length === 0) {
+        // Trigger queue worker to rebuild and refresh the cache in the background
+        if (isDefault) {
             await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
         }
 
@@ -127,7 +139,22 @@ export async function getRecentSurveys(req, res) {
         const limit = parseInt(req.query.limit) || 50;
         const skip = (page - 1) * limit;
         const filter = buildDateFilter(req);
+        const statusQuery = req.query.status || 'All';
+        const isDefault = Object.keys(filter).length === 0 && page === 1 && statusQuery === 'All';
+
+        const cacheKey = `dashboard:recent:${page}:${limit}:${statusQuery}:${req.query.startDate || ''}:${req.query.endDate || ''}`;
         
+        // Try reading from cache first
+        const cachedData = await redisConnection.get(cacheKey);
+        if (cachedData) {
+            return res.status(200).json(JSON.parse(cachedData));
+        }
+
+        // Trigger queue worker to rebuild and refresh the cache in the background on cache miss
+        if (isDefault) {
+            await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
+        }
+
         if (req.query.status && req.query.status !== 'All') {
             let statusVal = req.query.status;
             if (statusVal === 'Complete' || statusVal === 'completed') statusVal = 'completed';
@@ -147,11 +174,24 @@ export async function getRecentSurveys(req, res) {
                 path: 'surveyId',
                 select: 'supplierId name projectId',
                 populate: { path: 'supplierId', select: 'name' }
-            });
+            })
+            .lean();
+
         return res.status(200).json(surveys);
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+async function invalidateDashboardCache() {
+    try {
+        const keys = await redisConnection.keys('dashboard:*');
+        if (keys.length > 0) {
+            await redisConnection.del(...keys);
+        }
+    } catch (err) {
+        console.error('Error clearing dashboard cache:', err);
     }
 }
 
@@ -165,6 +205,10 @@ export async function removeSurvey(req, res) {
         if (!survey) {
             return res.status(404).json({ message: "Survey not found" });
         }
+
+        await invalidateDashboardCache();
+        await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
+
         return res.status(200).json(survey);
     } catch (error) {
         console.log(error);
@@ -183,6 +227,10 @@ export async function updateSurvey(req, res) {
         if (!survey) {
             return res.status(404).json({ message: "Survey not found" });
         }
+
+        await invalidateDashboardCache();
+        await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
+
         return res.status(200).json(survey);
     } catch (error) {
         console.log(error);

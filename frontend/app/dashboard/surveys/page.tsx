@@ -71,16 +71,16 @@ export default function SurveysPage() {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6"
       >
         <div className="relative flex-1 max-w-sm w-full">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
           <Input 
             placeholder="Search surveys by name or ID..." 
-            className="pl-9 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-emerald-500 rounded-xl shadow-xs" 
+            className="h-10 pl-10 pr-4 bg-white border border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:border-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-500/20 rounded-xl shadow-2xs transition-all" 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
-        <Button onClick={handleOpenCreate} className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shrink-0 w-full sm:w-auto font-medium shadow-xs rounded-xl">
+        <Button onClick={handleOpenCreate} className="h-10 px-4.5 gap-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shrink-0 w-full sm:w-auto font-medium shadow-2xs hover:shadow-xs transition-all rounded-xl cursor-pointer">
           <PlusCircle className="h-4 w-4" />
           Create Survey
         </Button>

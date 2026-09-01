@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-dotenv.config();
-dotenv.config({ path: "../.env" });
+dotenv.config({ quiet: true });
+dotenv.config({ path: "../.env", quiet: true });
 
 const transporter = nodemailer.createTransport({
     host: "smtp.hostinger.com",

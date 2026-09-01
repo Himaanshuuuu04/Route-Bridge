@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import SurveyModel from '../models/survey.model.mjs';
 import TransactionModel from '../models/transaction.model.mjs';
 import VendorModel from '../models/vendor.model.mjs';
+import { dashboardCacheQueue } from '../config/bullmq.mjs';
 
 export const getScreenerConfig = async (hash) => {
     const survey = await SurveyModel.findOne({ 'vendorLinks.hash': hash, status: 'active' });
@@ -46,6 +47,8 @@ export const submitScreener = async ({ hash, vendor_rid, answers, ipAddress, ses
             status: 'screened_out'
         });
 
+        await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
+
         return { status: 'screened_out' };
     }
 
@@ -63,6 +66,8 @@ export const submitScreener = async ({ hash, vendor_rid, answers, ipAddress, ses
         ipAddress,
         status: 'started'
     });
+
+    await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
 
     // Step 5: Link Encoding
     const redirectUrl = survey.baseSupplierUrl.replace('[identifier]', transactionToken);

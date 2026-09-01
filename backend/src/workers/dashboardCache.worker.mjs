@@ -7,38 +7,49 @@ const dashboardCacheWorker = new Worker('dashboardCacheQueue', async (job) => {
     try {
         console.log("Rebuilding default dashboard cache...");
         const filter = {}; 
-        const total_entries = await TransactionModel.countDocuments(filter);
-        const complete_entries = await TransactionModel.countDocuments({ ...filter, status: "completed" });
-        const terminate_entries = await TransactionModel.countDocuments({ ...filter, status: "terminate" });
-        const quota_full_entries = await TransactionModel.countDocuments({ ...filter, status: "quota_full" });
-        const security_term_entries = await TransactionModel.countDocuments({ ...filter, status: "security_term" });
-        const started_entries = await TransactionModel.countDocuments({ ...filter, status: "started" });
-        const screened_out_entries = await TransactionModel.countDocuments({ ...filter, status: "screened_out" });
-        const fraud_entries = await TransactionModel.countDocuments({ ...filter, status: "fraud" });
-
-        const timelineData = await TransactionModel.aggregate([
-            { $match: filter },
-            {
-                $group: {
-                    _id: {
-                        date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-                        status: "$status"
-                    },
-                    count: { $sum: 1 }
-                }
-            },
-            {
-                $group: {
-                    _id: "$_id.date",
-                    statuses: {
-                        $push: {
-                            status: "$_id.status",
-                            count: "$count"
+        const [
+            total_entries,
+            complete_entries,
+            terminate_entries,
+            quota_full_entries,
+            security_term_entries,
+            started_entries,
+            screened_out_entries,
+            fraud_entries,
+            timelineData
+        ] = await Promise.all([
+            TransactionModel.countDocuments(filter),
+            TransactionModel.countDocuments({ ...filter, status: "completed" }),
+            TransactionModel.countDocuments({ ...filter, status: "terminate" }),
+            TransactionModel.countDocuments({ ...filter, status: "quota_full" }),
+            TransactionModel.countDocuments({ ...filter, status: "security_term" }),
+            TransactionModel.countDocuments({ ...filter, status: "started" }),
+            TransactionModel.countDocuments({ ...filter, status: "screened_out" }),
+            TransactionModel.countDocuments({ ...filter, status: "fraud" }),
+            TransactionModel.aggregate([
+                { $match: filter },
+                {
+                    $group: {
+                        _id: {
+                            date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                            status: "$status"
+                        },
+                        count: { $sum: 1 }
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$_id.date",
+                        statuses: {
+                            $push: {
+                                status: "$_id.status",
+                                count: "$count"
+                            }
                         }
                     }
-                }
-            },
-            { $sort: { _id: 1 } }
+                },
+                { $sort: { _id: 1 } }
+            ])
         ]);
 
         const timeline = timelineData.map(item => {
@@ -72,8 +83,43 @@ const dashboardCacheWorker = new Worker('dashboardCacheQueue', async (job) => {
             timeline
         };
 
-        await redisConnection.set('dashboard:stats:default', JSON.stringify(dashboardData));
-        console.log("Successfully rebuilt dashboard cache.");
+        // 1. Update stats cache
+        await redisConnection.set('dashboard:stats:default', JSON.stringify(dashboardData), 'EX', 300);
+
+        // 2. Clear old recent surveys cache keys
+        const recentKeys = await redisConnection.keys('dashboard:recent:*');
+        if (recentKeys.length > 0) {
+            await redisConnection.del(...recentKeys);
+        }
+
+        // 3. Pre-warm default recent surveys caches (page 1, limit 10 & 50)
+        const recentSurveys10 = await TransactionModel.find({})
+            .sort({ createdAt: -1 })
+            .limit(10)
+            .populate('vendorId', 'name')
+            .populate({
+                path: 'surveyId',
+                select: 'supplierId name projectId',
+                populate: { path: 'supplierId', select: 'name' }
+            })
+            .lean();
+
+        await redisConnection.set('dashboard:recent:1:10:All::', JSON.stringify(recentSurveys10), 'EX', 120);
+
+        const recentSurveys50 = await TransactionModel.find({})
+            .sort({ createdAt: -1 })
+            .limit(50)
+            .populate('vendorId', 'name')
+            .populate({
+                path: 'surveyId',
+                select: 'supplierId name projectId',
+                populate: { path: 'supplierId', select: 'name' }
+            })
+            .lean();
+
+        await redisConnection.set('dashboard:recent:1:50:All::', JSON.stringify(recentSurveys50), 'EX', 120);
+
+        console.log("Successfully rebuilt dashboard stats and recent surveys cache.");
     } catch (error) {
          console.error("Failed to rebuild dashboard cache", error);
          throw error;

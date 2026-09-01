@@ -4,6 +4,7 @@ import SupplierModel from '../models/supplier.model.mjs';
 import VendorModel from '../models/vendor.model.mjs';
 import TransactionModel from '../models/transaction.model.mjs';
 import redisConnection from '../config/redis.mjs';
+import { dashboardCacheQueue } from '../config/bullmq.mjs';
 
 // ---- Suppliers ----
 
@@ -248,6 +249,8 @@ export async function deleteTransaction(req, res) {
         const deletedTransaction = await TransactionModel.findByIdAndDelete(id);
         if (!deletedTransaction) return res.status(404).json({ message: "Transaction not found" });
         
+        await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
+
         res.status(200).json({ message: "Transaction deleted successfully", deletedTransaction });
     } catch (error) {
         console.error(error);

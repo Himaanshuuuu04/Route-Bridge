@@ -1,10 +1,13 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
-dotenv.config();
-dotenv.config({ path: "../.env" });
+dotenv.config({ quiet: true });
+dotenv.config({ path: "../.env", quiet: true });
 
 const uri = process.env.MONGODB_URI;
+
+// Log all Mongoose database calls to console
+// mongoose.set('debug', true)
 
 export default async function connectDB() {
     try {

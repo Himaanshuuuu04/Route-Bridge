@@ -33,8 +33,8 @@ const calSans = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: "SurveyRouter - Intelligent Survey Redirects & Publisher Analytics",
-    template: "%s | SurveyRouter",
+    default: "EvoGlobal Insight - Intelligent Survey Redirects & Publisher Analytics",
+    template: "%s | EvoGlobal Insight",
   },
   description: "A premium, secure survey routing and redirection platform. Seamlessly manage upstream panel URLs, configure custom screeners, prevent fraud, and view real-time publisher stats.",
   keywords: [
@@ -47,9 +47,9 @@ export const metadata: Metadata = {
     "survey callbacks",
     "fraud prevention",
   ],
-  authors: [{ name: "SurveyRouter" }],
-  creator: "SurveyRouter Team",
-  publisher: "SurveyRouter",
+  authors: [{ name: "EvoGlobal Insight" }],
+  creator: "EvoGlobal Insight Team",
+  publisher: "EvoGlobal Insight",
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
@@ -59,21 +59,21 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://dashboard.evoglobalinsight.com",
-    title: "SurveyRouter - Intelligent Survey Redirects & Publisher Analytics",
+    title: "EvoGlobal Insight - Intelligent Survey Redirects & Publisher Analytics",
     description: "Manage upstream panel URLs, custom screeners, and real-time publisher callback statistics in a single premium dashboard.",
-    siteName: "SurveyRouter",
+    siteName: "EvoGlobal Insight",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "SurveyRouter Dashboard",
+        alt: "EvoGlobal Insight Dashboard",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "SurveyRouter - Intelligent Survey Redirects & Publisher Analytics",
+    title: "EvoGlobal Insight - Intelligent Survey Redirects & Publisher Analytics",
     description: "Intelligent survey routing platform and real-time analytics dashboard.",
     images: ["/og-image.png"],
   },
@@ -91,7 +91,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${calSans.variable} h-full antialiased dark`}
+      className={`${calSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
         <StoreProvider>

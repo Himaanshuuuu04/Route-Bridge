@@ -27,8 +27,8 @@ import surveyAdminRoutes from "./routes/surveyAdmin.routes.mjs";
 import mockRoutes from "./routes/mock.routes.mjs";
 
 // Environment setup
-dotenv.config();
-dotenv.config({ path: "../.env" });
+dotenv.config({ quiet: true });
+dotenv.config({ path: "../.env", quiet: true });
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

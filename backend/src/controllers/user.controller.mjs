@@ -1,11 +1,8 @@
 import UserModel from "../models/user.mjs";
 import create_token from "../helpers/jwt.mjs";
-import dotenv from "dotenv";
 import redisConnection from "../config/redis.mjs";
 import { emailQueue } from "../config/bullmq.mjs";
 
-dotenv.config();
-dotenv.config({ path: "../.env" });
 
 export async function signIn(req, res) {
     try {
@@ -113,6 +110,9 @@ export async function deleteUser(req, res) {
             return res.status(404).json({ message: "User not found" });
         }
         
+        // Invalidate cached user profile
+        await redisConnection.del(`user:profile:${id}`);
+
         return res.status(200).json({ message: "User deleted successfully", user });
     } catch (error) {
         console.log(error);
@@ -141,10 +141,20 @@ export async function logout(req, res) {
 
 export async function getMe(req, res) {
     try {
-        const user = await UserModel.findById(req.user.id);
+        const cacheKey = `user:profile:${req.user.id}`;
+        const cachedUser = await redisConnection.get(cacheKey);
+        if (cachedUser) {
+            return res.status(200).json(JSON.parse(cachedUser));
+        }
+
+        const user = await UserModel.findById(req.user.id).lean();
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
+
+        // Cache user profile in Redis for 10 minutes (600 seconds)
+        await redisConnection.set(cacheKey, JSON.stringify(user), 'EX', 600);
+
         return res.status(200).json(user);
     } catch (error) {
         console.log(error);
@@ -177,6 +187,9 @@ export async function toggleAdminStatus(req, res) {
         user.surveyAdmin = !user.surveyAdmin;
         await user.save();
         
+        // Invalidate cached user profile
+        await redisConnection.del(`user:profile:${id}`);
+
         return res.status(200).json({ message: "User admin status updated successfully", user });
     } catch (error) {
         console.log(error);
