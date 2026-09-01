@@ -69,21 +69,21 @@ export function DashboardNavbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/5 bg-black/40 backdrop-blur-xl h-16 flex items-center justify-between px-4 sm:px-6">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-xl h-16 flex items-center justify-between px-4 sm:px-6">
       {/* Left side: Sidebar Trigger & Breadcrumb */}
       <div className="flex items-center gap-3">
         {/* Toggle button for sidebar */}
-        <SidebarTrigger className="text-zinc-400 hover:text-white hover:bg-white/5" />
+        <SidebarTrigger className="text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg" />
         
-        <div className="h-4 w-[1px] bg-white/10 hidden sm:block" />
+        <div className="h-4 w-[1px] bg-slate-200 hidden sm:block" />
         
         {/* Mobile Brand / Desktop breadcrumb */}
         <div className="flex items-center gap-2">
           {/* Mobile Only: Mini Logo icon */}
-          <div className="w-7 h-7 bg-gradient-to-br from-emerald-400 to-indigo-500 rounded-lg flex items-center justify-center sm:hidden shrink-0">
+          <div className="w-7 h-7 bg-gradient-to-br from-emerald-500 to-indigo-600 rounded-lg flex items-center justify-center sm:hidden shrink-0 shadow-xs">
             <LayoutDashboard className="w-4 h-4 text-white" />
           </div>
-          <span className="text-sm font-semibold text-zinc-300">
+          <span className="text-sm font-semibold text-slate-800">
             {getBreadcrumbs()}
           </span>
         </div>
@@ -95,38 +95,38 @@ export function DashboardNavbar() {
         <Button
           variant="ghost"
           size="icon"
-          className="h-9 w-9 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 relative"
+          className="h-9 w-9 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 relative"
         >
           <Bell className="w-4 h-4" />
           <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-500" />
         </Button>
 
         {/* Separator */}
-        <div className="h-4 w-[1px] bg-white/10" />
+        <div className="h-4 w-[1px] bg-slate-200" />
 
         {/* User Profile Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 border border-white/10">
+            <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 border border-slate-200">
               <Avatar className="h-8.5 w-8.5">
                 <AvatarImage src="" alt="User profile" />
-                <AvatarFallback className="bg-zinc-850 text-white font-semibold text-xs">
+                <AvatarFallback className="bg-slate-100 text-slate-800 font-semibold text-xs border border-slate-200">
                   {getInitials()}
                 </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56 bg-zinc-950 border-zinc-800 text-white" align="end" forceMount>
+          <DropdownMenuContent className="w-56 bg-white border-slate-200 text-slate-900 shadow-xl" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-semibold leading-none text-white">{user?.name || "Loading..."}</p>
-                <p className="text-xs leading-none text-zinc-400">{user?.email || ""}</p>
+                <p className="text-sm font-semibold leading-none text-slate-900">{user?.name || "Loading..."}</p>
+                <p className="text-xs leading-none text-slate-500">{user?.email || ""}</p>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-zinc-800" />
+            <DropdownMenuSeparator className="bg-slate-100" />
             <DropdownMenuItem 
               onClick={handleLogout}
-              className="focus:bg-red-500/10 focus:text-red-400 text-red-400 cursor-pointer gap-2"
+              className="focus:bg-rose-50 focus:text-rose-600 text-rose-600 cursor-pointer gap-2"
             >
               <LogOut className="h-4 w-4" />
               <span>Log out</span>

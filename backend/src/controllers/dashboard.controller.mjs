@@ -171,3 +171,56 @@ export async function updateSurvey(req, res) {
         res.status(500).json({ message: "Internal Server Error" });
     }
 }
+
+export async function downloadSurveysCSV(req, res) {
+    try {
+        const filter = buildDateFilter(req);
+        
+        if (req.query.status && req.query.status !== 'All') {
+            let statusVal = req.query.status;
+            if (statusVal === 'Complete' || statusVal === 'completed') statusVal = 'completed';
+            else if (statusVal === 'Terminate' || statusVal === 'terminate') statusVal = 'terminate';
+            else if (statusVal === 'Quota Full' || statusVal === 'quota_full') statusVal = 'quota_full';
+            else if (statusVal === 'Security Term' || statusVal === 'security_term') statusVal = 'security_term';
+            else if (statusVal === 'Screen Out' || statusVal === 'screened_out') statusVal = 'screened_out';
+            filter.status = statusVal;
+        }
+
+        const surveys = await TransactionModel.find(filter)
+            .sort({ createdAt: -1 })
+            .populate('vendorId', 'name')
+            .populate({
+                path: 'surveyId',
+                select: 'supplierId name projectId',
+                populate: { path: 'supplierId', select: 'name' }
+            });
+
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename="surveys_data.csv"');
+
+        const headers = ['Transaction Token', 'Project ID', 'Serial', 'Survey Name', 'Vendor Name', 'Vendor RID', 'IP Address', 'Country', 'Status', 'Started At', 'Completed At'];
+        res.write(headers.join(',') + '\n');
+
+        surveys.forEach(survey => {
+            const row = [
+                `"${survey.transactionToken || ''}"`,
+                `"${survey.projectId || ''}"`,
+                `"${survey.serial !== undefined && survey.serial !== null ? survey.serial : ''}"`,
+                `"${survey.surveyId?.name || ''}"`,
+                `"${survey.vendorId?.name || ''}"`,
+                `"${survey.vendorRid || ''}"`,
+                `"${survey.ipAddress || ''}"`,
+                `"${survey.country || ''}"`,
+                `"${survey.status || ''}"`,
+                `"${survey.startedAt ? new Date(survey.startedAt).toISOString() : ''}"`,
+                `"${survey.completedAt ? new Date(survey.completedAt).toISOString() : ''}"`
+            ];
+            res.write(row.join(',') + '\n');
+        });
+
+        res.end();
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}

@@ -21,8 +21,8 @@ interface DashboardChartsProps {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[#09090b]/95 border border-white/10 backdrop-blur-md rounded-xl p-3.5 shadow-2xl text-xs">
-        <p className="font-bold text-white mb-2">
+      <div className="bg-white/95 border border-slate-200 backdrop-blur-md rounded-xl p-3.5 shadow-xl text-xs">
+        <p className="font-bold text-slate-900 mb-2">
           {new Date(label).toLocaleDateString(undefined, { 
             weekday: 'short',
             month: 'short', 
@@ -33,14 +33,14 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         <div className="space-y-1.5">
           {payload.map((entry: any, index: number) => (
             <div key={`item-${index}`} className="flex items-center justify-between gap-6">
-              <span className="flex items-center gap-1.5 text-zinc-400">
+              <span className="flex items-center gap-1.5 text-slate-600">
                 <span 
                   className="w-2 h-2 rounded-full inline-block" 
                   style={{ backgroundColor: entry.color }} 
                 />
                 {entry.name}
               </span>
-              <span className="font-semibold text-white">{entry.value}</span>
+              <span className="font-semibold text-slate-900">{entry.value}</span>
             </div>
           ))}
         </div>
@@ -60,9 +60,9 @@ export function DashboardCharts({ counts }: DashboardChartsProps) {
       transition={{ delay: 0.3 }}
       className="w-full"
     >
-      <Card className="bg-black/40 border-white/10 backdrop-blur-xl shadow-2xl h-full">
+      <Card className="bg-white border-slate-200/80 backdrop-blur-xl shadow-sm h-full">
         <CardHeader>
-          <CardTitle className="text-xl font-bold text-white">Traffic Trends</CardTitle>
+          <CardTitle className="text-xl font-bold text-slate-900">Traffic Trends</CardTitle>
         </CardHeader>
         <CardContent className="h-[350px]">
           {chartData.length > 0 ? (
@@ -76,10 +76,10 @@ export function DashboardCharts({ counts }: DashboardChartsProps) {
                   bottom: 5,
                 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0, 0, 0, 0.06)" vertical={false} />
                 <XAxis 
                   dataKey="date" 
-                  stroke="#71717a" 
+                  stroke="#64748b" 
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
@@ -93,7 +93,7 @@ export function DashboardCharts({ counts }: DashboardChartsProps) {
                   }}
                 />
                 <YAxis 
-                  stroke="#71717a" 
+                  stroke="#64748b" 
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
@@ -109,76 +109,76 @@ export function DashboardCharts({ counts }: DashboardChartsProps) {
                   wrapperStyle={{
                     fontSize: '11px',
                     paddingTop: '20px',
-                    color: '#a1a1aa'
+                    color: '#475569'
                   }}
                 />
                 <Line
                   type="monotone"
                   dataKey="started"
                   name="Started"
-                  stroke="#3b82f6"
+                  stroke="#2563eb"
                   strokeWidth={2}
                   dot={false}
-                  activeDot={{ r: 6, stroke: '#09090b', strokeWidth: 2 }}
+                  activeDot={{ r: 6, stroke: '#ffffff', strokeWidth: 2 }}
                 />
                 <Line
                   type="monotone"
                   dataKey="completed"
                   name="Completed"
-                  stroke="#10b981"
+                  stroke="#059669"
                   strokeWidth={2}
                   dot={false}
-                  activeDot={{ r: 6, stroke: '#09090b', strokeWidth: 2 }}
+                  activeDot={{ r: 6, stroke: '#ffffff', strokeWidth: 2 }}
                 />
                 <Line
                   type="monotone"
                   dataKey="screened_out"
                   name="Screened Out"
-                  stroke="#f97316"
+                  stroke="#ea580c"
                   strokeWidth={2}
                   dot={false}
-                  activeDot={{ r: 6, stroke: '#09090b', strokeWidth: 2 }}
+                  activeDot={{ r: 6, stroke: '#ffffff', strokeWidth: 2 }}
                 />
                 <Line
                   type="monotone"
                   dataKey="quota_full"
                   name="Quota Full"
-                  stroke="#f59e0b"
+                  stroke="#d97706"
                   strokeWidth={2}
                   dot={false}
-                  activeDot={{ r: 6, stroke: '#09090b', strokeWidth: 2 }}
+                  activeDot={{ r: 6, stroke: '#ffffff', strokeWidth: 2 }}
                 />
                 <Line
                   type="monotone"
                   dataKey="fraud"
                   name="Fraud"
-                  stroke="#ec4899"
+                  stroke="#db2777"
                   strokeWidth={2}
                   dot={false}
-                  activeDot={{ r: 6, stroke: '#09090b', strokeWidth: 2 }}
+                  activeDot={{ r: 6, stroke: '#ffffff', strokeWidth: 2 }}
                 />
                 <Line
                   type="monotone"
                   dataKey="terminate"
                   name="Terminate"
-                  stroke="#ef4444"
+                  stroke="#dc2626"
                   strokeWidth={2}
                   dot={false}
-                  activeDot={{ r: 6, stroke: '#09090b', strokeWidth: 2 }}
+                  activeDot={{ r: 6, stroke: '#ffffff', strokeWidth: 2 }}
                 />
                 <Line
                   type="monotone"
                   dataKey="security_term"
                   name="Security Term"
-                  stroke="#6366f1"
+                  stroke="#4f46e5"
                   strokeWidth={2}
                   dot={false}
-                  activeDot={{ r: 6, stroke: '#09090b', strokeWidth: 2 }}
+                  activeDot={{ r: 6, stroke: '#ffffff', strokeWidth: 2 }}
                 />
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-full text-zinc-500 font-medium">No data available</div>
+            <div className="flex items-center justify-center h-full text-slate-400 font-medium">No data available</div>
           )}
         </CardContent>
       </Card>

@@ -10,7 +10,12 @@ dotenv.config({ path: '../.env' });
 const agenda = new Agenda({
     db: {
         address: process.env.MONGODB_URI,
-        collection: 'agendaJobs'
+        collection: 'agendaJobs',
+        options: {
+            tls: true,
+            tlsCertificateKeyFile: './mongo.pem',
+            authMechanism: 'MONGODB-X509'
+        }
     }
 });
 

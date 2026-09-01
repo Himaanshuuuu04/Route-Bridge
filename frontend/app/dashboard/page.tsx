@@ -59,6 +59,8 @@ export default function DashboardPage() {
     }
   };
 
+
+
   const getTotalItemsForTab = () => {
     if (!counts) return 0;
     if (currentTab === "All") return counts.total_entries;
@@ -101,19 +103,19 @@ export default function DashboardPage() {
 
       {/* Stats Grid */}
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-10"
+        className="grid grid-cols-2 sm:grid-cols-4 2xl:grid-cols-8 gap-3 sm:gap-4 mb-6"
       >
-        <StatCard title="Total Clicks" value={counts?.total_entries || 0} icon={<BarChart3 className="w-5 h-5 text-zinc-400" />} loading={!counts} delay={0.1} />
-        <StatCard title="Started" value={counts?.started_entries || 0} icon={<Activity className="w-5 h-5 text-blue-400" />} loading={!counts} delay={0.2} />
-        <StatCard title="Completed" value={counts?.complete_entries || 0} icon={<CheckCircle2 className="w-5 h-5 text-emerald-400" />} loading={!counts} delay={0.3} />
-        <StatCard title="Screened Out" value={counts?.screened_out_entries || 0} icon={<XCircle className="w-5 h-5 text-orange-400" />} loading={!counts} delay={0.4} />
-        <StatCard title="Quota Full" value={counts?.quota_full_entries || 0} icon={<AlertTriangle className="w-5 h-5 text-amber-400" />} loading={!counts} delay={0.5} />
-        <StatCard title="Terminated" value={counts?.terminate_entries || 0} icon={<XCircle className="w-5 h-5 text-red-400" />} loading={!counts} delay={0.6} />
-        <StatCard title="Security Term" value={counts?.security_term_entries || 0} icon={<Activity className="w-5 h-5 text-indigo-400" />} loading={!counts} delay={0.7} />
-        <StatCard title="Fraud" value={counts?.fraud_entries || 0} icon={<XCircle className="w-5 h-5 text-pink-400" />} loading={!counts} delay={0.8} />
+        <StatCard title="Total Clicks" value={counts?.total_entries || 0} icon={<BarChart3 className="w-4 h-4 text-slate-500" />} loading={!counts} delay={0.05} />
+        <StatCard title="Started" value={counts?.started_entries || 0} icon={<Activity className="w-4 h-4 text-blue-600" />} loading={!counts} delay={0.1} />
+        <StatCard title="Completed" value={counts?.complete_entries || 0} icon={<CheckCircle2 className="w-4 h-4 text-emerald-600" />} loading={!counts} delay={0.15} />
+        <StatCard title="Screened Out" value={counts?.screened_out_entries || 0} icon={<XCircle className="w-4 h-4 text-amber-600" />} loading={!counts} delay={0.2} />
+        <StatCard title="Quota Full" value={counts?.quota_full_entries || 0} icon={<AlertTriangle className="w-4 h-4 text-orange-600" />} loading={!counts} delay={0.25} />
+        <StatCard title="Terminated" value={counts?.terminate_entries || 0} icon={<XCircle className="w-4 h-4 text-rose-600" />} loading={!counts} delay={0.3} />
+        <StatCard title="Security Term" value={counts?.security_term_entries || 0} icon={<Activity className="w-4 h-4 text-indigo-600" />} loading={!counts} delay={0.35} />
+        <StatCard title="Fraud" value={counts?.fraud_entries || 0} icon={<XCircle className="w-4 h-4 text-pink-600" />} loading={!counts} delay={0.4} />
       </motion.div>
 
       <div className="flex flex-col gap-8">

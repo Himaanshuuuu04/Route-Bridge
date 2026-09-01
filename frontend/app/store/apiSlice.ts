@@ -69,6 +69,7 @@ export interface EligibilityRule {
 
 export interface Survey {
   _id: string;
+  serial?: number;
   uid?: string;
   pid?: string;
   name?: string;
@@ -104,6 +105,7 @@ export interface Vendor {
 
 export interface Transaction {
   _id: string;
+  serial?: number;
   transactionToken: string;
   surveyId: { _id: string; name: string; projectId: string };
   vendorId: { _id: string; name: string };

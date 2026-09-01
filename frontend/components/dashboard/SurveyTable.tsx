@@ -29,14 +29,14 @@ function getFlagEmoji(countryCode?: string) {
 
 const getStatusBadge = (status: string) => {
   switch (status) {
-    case 'started': return <Badge className="bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border-blue-500/20">Started</Badge>;
-    case 'completed': return <Badge className="bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border-emerald-500/20">Completed</Badge>;
-    case 'screened_out': return <Badge className="bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 border-orange-500/20">Screened Out</Badge>;
-    case 'quota_full': return <Badge className="bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border-amber-500/20">Quota Full</Badge>;
-    case 'fraud': return <Badge className="bg-pink-500/10 text-pink-400 hover:bg-pink-500/20 border-pink-500/20">Fraud</Badge>;
-    case 'terminate': return <Badge className="bg-red-500/10 text-red-400 hover:bg-red-500/20 border-red-500/20">Terminate</Badge>;
-    case 'security_term': return <Badge className="bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 border-indigo-500/20">Security</Badge>;
-    default: return <Badge variant="secondary" className="bg-white/10 text-white">{status}</Badge>;
+    case 'started': return <Badge className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200 font-medium">Started</Badge>;
+    case 'completed': return <Badge className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200 font-medium">Completed</Badge>;
+    case 'screened_out': return <Badge className="bg-amber-50 text-amber-700 hover:bg-amber-100 border-amber-200 font-medium">Screened Out</Badge>;
+    case 'quota_full': return <Badge className="bg-orange-50 text-orange-700 hover:bg-orange-100 border-orange-200 font-medium">Quota Full</Badge>;
+    case 'fraud': return <Badge className="bg-pink-50 text-pink-700 hover:bg-pink-100 border-pink-200 font-medium">Fraud</Badge>;
+    case 'terminate': return <Badge className="bg-rose-50 text-rose-700 hover:bg-rose-100 border-rose-200 font-medium">Terminate</Badge>;
+    case 'security_term': return <Badge className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border-indigo-200 font-medium">Security</Badge>;
+    default: return <Badge variant="secondary" className="bg-slate-100 text-slate-800 border-slate-200 font-medium">{status}</Badge>;
   }
 };
 
@@ -70,21 +70,21 @@ export function SurveyTable({
   const totalPages = Math.ceil(totalItems / limit) || 1;
 
   return (
-    <Card className="bg-black/40 border-white/10 backdrop-blur-xl shadow-2xl flex flex-col h-full w-full overflow-hidden">
-      <CardHeader className="pb-6 border-b border-white/5">
+    <Card className="bg-white border-slate-200/80 backdrop-blur-xl shadow-sm flex flex-col h-full w-full overflow-hidden">
+      <CardHeader className="pb-6 border-b border-slate-100">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <CardTitle className="text-xl font-bold text-white">Surveys Data</CardTitle>
+          <CardTitle className="text-xl font-bold text-slate-900">Surveys Data</CardTitle>
           {currentTab && onTabChange && (
             <Tabs value={currentTab} onValueChange={onTabChange} className="w-full sm:w-auto overflow-hidden">
-              <TabsList className="bg-white/5 border border-white/10 p-1 rounded-full text-zinc-400 flex overflow-x-auto w-full sm:w-auto flex-nowrap max-w-full scrollbar-none">
-                <TabsTrigger value="All" className="rounded-full data-[state=active]:bg-white/10 data-[state=active]:text-white transition-all shrink-0">All</TabsTrigger>
-                <TabsTrigger value="started" className="rounded-full data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400 transition-all shrink-0">Started</TabsTrigger>
-                <TabsTrigger value="completed" className="rounded-full data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400 transition-all shrink-0">Complete</TabsTrigger>
-                <TabsTrigger value="screened_out" className="rounded-full data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-400 transition-all shrink-0">Screen Out</TabsTrigger>
-                <TabsTrigger value="quota_full" className="rounded-full data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 transition-all shrink-0">Quota</TabsTrigger>
-                <TabsTrigger value="fraud" className="rounded-full data-[state=active]:bg-pink-500/20 data-[state=active]:text-pink-400 transition-all shrink-0">Fraud</TabsTrigger>
-                <TabsTrigger value="terminate" className="rounded-full data-[state=active]:bg-red-500/20 data-[state=active]:text-red-400 transition-all shrink-0">Terminate</TabsTrigger>
-                <TabsTrigger value="security_term" className="rounded-full data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-400 transition-all shrink-0">Security</TabsTrigger>
+              <TabsList className="bg-slate-100/80 border border-slate-200/80 p-1 rounded-full text-slate-600 flex overflow-x-auto w-full sm:w-auto flex-nowrap max-w-full scrollbar-none">
+                <TabsTrigger value="All" className="rounded-full data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs transition-all shrink-0 font-medium">All</TabsTrigger>
+                <TabsTrigger value="started" className="rounded-full data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all shrink-0 font-medium">Started</TabsTrigger>
+                <TabsTrigger value="completed" className="rounded-full data-[state=active]:bg-emerald-600 data-[state=active]:text-white transition-all shrink-0 font-medium">Complete</TabsTrigger>
+                <TabsTrigger value="screened_out" className="rounded-full data-[state=active]:bg-amber-600 data-[state=active]:text-white transition-all shrink-0 font-medium">Screen Out</TabsTrigger>
+                <TabsTrigger value="quota_full" className="rounded-full data-[state=active]:bg-orange-600 data-[state=active]:text-white transition-all shrink-0 font-medium">Quota</TabsTrigger>
+                <TabsTrigger value="fraud" className="rounded-full data-[state=active]:bg-pink-600 data-[state=active]:text-white transition-all shrink-0 font-medium">Fraud</TabsTrigger>
+                <TabsTrigger value="terminate" className="rounded-full data-[state=active]:bg-rose-600 data-[state=active]:text-white transition-all shrink-0 font-medium">Terminate</TabsTrigger>
+                <TabsTrigger value="security_term" className="rounded-full data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all shrink-0 font-medium">Security</TabsTrigger>
               </TabsList>
             </Tabs>
           )}
@@ -94,38 +94,40 @@ export function SurveyTable({
         {/* Desktop Table View */}
         <div className="hidden md:block overflow-x-auto">
           <Table>
-            <TableHeader className="bg-white/[0.02]">
-              <TableRow className="border-white/5 hover:bg-transparent">
-                <TableHead className="pl-6 text-zinc-400 font-semibold py-4">Project ID</TableHead>
-                <TableHead className="text-zinc-400 font-semibold">User ID</TableHead>
-                <TableHead className="hidden lg:table-cell text-zinc-400 font-semibold">Supplier</TableHead>
-                <TableHead className="hidden lg:table-cell text-zinc-400 font-semibold">Vendor</TableHead>
-                <TableHead className="hidden sm:table-cell text-zinc-400 font-semibold">IP Address</TableHead>
-                <TableHead className="hidden md:table-cell text-zinc-400 font-semibold">Country</TableHead>
-                <TableHead className="text-zinc-400 font-semibold">Status</TableHead>
-                <TableHead className="hidden md:table-cell text-zinc-400 font-semibold">Date</TableHead>
-                <TableHead className="text-right pr-6 text-zinc-400 font-semibold">Actions</TableHead>
+            <TableHeader className="bg-slate-50/80">
+              <TableRow className="border-slate-100 hover:bg-transparent">
+                <TableHead className="pl-6 text-slate-600 font-semibold py-4">Project ID</TableHead>
+                <TableHead className="text-slate-600 font-semibold">S.No</TableHead>
+                <TableHead className="text-slate-600 font-semibold">User ID</TableHead>
+                <TableHead className="hidden lg:table-cell text-slate-600 font-semibold">Supplier</TableHead>
+                <TableHead className="hidden lg:table-cell text-slate-600 font-semibold">Vendor</TableHead>
+                <TableHead className="hidden sm:table-cell text-slate-600 font-semibold">IP Address</TableHead>
+                <TableHead className="hidden md:table-cell text-slate-600 font-semibold">Country</TableHead>
+                <TableHead className="text-slate-600 font-semibold">Status</TableHead>
+                <TableHead className="hidden md:table-cell text-slate-600 font-semibold">Date</TableHead>
+                <TableHead className="text-right pr-6 text-slate-600 font-semibold">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               <AnimatePresence mode="popLayout">
                 {isLoading ? (
                   Array.from({ length: limit }).map((_, i) => (
-                    <TableRow key={`skeleton-${i}`} className="border-white/5">
-                      <TableCell className="pl-6"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-28 bg-white/5 rounded-md" /></TableCell>
-                      <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
-                      <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
-                      <TableCell className="hidden sm:table-cell"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
-                      <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-20 bg-white/5 rounded-md" /></TableCell>
-                      <TableCell><Skeleton className="h-6 w-24 rounded-full bg-white/5" /></TableCell>
-                      <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-24 bg-white/5 rounded-md" /></TableCell>
-                      <TableCell className="text-right pr-6"><Skeleton className="h-8 w-8 ml-auto rounded-md bg-white/5" /></TableCell>
+                    <TableRow key={`skeleton-${i}`} className="border-slate-100">
+                      <TableCell className="pl-6"><Skeleton className="h-5 w-24 bg-slate-200 rounded-md" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-12 bg-slate-200 rounded-md" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-28 bg-slate-200 rounded-md" /></TableCell>
+                      <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-24 bg-slate-200 rounded-md" /></TableCell>
+                      <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-24 bg-slate-200 rounded-md" /></TableCell>
+                      <TableCell className="hidden sm:table-cell"><Skeleton className="h-5 w-24 bg-slate-200 rounded-md" /></TableCell>
+                      <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-20 bg-slate-200 rounded-md" /></TableCell>
+                      <TableCell><Skeleton className="h-6 w-24 rounded-full bg-slate-200" /></TableCell>
+                      <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-24 bg-slate-200 rounded-md" /></TableCell>
+                      <TableCell className="text-right pr-6"><Skeleton className="h-8 w-8 ml-auto rounded-md bg-slate-200" /></TableCell>
                     </TableRow>
                   ))
                 ) : surveys.length === 0 ? (
                   <TableRow className="border-none">
-                    <TableCell colSpan={9} className="h-48 text-center text-zinc-500 font-medium">
+                    <TableCell colSpan={10} className="h-48 text-center text-slate-400 font-medium">
                       No surveys found in this category.
                     </TableCell>
                   </TableRow>
@@ -137,56 +139,57 @@ export function SurveyTable({
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className="group transition-colors border-white/5 hover:bg-white/[0.02]"
+                      className="group transition-colors border-slate-100 hover:bg-slate-50/80"
                     >
-                      <TableCell className="pl-6 font-bold text-white">{survey.projectId || survey.surveyId?.projectId || survey.pid}</TableCell>
-                      <TableCell className="text-zinc-400 font-medium max-w-[160px] truncate">{survey.transactionToken || survey.uid}</TableCell>
-                      <TableCell className="hidden lg:table-cell text-zinc-300">{survey.surveyId?.supplierId?.name || "N/A"}</TableCell>
-                      <TableCell className="hidden lg:table-cell text-zinc-300">{survey.vendorId?.name || "N/A"}</TableCell>
+                      <TableCell className="pl-6 font-bold text-slate-900">{survey.projectId || survey.surveyId?.projectId || survey.pid}</TableCell>
+                      <TableCell className="text-slate-500 font-medium">{survey.serial !== undefined ? survey.serial : '-'}</TableCell>
+                      <TableCell className="text-slate-600 font-medium max-w-[160px] truncate">{survey.transactionToken || survey.uid}</TableCell>
+                      <TableCell className="hidden lg:table-cell text-slate-700">{survey.surveyId?.supplierId?.name || "N/A"}</TableCell>
+                      <TableCell className="hidden lg:table-cell text-slate-700">{survey.vendorId?.name || "N/A"}</TableCell>
                       <TableCell className="hidden sm:table-cell">
-                        <span className="font-mono text-xs text-zinc-500 bg-black/50 px-2 py-1 rounded inline-block">
+                        <span className="font-mono text-xs text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded inline-block">
                           {survey.ipAddress}
                         </span>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        <span className="text-zinc-300 font-medium flex items-center gap-1.5">
+                        <span className="text-slate-700 font-medium flex items-center gap-1.5">
                           <span className="text-lg">{getFlagEmoji(survey.countryCode)}</span>
                           <span>{survey.country || 'Unknown'}</span>
                         </span>
                       </TableCell>
                       <TableCell>{getStatusBadge(survey.status)}</TableCell>
-                      <TableCell className="hidden md:table-cell text-zinc-400 font-medium">
+                      <TableCell className="hidden md:table-cell text-slate-500 font-medium">
                         {new Date(survey.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                       </TableCell>
                       <TableCell className="text-right pr-6">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors rounded-lg">
                               <MoreHorizontal className="h-4 w-4" />
                               <span className="sr-only">Open menu</span>
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-[180px] bg-[#09090b] border-white/10 text-white shadow-xl">
-                            <DropdownMenuLabel className="text-zinc-400">Actions</DropdownMenuLabel>
-                            <DropdownMenuSeparator className="bg-white/10" />
+                          <DropdownMenuContent align="end" className="w-[180px] bg-white border-slate-200 text-slate-900 shadow-xl">
+                            <DropdownMenuLabel className="text-slate-400">Actions</DropdownMenuLabel>
+                            <DropdownMenuSeparator className="bg-slate-100" />
                             <DropdownMenuSub>
-                              <DropdownMenuSubTrigger className="focus:bg-white/10 focus:text-white">
-                                <Settings className="mr-2 h-4 w-4 text-zinc-400" />
+                              <DropdownMenuSubTrigger className="focus:bg-slate-100 focus:text-slate-900">
+                                <Settings className="mr-2 h-4 w-4 text-slate-500" />
                                 <span>Update Status</span>
                               </DropdownMenuSubTrigger>
                               <DropdownMenuPortal>
-                                <DropdownMenuSubContent className="bg-[#09090b] border-white/10 text-white shadow-xl">
-                                  <DropdownMenuItem className="focus:bg-blue-500/20 focus:text-blue-400" onClick={() => onUpdateStatus(survey._id, "started")}>Started</DropdownMenuItem>
-                                  <DropdownMenuItem className="focus:bg-emerald-500/20 focus:text-emerald-400" onClick={() => onUpdateStatus(survey._id, "completed")}>Complete</DropdownMenuItem>
-                                  <DropdownMenuItem className="focus:bg-orange-500/20 focus:text-orange-400" onClick={() => onUpdateStatus(survey._id, "screened_out")}>Screen Out</DropdownMenuItem>
-                                  <DropdownMenuItem className="focus:bg-amber-500/20 focus:text-amber-400" onClick={() => onUpdateStatus(survey._id, "quota_full")}>Quota Full</DropdownMenuItem>
-                                  <DropdownMenuItem className="focus:bg-pink-500/20 focus:text-pink-400" onClick={() => onUpdateStatus(survey._id, "fraud")}>Fraud</DropdownMenuItem>
-                                  <DropdownMenuItem className="focus:bg-red-500/20 focus:text-red-400" onClick={() => onUpdateStatus(survey._id, "terminate")}>Terminate</DropdownMenuItem>
-                                  <DropdownMenuItem className="focus:bg-indigo-500/20 focus:text-indigo-400" onClick={() => onUpdateStatus(survey._id, "security_term")}>Security Term</DropdownMenuItem>
+                                <DropdownMenuSubContent className="bg-white border-slate-200 text-slate-900 shadow-xl">
+                                  <DropdownMenuItem className="focus:bg-blue-50 focus:text-blue-600" onClick={() => onUpdateStatus(survey._id, "started")}>Started</DropdownMenuItem>
+                                  <DropdownMenuItem className="focus:bg-emerald-50 focus:text-emerald-600" onClick={() => onUpdateStatus(survey._id, "completed")}>Complete</DropdownMenuItem>
+                                  <DropdownMenuItem className="focus:bg-amber-50 focus:text-amber-600" onClick={() => onUpdateStatus(survey._id, "screened_out")}>Screen Out</DropdownMenuItem>
+                                  <DropdownMenuItem className="focus:bg-orange-50 focus:text-orange-600" onClick={() => onUpdateStatus(survey._id, "quota_full")}>Quota Full</DropdownMenuItem>
+                                  <DropdownMenuItem className="focus:bg-pink-50 focus:text-pink-600" onClick={() => onUpdateStatus(survey._id, "fraud")}>Fraud</DropdownMenuItem>
+                                  <DropdownMenuItem className="focus:bg-rose-50 focus:text-rose-600" onClick={() => onUpdateStatus(survey._id, "terminate")}>Terminate</DropdownMenuItem>
+                                  <DropdownMenuItem className="focus:bg-indigo-50 focus:text-indigo-600" onClick={() => onUpdateStatus(survey._id, "security_term")}>Security Term</DropdownMenuItem>
                                 </DropdownMenuSubContent>
                               </DropdownMenuPortal>
                             </DropdownMenuSub>
-                            <DropdownMenuItem className="text-red-400 focus:bg-red-500/10 focus:text-red-400" onClick={() => onDelete(survey._id)}>
+                            <DropdownMenuItem className="text-rose-600 focus:bg-rose-50 focus:text-rose-600" onClick={() => onDelete(survey._id)}>
                               <Trash2 className="mr-2 h-4 w-4" />
                               <span>Delete</span>
                             </DropdownMenuItem>
@@ -202,23 +205,23 @@ export function SurveyTable({
         </div>
 
         {/* Mobile Cards List View */}
-        <div className="md:hidden divide-y divide-white/5">
+        <div className="md:hidden divide-y divide-slate-100">
           <AnimatePresence mode="popLayout">
             {isLoading ? (
               Array.from({ length: 4 }).map((_, i) => (
-                <div key={`skeleton-card-${i}`} className="p-4 space-y-3 bg-black/10">
+                <div key={`skeleton-card-${i}`} className="p-4 space-y-3 bg-slate-50/50">
                   <div className="flex items-center justify-between">
-                    <Skeleton className="h-5 w-24 bg-white/5" />
-                    <Skeleton className="h-6 w-16 bg-white/5 rounded-full" />
+                    <Skeleton className="h-5 w-24 bg-slate-200" />
+                    <Skeleton className="h-6 w-16 bg-slate-200 rounded-full" />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <Skeleton className="h-4 w-20 bg-white/5" />
-                    <Skeleton className="h-4 w-20 bg-white/5" />
+                    <Skeleton className="h-4 w-20 bg-slate-200" />
+                    <Skeleton className="h-4 w-20 bg-slate-200" />
                   </div>
                 </div>
               ))
             ) : surveys.length === 0 ? (
-              <div className="p-8 text-center text-zinc-500 font-medium">
+              <div className="p-8 text-center text-slate-400 font-medium">
                 No surveys found in this category.
               </div>
             ) : (
@@ -229,11 +232,11 @@ export function SurveyTable({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="p-4 space-y-3 hover:bg-white/[0.01] transition-colors"
+                  className="p-4 space-y-3 hover:bg-slate-50/80 transition-colors"
                 >
                   {/* Card Title Header */}
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-bold text-white text-sm truncate">
+                    <span className="font-bold text-slate-900 text-sm truncate">
                       {survey.projectId || survey.surveyId?.projectId || survey.pid}
                     </span>
                     <div className="flex items-center gap-2 shrink-0">
@@ -242,32 +245,32 @@ export function SurveyTable({
                       {/* Actions Dropdown */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors">
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors rounded-lg">
                             <MoreHorizontal className="h-4 w-4" />
                             <span className="sr-only">Open menu</span>
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-[180px] bg-[#09090b] border-white/10 text-white shadow-xl">
-                          <DropdownMenuLabel className="text-zinc-400">Actions</DropdownMenuLabel>
-                          <DropdownMenuSeparator className="bg-white/10" />
+                        <DropdownMenuContent align="end" className="w-[180px] bg-white border-slate-200 text-slate-900 shadow-xl">
+                          <DropdownMenuLabel className="text-slate-400">Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator className="bg-slate-100" />
                           <DropdownMenuSub>
-                            <DropdownMenuSubTrigger className="focus:bg-white/10 focus:text-white">
-                              <Settings className="mr-2 h-4 w-4 text-zinc-400" />
+                            <DropdownMenuSubTrigger className="focus:bg-slate-100 focus:text-slate-900">
+                              <Settings className="mr-2 h-4 w-4 text-slate-500" />
                               <span>Update Status</span>
                             </DropdownMenuSubTrigger>
                             <DropdownMenuPortal>
-                              <DropdownMenuSubContent className="bg-[#09090b] border-white/10 text-white shadow-xl">
-                                <DropdownMenuItem className="focus:bg-blue-500/20 focus:text-blue-400" onClick={() => onUpdateStatus(survey._id, "started")}>Started</DropdownMenuItem>
-                                <DropdownMenuItem className="focus:bg-emerald-500/20 focus:text-emerald-400" onClick={() => onUpdateStatus(survey._id, "completed")}>Complete</DropdownMenuItem>
-                                <DropdownMenuItem className="focus:bg-orange-500/20 focus:text-orange-400" onClick={() => onUpdateStatus(survey._id, "screened_out")}>Screen Out</DropdownMenuItem>
-                                <DropdownMenuItem className="focus:bg-amber-500/20 focus:text-amber-400" onClick={() => onUpdateStatus(survey._id, "quota_full")}>Quota Full</DropdownMenuItem>
-                                <DropdownMenuItem className="focus:bg-pink-500/20 focus:text-pink-400" onClick={() => onUpdateStatus(survey._id, "fraud")}>Fraud</DropdownMenuItem>
-                                <DropdownMenuItem className="focus:bg-red-500/20 focus:text-red-400" onClick={() => onUpdateStatus(survey._id, "terminate")}>Terminate</DropdownMenuItem>
-                                <DropdownMenuItem className="focus:bg-indigo-500/20 focus:text-indigo-400" onClick={() => onUpdateStatus(survey._id, "security_term")}>Security Term</DropdownMenuItem>
+                              <DropdownMenuSubContent className="bg-white border-slate-200 text-slate-900 shadow-xl">
+                                <DropdownMenuItem className="focus:bg-blue-50 focus:text-blue-600" onClick={() => onUpdateStatus(survey._id, "started")}>Started</DropdownMenuItem>
+                                <DropdownMenuItem className="focus:bg-emerald-50 focus:text-emerald-600" onClick={() => onUpdateStatus(survey._id, "completed")}>Complete</DropdownMenuItem>
+                                <DropdownMenuItem className="focus:bg-amber-50 focus:text-amber-600" onClick={() => onUpdateStatus(survey._id, "screened_out")}>Screen Out</DropdownMenuItem>
+                                <DropdownMenuItem className="focus:bg-orange-50 focus:text-orange-600" onClick={() => onUpdateStatus(survey._id, "quota_full")}>Quota Full</DropdownMenuItem>
+                                <DropdownMenuItem className="focus:bg-pink-50 focus:text-pink-600" onClick={() => onUpdateStatus(survey._id, "fraud")}>Fraud</DropdownMenuItem>
+                                <DropdownMenuItem className="focus:bg-rose-50 focus:text-rose-600" onClick={() => onUpdateStatus(survey._id, "terminate")}>Terminate</DropdownMenuItem>
+                                <DropdownMenuItem className="focus:bg-indigo-50 focus:text-indigo-600" onClick={() => onUpdateStatus(survey._id, "security_term")}>Security Term</DropdownMenuItem>
                               </DropdownMenuSubContent>
                             </DropdownMenuPortal>
                           </DropdownMenuSub>
-                          <DropdownMenuItem className="text-red-400 focus:bg-red-500/10 focus:text-red-400" onClick={() => onDelete(survey._id)}>
+                          <DropdownMenuItem className="text-rose-600 focus:bg-rose-50 focus:text-rose-600" onClick={() => onDelete(survey._id)}>
                             <Trash2 className="mr-2 h-4 w-4" />
                             <span>Delete</span>
                           </DropdownMenuItem>
@@ -277,35 +280,41 @@ export function SurveyTable({
                   </div>
 
                   {/* Card Details Grid */}
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-3.5 text-xs border-t border-white/5 pt-3">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-3.5 text-xs border-t border-slate-100 pt-3">
                     <div>
-                      <span className="text-zinc-500 block text-[9px] uppercase font-bold tracking-wider mb-0.5">User ID</span>
-                      <span className="text-zinc-300 font-medium truncate block max-w-[130px]" title={survey.transactionToken || survey.uid}>
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">S.No</span>
+                      <span className="text-slate-700 font-medium block">
+                        {survey.serial !== undefined ? survey.serial : '-'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">User ID</span>
+                      <span className="text-slate-700 font-medium truncate block max-w-[130px]" title={survey.transactionToken || survey.uid}>
                         {survey.transactionToken || survey.uid}
                       </span>
                     </div>
                     <div>
-                      <span className="text-zinc-500 block text-[9px] uppercase font-bold tracking-wider mb-0.5">IP Address</span>
-                      <span className="font-mono text-zinc-400">{survey.ipAddress || "N/A"}</span>
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">IP Address</span>
+                      <span className="font-mono text-slate-600">{survey.ipAddress || "N/A"}</span>
                     </div>
                     <div>
-                      <span className="text-zinc-500 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Supplier</span>
-                      <span className="text-zinc-300 truncate block max-w-[130px]">{survey.surveyId?.supplierId?.name || "N/A"}</span>
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Supplier</span>
+                      <span className="text-slate-700 truncate block max-w-[130px]">{survey.surveyId?.supplierId?.name || "N/A"}</span>
                     </div>
                     <div>
-                      <span className="text-zinc-500 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Vendor</span>
-                      <span className="text-zinc-300 truncate block max-w-[130px]">{survey.vendorId?.name || "N/A"}</span>
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Vendor</span>
+                      <span className="text-slate-700 truncate block max-w-[130px]">{survey.vendorId?.name || "N/A"}</span>
                     </div>
                     <div>
-                      <span className="text-zinc-500 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Country</span>
-                      <span className="text-zinc-300 flex items-center gap-1.5">
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Country</span>
+                      <span className="text-slate-700 flex items-center gap-1.5">
                         <span className="text-base leading-none">{getFlagEmoji(survey.countryCode)}</span>
                         <span className="truncate">{survey.country || "Unknown"}</span>
                       </span>
                     </div>
                     <div>
-                      <span className="text-zinc-500 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Date</span>
-                      <span className="text-zinc-400">
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Date</span>
+                      <span className="text-slate-600">
                         {new Date(survey.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
                       </span>
                     </div>
@@ -318,16 +327,16 @@ export function SurveyTable({
       </CardContent>
       
       {/* Pagination Controls */}
-      <div className="border-t border-white/5 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 bg-black/20 rounded-b-xl">
-        <div className="flex items-center gap-3 text-sm text-zinc-400 font-medium">
+      <div className="border-t border-slate-100 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/80 rounded-b-xl">
+        <div className="flex items-center gap-3 text-sm text-slate-600 font-medium">
           <p>Rows per page</p>
           <Select value={limit.toString()} onValueChange={(val) => onLimitChange(Number(val))}>
-            <SelectTrigger className="h-8 w-[70px] bg-white/5 border-white/10 text-white">
+            <SelectTrigger className="h-8 w-[70px] bg-white border border-slate-200 text-slate-800 hover:bg-slate-50 shadow-2xs">
               <SelectValue placeholder={limit} />
             </SelectTrigger>
-            <SelectContent side="top" className="bg-[#09090b] border-white/10 text-white">
+            <SelectContent side="top" className="bg-white border border-slate-200 text-slate-900 shadow-xl">
               {[10, 20, 50, 100].map((pageSize) => (
-                <SelectItem key={pageSize} value={pageSize.toString()} className="focus:bg-white/10 focus:text-white">
+                <SelectItem key={pageSize} value={pageSize.toString()} className="focus:bg-slate-100 focus:text-slate-900 cursor-pointer">
                   {pageSize}
                 </SelectItem>
               ))}
@@ -340,7 +349,7 @@ export function SurveyTable({
             <PaginationItem>
               <PaginationPrevious 
                 onClick={() => onPageChange(Math.max(1, page - 1))} 
-                className={`text-zinc-400 hover:text-white hover:bg-white/10 ${page === 1 ? "pointer-events-none opacity-30" : "cursor-pointer"}`}
+                className={`text-slate-600 hover:text-slate-900 hover:bg-slate-100 ${page === 1 ? "pointer-events-none opacity-40 text-slate-400" : "cursor-pointer"}`}
               />
             </PaginationItem>
             
@@ -356,7 +365,11 @@ export function SurveyTable({
                     <PaginationLink 
                       isActive={page === pageNum}
                       onClick={() => onPageChange(pageNum)}
-                      className={`cursor-pointer ${page === pageNum ? "bg-white text-black hover:bg-zinc-200" : "text-zinc-400 hover:bg-white/10 hover:text-white border-transparent"}`}
+                      className={`cursor-pointer rounded-lg border h-8 w-8 text-xs font-semibold transition-all ${
+                        page === pageNum 
+                          ? "bg-slate-900 text-white border-slate-900 hover:bg-slate-800 shadow-2xs" 
+                          : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100 hover:text-slate-900"
+                      }`}
                     >
                       {pageNum}
                     </PaginationLink>
@@ -368,21 +381,21 @@ export function SurveyTable({
             
             {totalPages > 5 && page < totalPages - 2 && (
                <PaginationItem>
-                 <PaginationEllipsis className="text-zinc-400" />
+                 <PaginationEllipsis className="text-slate-400" />
                </PaginationItem>
             )}
 
             <PaginationItem>
               <PaginationNext 
                 onClick={() => onPageChange(Math.min(totalPages, page + 1))}
-                className={`text-zinc-400 hover:text-white hover:bg-white/10 ${page === totalPages ? "pointer-events-none opacity-30" : "cursor-pointer"}`}
+                className={`text-slate-600 hover:text-slate-900 hover:bg-slate-100 ${page === totalPages ? "pointer-events-none opacity-40 text-slate-400" : "cursor-pointer"}`}
               />
             </PaginationItem>
           </PaginationContent>
         </Pagination>
         
-        <div className="text-sm text-zinc-500 font-medium sm:w-[130px] text-right">
-          Page <span className="text-white">{page}</span> of {totalPages}
+        <div className="text-sm text-slate-500 font-medium sm:w-[130px] text-right">
+          Page <span className="text-slate-900 font-bold">{page}</span> of {totalPages}
         </div>
       </div>
     </Card>

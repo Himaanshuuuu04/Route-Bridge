@@ -34,26 +34,26 @@ export function StatCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.5 }}
-      whileHover={{ y: -5 }}
+      transition={{ delay, duration: 0.3 }}
+      whileHover={{ y: -3 }}
       className="h-full"
     >
       <CardWrapper>
-        <Card className="bg-black/40 border-white/10 backdrop-blur-xl shadow-lg hover:shadow-emerald-500/10 hover:border-white/20 transition-all duration-300 h-full flex flex-col justify-between">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-semibold text-zinc-400">{title}</CardTitle>
-            {icon && <div className="p-2 bg-white/5 rounded-xl border border-white/5 flex items-center justify-center shrink-0">{icon}</div>}
-          </CardHeader>
-          <CardContent className="pt-2">
+        <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs hover:shadow-sm hover:border-slate-300 transition-all duration-200 h-full flex flex-col justify-between">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-semibold text-slate-500 truncate" title={title}>{title}</span>
+            {icon && <div className="p-1.5 bg-slate-100/80 rounded-lg border border-slate-200/60 flex items-center justify-center shrink-0">{icon}</div>}
+          </div>
+          <div className="mt-2">
             {loading ? (
-              <Skeleton className="h-8 w-20 bg-white/10 rounded-md" />
+              <Skeleton className="h-6 w-16 bg-slate-200 rounded-md" />
             ) : (
-              <div className="text-4xl font-black tracking-tight text-white mt-1">{value.toLocaleString()}</div>
+              <div className="text-2xl font-extrabold tracking-tight text-slate-900">{value.toLocaleString()}</div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </CardWrapper>
     </motion.div>
   );

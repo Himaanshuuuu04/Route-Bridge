@@ -27,7 +27,8 @@ import {
   BarChart3,
   Settings,
   ClipboardList,
-  ArrowRightLeft
+  ArrowRightLeft,
+  Download
 } from "lucide-react";
 
 export function DashboardSidebar() {
@@ -51,27 +52,29 @@ export function DashboardSidebar() {
 
   const navItems = [
     { name: "Overview", href: "/dashboard", icon: <LayoutDashboard className="mr-2 h-4 w-4" /> },
-    { name: "All Surveys", href: "/dashboard/all", icon: <BarChart3 className="mr-2 h-4 w-4 text-zinc-400" /> },
-    { name: "Completed", href: "/dashboard/completed", icon: <CheckCircle2 className="mr-2 h-4 w-4 text-emerald-400" /> },
-    { name: "Terminated", href: "/dashboard/terminated", icon: <XCircle className="mr-2 h-4 w-4 text-red-400" /> },
-    { name: "Quota Full", href: "/dashboard/quota", icon: <AlertTriangle className="mr-2 h-4 w-4 text-amber-400" /> },
-    { name: "Security Term", href: "/dashboard/security", icon: <Activity className="mr-2 h-4 w-4 text-indigo-400" /> },
+   
+    { name: "All Surveys", href: "/dashboard/all", icon: <BarChart3 className="mr-2 h-4 w-4 text-slate-500" /> },
+    { name: "Completed", href: "/dashboard/completed", icon: <CheckCircle2 className="mr-2 h-4 w-4 text-emerald-600" /> },
+    { name: "Terminated", href: "/dashboard/terminated", icon: <XCircle className="mr-2 h-4 w-4 text-rose-500" /> },
+    { name: "Quota Full", href: "/dashboard/quota", icon: <AlertTriangle className="mr-2 h-4 w-4 text-amber-500" /> },
+    { name: "Security Term", href: "/dashboard/security", icon: <Activity className="mr-2 h-4 w-4 text-indigo-500" /> },
+     { name: "Download Data", href: "/dashboard/download", icon: <Download className="mr-2 h-4 w-4 text-blue-600" /> },
   ];
 
   const adminItems = [
-    { name: "Manage Surveys", href: "/dashboard/surveys", icon: <ClipboardList className="mr-2 h-4 w-4 text-purple-400" /> },
-    { name: "Manage Users", href: "/dashboard/users", icon: <Settings className="mr-2 h-4 w-4 text-emerald-400" /> },
+    { name: "Manage Surveys", href: "/dashboard/surveys", icon: <ClipboardList className="mr-2 h-4 w-4 text-purple-600" /> },
+    { name: "Manage Users", href: "/dashboard/users", icon: <Settings className="mr-2 h-4 w-4 text-emerald-600" /> },
   ];
 
   return (
-    <Sidebar collapsible="icon" variant="inset" className="bg-black/50 border-r border-white/5 backdrop-blur-xl">
+    <Sidebar collapsible="icon" variant="inset" className="bg-white/80 border-r border-slate-200/80 backdrop-blur-xl text-slate-800">
       <SidebarHeader>
         <div className="flex items-center gap-3 p-4 justify-center">
-          <div className="w-10 h-10 flex items-center justify-center  shrink-0">
-            <img src="/logo.webp" alt="logo" className="w-8 h-8 text-white" />
+          <div className="w-10 h-10 flex items-center justify-center shrink-0">
+            <img src="/logo.webp" alt="logo" className="w-8 h-8" />
           </div>
           {!isCollapsed && (
-            <h1 className="text-md font-bold tracking-tight text-white animate-in fade-in duration-200">Evo Global Insight</h1>
+            <h1 className="text-md font-bold tracking-tight text-slate-900 animate-in fade-in duration-200">Evo Global Insight</h1>
           )}
         </div>
       </SidebarHeader>
@@ -85,10 +88,10 @@ export function DashboardSidebar() {
                   isActive={pathname === item.href} 
                   tooltip={item.name} 
                   className={cn(
-                    "font-medium transition-all duration-200",
+                    "font-medium transition-all duration-200 rounded-xl",
                     pathname === item.href 
-                      ? "bg-white/10 text-white hover:bg-white/20 hover:text-white font-semibold" 
-                      : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                      ? "bg-slate-900 text-white hover:bg-slate-800 hover:text-white font-semibold shadow-xs" 
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                   )}
                 >
                   <Link href={item.href}>
@@ -104,7 +107,7 @@ export function DashboardSidebar() {
         {!isUserLoading && user?.surveyAdmin && (
           <SidebarGroup>
             {!isCollapsed && (
-              <div className="px-4 py-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1 mt-2 animate-in fade-in duration-200">
+              <div className="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1 mt-2 animate-in fade-in duration-200">
                 Administration
               </div>
             )}
@@ -116,10 +119,10 @@ export function DashboardSidebar() {
                     isActive={pathname === item.href || pathname.startsWith(`${item.href}/`)} 
                     tooltip={item.name} 
                     className={cn(
-                      "font-medium transition-all duration-200",
+                      "font-medium transition-all duration-200 rounded-xl",
                       pathname === item.href || pathname.startsWith(`${item.href}/`)
-                        ? "bg-white/10 text-white hover:bg-white/20 hover:text-white font-semibold" 
-                        : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                        ? "bg-slate-900 text-white hover:bg-slate-800 hover:text-white font-semibold shadow-xs" 
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                     )}
                   >
                     <Link href={item.href}>
@@ -139,7 +142,7 @@ export function DashboardSidebar() {
               <SidebarMenuButton 
                 onClick={handleLogout}
                 tooltip="Sign out"
-                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors font-medium"
+                className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 transition-colors font-medium rounded-xl"
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Sign out</span>
