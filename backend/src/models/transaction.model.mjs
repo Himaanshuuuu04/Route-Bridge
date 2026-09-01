@@ -20,23 +20,16 @@ const transactionSchema = new Schema({
     completedAt: { type: Date }
 }, { timestamps: true });
 
-transactionSchema.pre('save', async function (next) {
+transactionSchema.pre('save', async function () {
     if (this.isNew) {
-        try {
-            if (this.projectId) {
-                const lastTx = await this.constructor.findOne({ projectId: this.projectId })
-                    .sort({ serial: -1 })
-                    .exec();
-                this.serial = lastTx && lastTx.serial !== undefined ? lastTx.serial + 1 : 0;
-            } else {
-                this.serial = 0;
-            }
-            next();
-        } catch (err) {
-            next(err);
+        if (this.projectId) {
+            const lastTx = await this.constructor.findOne({ projectId: this.projectId })
+                .sort({ serial: -1 })
+                .exec();
+            this.serial = lastTx && lastTx.serial !== undefined ? lastTx.serial + 1 : 0;
+        } else {
+            this.serial = 0;
         }
-    } else {
-        next();
     }
 });
 

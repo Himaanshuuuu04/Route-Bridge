@@ -1,7 +1,8 @@
 import UserModel from "../models/user.mjs";
 import create_token from "../helpers/jwt.mjs";
-import dotenv from "dotenv"
-import { sendMail } from "../helpers/sender.mjs";
+import dotenv from "dotenv";
+import redisConnection from "../config/redis.mjs";
+import { emailQueue } from "../config/bullmq.mjs";
 
 dotenv.config();
 dotenv.config({ path: "../.env" });
@@ -17,13 +18,17 @@ export async function signIn(req, res) {
             return res.status(404).json({ message: "User not found, please sign up first" });
         }
         const otp = Math.floor(100000 + Math.random() * 900000);
-        // update user with otp and otpExpiry
-        await UserModel.updateOne({ email: email }, { otp: otp, otpExpiry: new Date(Date.now() + 10 * 60 * 1000) });
-        // send otp to user
-        await sendMail(email, user.name, otp);
+        console.log(otp);
+
+        // Store OTP in Redis with 10-minute expiry (600 seconds)
+        await redisConnection.set(`otp:${email}`, String(otp), 'EX', 600);
+
+        // Enqueue email job for async processing
+        await emailQueue.add('sendOtp', 
+            { email, name: user.name, otp }, 
+            { attempts: 3, backoff: { type: 'exponential', delay: 2000 } }
+        );
         return res.status(200).json({ message: "OTP sent successfully" });
-
-
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Internal Server Error" });
@@ -32,7 +37,6 @@ export async function signIn(req, res) {
 
 export async function verifyOtp(req, res) {
     try {
-    
         const email = req.body.email;
         const otp = req.body.otp;
         if (!email || !otp) {
@@ -42,13 +46,18 @@ export async function verifyOtp(req, res) {
         if (!user) {
             return res.status(404).json({ message: "User not found, please sign up first" });
         }
-        if (user.otp !== otp) {
+
+        const cachedOtp = await redisConnection.get(`otp:${email}`);
+        if (!cachedOtp) {
+            return res.status(401).json({ message: "OTP expired or invalid" });
+        }
+        if (cachedOtp !== String(otp)) {
             return res.status(401).json({ message: "Invalid OTP" });
         }
-        if (user.otpExpiry < new Date(Date.now())) {
-            return res.status(401).json({ message: "OTP expired" });
-        }
-        await UserModel.updateOne({ email: email }, { otp: null, otpExpiry: null });
+
+        // OTP is valid, remove it from Redis
+        await redisConnection.del(`otp:${email}`);
+
         const token = await create_token(user._id, user.email);
         const isProd = process.env.NODE_ENV === "production" || (req.get("origin") && req.get("origin").startsWith("https"));
         const cookieOptions = {
@@ -62,13 +71,11 @@ export async function verifyOtp(req, res) {
         }
         res.cookie("token", token, cookieOptions);
         return res.status(200).json({ message: "OTP verified successfully" });
-
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Internal Server Error" });
     }
 }
-
 
 export async function addUser(req, res) {
     try {
@@ -134,7 +141,7 @@ export async function logout(req, res) {
 
 export async function getMe(req, res) {
     try {
-        const user = await UserModel.findById(req.user.id).select("-otp -otpExpiry");
+        const user = await UserModel.findById(req.user.id);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -147,7 +154,7 @@ export async function getMe(req, res) {
 
 export async function getUsers(req, res) {
     try {
-        const users = await UserModel.find().select("-otp -otpExpiry").sort({ createdAt: -1 });
+        const users = await UserModel.find().sort({ createdAt: -1 });
         return res.status(200).json(users);
     } catch (error) {
         console.log(error);

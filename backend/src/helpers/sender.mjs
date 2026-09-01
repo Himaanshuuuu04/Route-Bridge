@@ -223,3 +223,31 @@ This is an automated security email. Please do not reply.
         }
     }
 }
+
+export async function sendErrorNotificationMail(workerName, job, err) {
+    const adminEmail = process.env.ADMIN_EMAIL || "xdev.himanshu@gmail.com";
+    try {
+        const mailOptions = {
+            from: process.env.EMAIL_HOSTINGER_USER,
+            to: adminEmail,
+            subject: `🚨 [Alert] Worker Job Failed: ${workerName}`,
+            html: `
+                <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+                    <h2 style="color: #d9534f;">Job Execution Failed in Worker</h2>
+                    <p><strong>Worker:</strong> ${workerName}</p>
+                    <p><strong>Job ID:</strong> ${job?.id || 'N/A'}</p>
+                    <p><strong>Job Name:</strong> ${job?.name || 'N/A'}</p>
+                    <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+                    <h3>Error Stack / Details:</h3>
+                    <pre style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; overflow-x: auto;">${err?.stack || err?.message || err}</pre>
+                    <h3>Job Payload:</h3>
+                    <pre style="background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto;">${JSON.stringify(job?.data || {}, null, 2)}</pre>
+                </div>
+            `,
+        };
+        await transporter.sendMail(mailOptions);
+        console.log(`Error notification email sent to admin (${adminEmail}) for worker ${workerName}`);
+    } catch (notificationErr) {
+        console.error("Failed to send error notification email to admin:", notificationErr.message);
+    }
+}

@@ -46,10 +46,7 @@ app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "../public")));
 
 // Initialize Database Connection
-connectDB().then(() => {
-  console.log("MongoDB Connected");
-});
-
+connectDB()
 // Health check route
 app.get("/health", (req, res) => {
   res.send("OK");
