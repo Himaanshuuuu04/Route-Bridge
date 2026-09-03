@@ -47,11 +47,13 @@ export default function DownloadDataPage() {
           queryParams += `&endDate=${localEnd.toISOString()}`;
         }
       }
-      if (uid) {
-        queryParams += `&uid=${encodeURIComponent(uid)}`;
+      const trimmedUid = uid.trim();
+      if (trimmedUid) {
+        queryParams += `&uid=${encodeURIComponent(trimmedUid)}`;
       }
-      if (pid) {
-        queryParams += `&pid=${encodeURIComponent(pid)}`;
+      const trimmedPid = pid.trim();
+      if (trimmedPid) {
+        queryParams += `&pid=${encodeURIComponent(trimmedPid)}`;
       }
 
 

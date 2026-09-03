@@ -253,15 +253,21 @@ export async function downloadSurveysCSV(req, res) {
         }
         
         if (req.query.uid) {
+            const uidTrimmed = req.query.uid.trim();
+            req.query.uid = uidTrimmed;
             filter.$or = [
                 { transactionToken: { $regex: req.query.uid, $options: 'i' } },
-                { vendorRid: { $regex: req.query.uid, $options: 'i' } }
+                { vendorRid: { $regex: req.query.uid, $options: 'i' } },
+                { uid: { $regex: req.query.uid, $options: 'i' } }
             ];
         }
 
         if (req.query.pid) {
+            const pidTrimmed = req.query.pid.trim();
+            req.query.pid = pidTrimmed;
             filter.projectId = { $regex: req.query.pid, $options: 'i' };
         }
+
         const surveys = await TransactionModel.find(filter)
             .sort({ createdAt: -1 })
             .populate('vendorId', 'name')
@@ -279,8 +285,8 @@ export async function downloadSurveysCSV(req, res) {
 
         surveys.forEach(survey => {
             const row = [
-                `"${survey.transactionToken || ''}"`,
-                `"${survey.projectId || ''}"`,
+                `"${survey.transactionToken || survey.uid || ''}"`,
+                `"${survey.projectId || survey.pid || ''}"`,
                 `"${survey.serial !== undefined && survey.serial !== null ? survey.serial : ''}"`,
                 `"${survey.surveyId?.name || ''}"`,
                 `"${survey.vendorId?.name || ''}"`,
