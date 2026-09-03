@@ -1,5 +1,59 @@
 import axios from 'axios';
 
+export function getClientIp(req) {
+    const cfConnectingIp = req.headers['cf-connecting-ip'];
+    const trueClientIp = req.headers['true-client-ip'];
+    const xRealIp = req.headers['x-real-ip'];
+    const xForwardedFor = req.headers['x-forwarded-for'];
+    const reqIp = req.ip;
+    const remoteAddress = req.socket?.remoteAddress;
+
+    console.log(`[IP Extraction Debug] Headers:`, {
+        'cf-connecting-ip': cfConnectingIp,
+        'true-client-ip': trueClientIp,
+        'cf-ipcountry': req.headers['cf-ipcountry'],
+        'x-real-ip': xRealIp,
+        'x-forwarded-for': xForwardedFor,
+        'req.ip': reqIp,
+        'remoteAddress': remoteAddress
+    });
+
+    let resolvedIp = cfConnectingIp || trueClientIp || xRealIp;
+
+    if (!resolvedIp && xForwardedFor) {
+        resolvedIp = xForwardedFor.split(',')[0].trim();
+    }
+
+    if (!resolvedIp) {
+        resolvedIp = reqIp || remoteAddress || '';
+    }
+
+    if (resolvedIp.startsWith('::ffff:')) {
+        resolvedIp = resolvedIp.substring(7);
+    }
+
+    console.log(`[IP Extraction Debug] Selected Client IP: "${resolvedIp}"`);
+    return resolvedIp.trim();
+}
+
+export async function getCountryFromRequest(req) {
+    const ip = getClientIp(req);
+
+    // If behind Cloudflare, cf-ipcountry is provided directly by Cloudflare edge
+    const cfCountry = req.headers['cf-ipcountry'];
+    if (cfCountry && typeof cfCountry === 'string' && cfCountry.length === 2 && cfCountry !== 'XX' && cfCountry !== 'T1') {
+        const countryCode = cfCountry.trim().toUpperCase();
+        console.log(`[GeoIP Debug] Using Cloudflare cf-ipcountry header: "${countryCode}" for IP "${ip}"`);
+        return {
+            country: countryCode,
+            countryCode: countryCode,
+            source: 'cloudflare'
+        };
+    }
+
+    return await getCountryFromIp(ip);
+}
+
 export async function getCountryFromIp(ip) {
     console.log(`[GeoIP Debug] Incoming IP: "${ip}"`);
 

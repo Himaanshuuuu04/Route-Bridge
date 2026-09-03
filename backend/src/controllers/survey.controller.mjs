@@ -1,7 +1,7 @@
 import TransactionModel from "../models/transaction.model.mjs";
 import SurveyModel from "../models/survey.model.mjs";
 import { webhookQueue, dashboardCacheQueue } from "../config/bullmq.mjs";
-import { getCountryFromIp } from "../helpers/ip.mjs";
+import { getCountryFromIp, getCountryFromRequest, getClientIp } from "../helpers/ip.mjs";
 import { renderSurveyTemplate } from "../helpers/template.mjs";
 
 async function handleRegisteredProject(uid, pid, ip, geo, mappedStatus, transaction) {
@@ -72,12 +72,8 @@ async function processLegacyBridge(status, req, res) {
             return res.status(400).send("Bad Request: uid and pid are required");
         }
         
-        let ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.ip || req.socket.remoteAddress || '';
-        if (ip.includes(',')) {
-            ip = ip.split(',')[0].trim();
-        }
-        
-        const geo = await getCountryFromIp(ip);
+        const ip = getClientIp(req);
+        const geo = await getCountryFromRequest(req);
 
         // Bridge Action (Merged)
         let mappedStatus = 'completed';

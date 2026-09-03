@@ -1,10 +1,10 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler';
-import crypto from 'crypto'; // Not strictly needed but keeping it safe if used later
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { getScreenerConfig, submitScreener } from '../services/screener.service.mjs';
 import SurveyModel from '../models/survey.model.mjs';
-import { getCountryFromIp } from '../helpers/ip.mjs';
+import { getCountryFromIp, getCountryFromRequest, getClientIp } from '../helpers/ip.mjs';
 
 const router = express.Router();
 
@@ -19,16 +19,16 @@ router.get('/config/:hash', asyncHandler(async (req, res) => {
 
     // IP Filtering Check
     if (survey.ipFiltering) {
-        let ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        if (ipAddress && ipAddress.includes(',')) {
-            ipAddress = ipAddress.split(',')[0].trim();
-        }
-        
-        const geo = await getCountryFromIp(ipAddress);
-        const allowed = survey.allowedCountries || [];
-        
+        const geo = await getCountryFromRequest(req);
+        const allowed = (survey.allowedCountries || []).map(c => c.trim().toUpperCase());
+        const userCountryCode = (geo.countryCode || '').trim().toUpperCase();
+        const userCountry = (geo.country || '').trim().toUpperCase();
+
+        const isAllowed = allowed.includes(userCountryCode) || allowed.includes(userCountry);
+        console.log(`[Screener IP Filter] Allowed: ${JSON.stringify(allowed)} | Detected: ${userCountryCode} (${userCountry}) | Match: ${isAllowed}`);
+
         // Match country code
-        if (!allowed.includes(geo.countryCode)) {
+        if (!isAllowed) {
             return res.json({
                 status: 'rejected',
                 message: 'Sorry, your region is not eligible for this survey.'
@@ -122,12 +122,9 @@ router.post('/submit', asyncHandler(async (req, res) => {
         }
     }
 
-    // IP and session could be pulled from req
-    let ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-    if (ipAddress && ipAddress.includes(',')) {
-        ipAddress = ipAddress.split(',')[0].trim();
-    }
-    console.log('[Screener API] Extracted IP Address:', ipAddress);
+    // IP and session extracted from request
+    const ipAddress = getClientIp(req);
+    console.log('[Screener Submit] Extracted Client IP:', ipAddress);
     const sessionFingerprint = req.cookies?.sessionId || 'unknown';
 
     try {
