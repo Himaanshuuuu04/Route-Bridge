@@ -251,7 +251,17 @@ export async function downloadSurveysCSV(req, res) {
             else if (statusVal === 'Screen Out' || statusVal === 'screened_out') statusVal = 'screened_out';
             filter.status = statusVal;
         }
+        
+        if (req.query.uid) {
+            filter.$or = [
+                { transactionToken: { $regex: req.query.uid, $options: 'i' } },
+                { vendorRid: { $regex: req.query.uid, $options: 'i' } }
+            ];
+        }
 
+        if (req.query.pid) {
+            filter.projectId = { $regex: req.query.pid, $options: 'i' };
+        }
         const surveys = await TransactionModel.find(filter)
             .sort({ createdAt: -1 })
             .populate('vendorId', 'name')

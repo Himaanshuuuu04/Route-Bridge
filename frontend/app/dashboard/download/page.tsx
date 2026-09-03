@@ -28,6 +28,8 @@ export default function DownloadDataPage() {
   const [endDate, setEndDate] = useState("");
   const [status, setStatus] = useState("All");
   const [isDownloading, setIsDownloading] = useState(false);
+  const [uid, setUid] = useState("");
+  const [pid, setPid] = useState("");
 
   const handleDownloadCSV = async () => {
     try {
@@ -45,6 +47,13 @@ export default function DownloadDataPage() {
           queryParams += `&endDate=${localEnd.toISOString()}`;
         }
       }
+      if (uid) {
+        queryParams += `&uid=${encodeURIComponent(uid)}`;
+      }
+      if (pid) {
+        queryParams += `&pid=${encodeURIComponent(pid)}`;
+      }
+
 
       const response = await axios({
         url: `${API_URL}/api/dashboard/download${queryParams}`,
@@ -104,6 +113,27 @@ export default function DownloadDataPage() {
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
               </select>
+            </div>
+              <div className="space-y-4">
+              <h2 className="text-lg font-semibold text-slate-800">3. Filter by UID (Optional)</h2>
+              <input
+                type="text"
+                placeholder="Enter Transaction Token or Vendor RID..."
+                value={uid}
+                onChange={(e) => setUid(e.target.value)}
+                className="w-full md:max-w-md bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 font-medium"
+              />
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold text-slate-800">4. Filter by PID (Optional)</h2>
+              <input
+                type="text"
+                placeholder="Enter Project ID..."
+                value={pid}
+                onChange={(e) => setPid(e.target.value)}
+                className="w-full md:max-w-md bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 font-medium"
+              />
             </div>
 
             <div className="pt-6 border-t border-slate-100">
