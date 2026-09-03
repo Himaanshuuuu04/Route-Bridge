@@ -25,7 +25,6 @@ router.get('/config/:hash', asyncHandler(async (req, res) => {
         const userCountry = (geo.country || '').trim().toUpperCase();
 
         const isAllowed = allowed.includes(userCountryCode) || allowed.includes(userCountry);
-        console.log(`[Screener IP Filter] Allowed: ${JSON.stringify(allowed)} | Detected: ${userCountryCode} (${userCountry}) | Match: ${isAllowed}`);
 
         // Match country code
         if (!isAllowed) {
@@ -124,7 +123,6 @@ router.post('/submit', asyncHandler(async (req, res) => {
 
     // IP and session extracted from request
     const ipAddress = getClientIp(req);
-    console.log('[Screener Submit] Extracted Client IP:', ipAddress);
     const sessionFingerprint = req.cookies?.sessionId || 'unknown';
 
     try {
