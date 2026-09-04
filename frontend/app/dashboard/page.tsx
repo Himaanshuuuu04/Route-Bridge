@@ -66,6 +66,14 @@ export default function DashboardPage() {
     refetchSurveys();
   };
 
+  React.useEffect(() => {
+    const onRefresh = () => {
+      handleRefresh();
+    };
+    window.addEventListener("dashboard:refresh", onRefresh);
+    return () => window.removeEventListener("dashboard:refresh", onRefresh);
+  }, [refetchCounts, refetchSurveys]);
+
   const handleDelete = async (id: string) => {
     try {
       await deleteSurvey(id).unwrap();

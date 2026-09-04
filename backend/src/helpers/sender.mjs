@@ -18,187 +18,120 @@ export async function sendMail(email, name, otp) {
         const mailOptions = {
             from: process.env.EMAIL_HOSTINGER_USER,
             to: email,
-            subject: `OTP is ${otp} - EvoGlobalInsight`,
+            subject: `${otp} is your verification code - EvoGlobal Insight`,
             html: `
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Verification Code</title>
+  <!--[if mso]>
+  <style type="text/css">
+    body, table, td {font-family: Arial, Helvetica, sans-serif !important;}
+  </style>
+  <![endif]-->
 </head>
-<body style="margin:0;padding:0;background:#f4f7fb;font-family:Arial,Helvetica,sans-serif;">
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; color: #0f172a;">
+  <!-- Preheader preview text -->
+  <div style="display: none; font-size: 1px; color: #f8fafc; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
+    Your one-time verification code is ${otp}. Valid for 10 minutes.
+  </div>
 
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f7fb;padding:40px 0;">
-<tr>
-<td align="center">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; padding: 48px 16px;">
+    <tr>
+      <td align="center">
+        <!-- Main Wrapper Container -->
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 480px; width: 100%;">
+          
+          <!-- Brand Header -->
+          <tr>
+            <td align="center" style="padding-bottom: 24px;">
+              <span style="font-size: 19px; font-weight: 700; color: #0f172a; letter-spacing: -0.3px;">EvoGlobal Insight</span>
+            </td>
+          </tr>
 
-<table width="600" cellpadding="0" cellspacing="0"
-style="background:#ffffff;border-radius:16px;overflow:hidden;
-box-shadow:0 8px 30px rgba(0,0,0,0.08);">
+          <!-- Main Card -->
+          <tr>
+            <td style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 4px 10px -4px rgba(15, 23, 42, 0.02); padding: 36px 32px;">
+              
+              <!-- Card Header -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td>
+                    <!-- Pill Badge -->
+                    <table border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 14px;">
+                      <tr>
+                        <td style="background-color: #eff6ff; border: 1px solid #dbeafe; padding: 4px 12px; border-radius: 9999px;">
+                          <span style="font-size: 11px; font-weight: 700; color: #1d4ed8; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Sign-In Verification
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
 
-<!-- Header -->
-<tr>
-<td style="
-background:linear-gradient(135deg,#0f172a,#1e293b);
-padding:40px 30px;
-text-align:center;
-">
-<h1 style="
-margin:0;
-color:#ffffff;
-font-size:30px;
-font-weight:700;
-letter-spacing:0.5px;
-">
-Evo Global Insight
-</h1>
+                    <h1 style="margin: 0 0 8px 0; font-size: 22px; font-weight: 700; color: #0f172a; letter-spacing: -0.4px;">
+                      Verification Code
+                    </h1>
+                    <p style="margin: 0 0 24px 0; font-size: 14.5px; color: #64748b; line-height: 1.55;">
+                      Hello <strong>${name || 'there'}</strong>, use the verification code below to securely sign in to your EvoGlobal Insight dashboard.
+                    </p>
+                  </td>
+                </tr>
+              </table>
 
-<p style="
-margin-top:10px;
-color:#cbd5e1;
-font-size:14px;
-">
-Secure Dashboard Access
-</p>
-</td>
-</tr>
+              <!-- OTP Display Box -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; margin: 0 0 24px 0; text-align: center;">
+                <tr>
+                  <td style="padding: 24px 16px;">
+                    <div style="font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px;">
+                      One-Time Passcode
+                    </div>
+                    <div style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: 38px; font-weight: 700; color: #0f172a; letter-spacing: 8px; margin-left: 8px; line-height: 1.1;">
+                      ${otp}
+                    </div>
+                    <div style="margin-top: 14px;">
+                      <span style="display: inline-block; background-color: #fef3c7; color: #92400e; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 9999px;">
+                        Expires in 10 minutes
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              </table>
 
-<!-- Content -->
-<tr>
-<td style="padding:40px 35px;">
+              <!-- Security Note -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px solid #f1f5f9; border-radius: 12px;">
+                <tr>
+                  <td style="padding: 14px 16px;">
+                    <p style="margin: 0; font-size: 12.5px; color: #64748b; line-height: 1.55;">
+                      <strong style="color: #334155;">Security Note:</strong> If you did not request this code, you can safely ignore this email. Never share this code with anyone; staff will never ask for it.
+                    </p>
+                  </td>
+                </tr>
+              </table>
 
-<h2 style="
-margin:0 0 20px 0;
-color:#0f172a;
-font-size:24px;
-">
-Verify Your Sign-In
-</h2>
+            </td>
+          </tr>
 
-<p style="
-font-size:16px;
-line-height:1.7;
-color:#475569;
-margin-bottom:25px;
-">
-Hello <strong>${name}</strong>,
-</p>
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding: 28px 16px 0 16px;">
+              <p style="margin: 0 0 6px 0; font-size: 12px; color: #94a3b8; font-weight: 500;">
+                © ${new Date().getFullYear()} EvoGlobal Insight. All rights reserved.
+              </p>
+              <p style="margin: 0; font-size: 11px; color: #cbd5e1;">
+                Automated security transmission • Do not reply
+              </p>
+            </td>
+          </tr>
 
-<p style="
-font-size:16px;
-line-height:1.7;
-color:#475569;
-margin-bottom:30px;
-">
-We received a request to sign in to your
-<strong>Evo Global Insight Dashboard</strong>.
-
-Use the verification code below to continue:
-</p>
-
-<!-- OTP Box -->
-<div style="
-background:#f8fafc;
-border:2px dashed #2563eb;
-border-radius:12px;
-padding:30px;
-text-align:center;
-margin:30px 0;
-">
-
-<p style="
-margin:0 0 10px 0;
-font-size:14px;
-letter-spacing:1px;
-color:#64748b;
-text-transform:uppercase;
-">
-One-Time Password
-</p>
-
-<p style="
-margin:0;
-font-size:42px;
-font-weight:700;
-letter-spacing:8px;
-color:#2563eb;
-">
-${otp}
-</p>
-
-</div>
-
-<p style="
-font-size:15px;
-color:#64748b;
-line-height:1.7;
-">
-This verification code will expire in
-<strong>10 minutes</strong>.
-For your security, never share this code with anyone.
-</p>
-
-<!-- Security Notice -->
-<div style="
-background:#eff6ff;
-border-left:4px solid #2563eb;
-padding:16px;
-margin-top:30px;
-border-radius:6px;
-">
-
-<p style="
-margin:0;
-font-size:14px;
-line-height:1.6;
-color:#1e3a8a;
-">
-If you did not request this login, you can safely ignore this email.
-No changes will be made to your account.
-</p>
-
-</div>
-
-</td>
-</tr>
-
-<!-- Footer -->
-<tr>
-<td style="
-background:#f8fafc;
-padding:25px;
-text-align:center;
-border-top:1px solid #e2e8f0;
-">
-
-<p style="
-margin:0;
-font-size:14px;
-color:#64748b;
-">
-© ${new Date().getFullYear()} Evo Global Insight
-</p>
-
-<p style="
-margin-top:8px;
-font-size:12px;
-color:#94a3b8;
-">
-This is an automated security email. Please do not reply.
-</p>
-
-</td>
-</tr>
-
-</table>
-
-</td>
-</tr>
-</table>
-
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
-
             `,
         };
         const info = await transporter.sendMail(mailOptions);

@@ -20,6 +20,9 @@ const transactionSchema = new Schema({
     completedAt: { type: Date }
 }, { timestamps: true });
 
+transactionSchema.index({ createdAt: -1 });
+transactionSchema.index({ status: 1, createdAt: -1 });
+
 transactionSchema.pre('save', async function () {
     if (this.isNew) {
         if (this.projectId) {
