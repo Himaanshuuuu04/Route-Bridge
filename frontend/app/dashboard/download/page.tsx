@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Download, FileSpreadsheet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/app/context/ToastContext";
-import { DateFilter } from "@/components/dashboard/DateFilter";
+import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
 import axios from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
@@ -93,7 +93,7 @@ export default function DownloadDataPage() {
           <div className="flex flex-col gap-8">
             <div className="space-y-4">
               <h2 className="text-lg font-semibold text-slate-800">1. Select Date Range</h2>
-              <DateFilter 
+              <DashboardFilters 
                 startDate={startDate}
                 endDate={endDate}
                 onStartDateChange={setStartDate}
@@ -101,6 +101,7 @@ export default function DownloadDataPage() {
                 onResetPage={() => {}}
                 onRefresh={() => {}}
                 isRefreshing={false}
+                hideSearch={true}
               />
             </div>
 

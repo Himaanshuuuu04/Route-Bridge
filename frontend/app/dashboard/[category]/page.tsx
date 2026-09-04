@@ -9,7 +9,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useToast } from "@/app/context/ToastContext";
 
 import { useGetCountsQuery, useGetSurveysQuery, useDeleteSurveyMutation, useUpdateSurveyStatusMutation } from "@/app/store/apiSlice";
-import { DateFilter } from "@/components/dashboard/DateFilter";
+import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
 import { SurveyTable } from "@/components/dashboard/SurveyTable";
 
 interface PageProps {
@@ -35,6 +35,24 @@ export default function CategoryPage({ params }: PageProps) {
   const [limit, setLimit] = useState(10);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [uid, setUid] = useState("");
+  const [pid, setPid] = useState("");
+  const [debouncedUid, setDebouncedUid] = useState("");
+  const [debouncedPid, setDebouncedPid] = useState("");
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedUid(uid);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [uid]);
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedPid(pid);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [pid]);
 
   const { data: counts, isLoading: isCountsLoading, refetch: refetchCounts } = useGetCountsQuery({ startDate, endDate });
   const { data: surveys = [], isLoading: isSurveysLoading, isFetching: isSurveysFetching, refetch: refetchSurveys } = useGetSurveysQuery({ 
@@ -42,7 +60,9 @@ export default function CategoryPage({ params }: PageProps) {
     page, 
     limit, 
     startDate, 
-    endDate 
+    endDate,
+    uid: debouncedUid,
+    pid: debouncedPid
   });
 
   const [deleteSurvey] = useDeleteSurveyMutation();
@@ -100,11 +120,15 @@ export default function CategoryPage({ params }: PageProps) {
 
   return (
     <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-10 relative z-10">
-      <DateFilter 
+      <DashboardFilters 
         startDate={startDate}
         endDate={endDate}
         onStartDateChange={setStartDate}
         onEndDateChange={setEndDate}
+        uid={uid}
+        pid={pid}
+        onUidChange={setUid}
+        onPidChange={setPid}
         onResetPage={() => setPage(1)}
         onRefresh={handleRefresh}
         isRefreshing={isDataLoading}

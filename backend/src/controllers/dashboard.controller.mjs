@@ -140,9 +140,11 @@ export async function getRecentSurveys(req, res) {
         const skip = (page - 1) * limit;
         const filter = buildDateFilter(req);
         const statusQuery = req.query.status || 'All';
-        const isDefault = Object.keys(filter).length === 0 && page === 1 && statusQuery === 'All';
+        const uidQuery = req.query.uid ? req.query.uid.trim() : '';
+        const pidQuery = req.query.pid ? req.query.pid.trim() : '';
+        const isDefault = Object.keys(filter).length === 0 && page === 1 && statusQuery === 'All' && !uidQuery && !pidQuery;
 
-        const cacheKey = `dashboard:recent:${page}:${limit}:${statusQuery}:${req.query.startDate || ''}:${req.query.endDate || ''}`;
+        const cacheKey = `dashboard:recent:${page}:${limit}:${statusQuery}:${req.query.startDate || ''}:${req.query.endDate || ''}:${uidQuery}:${pidQuery}`;
         
         // Try reading from cache first
         const cachedData = await redisConnection.get(cacheKey);
@@ -163,6 +165,18 @@ export async function getRecentSurveys(req, res) {
             else if (statusVal === 'Security Term' || statusVal === 'security_term') statusVal = 'security_term';
             else if (statusVal === 'Screen Out' || statusVal === 'screened_out') statusVal = 'screened_out';
             filter.status = statusVal;
+        }
+
+        if (uidQuery) {
+            filter.$or = [
+                { transactionToken: { $regex: uidQuery, $options: 'i' } },
+                { vendorRid: { $regex: uidQuery, $options: 'i' } },
+                { uid: { $regex: uidQuery, $options: 'i' } }
+            ];
+        }
+
+        if (pidQuery) {
+            filter.projectId = { $regex: pidQuery, $options: 'i' };
         }
 
         const surveys = await TransactionModel.find(filter)

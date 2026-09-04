@@ -149,8 +149,8 @@ export const apiSlice = createApi({
       },
       providesTags: ['Counts'],
     }),
-    getSurveys: builder.query<Survey[], { category: string; page: number; limit: number; startDate?: string; endDate?: string }>({
-      query: ({ category, page, limit, startDate, endDate }) => {
+    getSurveys: builder.query<Survey[], { category: string; page: number; limit: number; startDate?: string; endDate?: string; uid?: string; pid?: string }>({
+      query: ({ category, page, limit, startDate, endDate, uid, pid }) => {
         let formattedStartDate = startDate;
         let formattedEndDate = endDate;
         if (startDate) {
@@ -174,6 +174,8 @@ export const apiSlice = createApi({
             status: category,
             ...(formattedStartDate && { startDate: formattedStartDate }),
             ...(formattedEndDate && { endDate: formattedEndDate }),
+            ...(uid && { uid }),
+            ...(pid && { pid }),
           },
         };
       },
