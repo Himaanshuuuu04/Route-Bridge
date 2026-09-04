@@ -40,7 +40,12 @@ export default function DashboardPage() {
     return () => clearTimeout(handler);
   }, [pid]);
 
-  const { data: counts, isLoading: isCountsLoading, refetch: refetchCounts } = useGetCountsQuery({ startDate, endDate });
+  const { data: counts, isLoading: isCountsLoading, refetch: refetchCounts } = useGetCountsQuery({ 
+    startDate, 
+    endDate,
+    uid: debouncedUid,
+    pid: debouncedPid 
+  });
   const { data: surveys = [], isLoading: isSurveysLoading, isFetching: isSurveysFetching, refetch: refetchSurveys } = useGetSurveysQuery({ 
     category: currentTab, 
     page, 

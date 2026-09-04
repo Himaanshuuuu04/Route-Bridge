@@ -34,7 +34,22 @@ function buildDateFilter(req) {
 export async function getSurveyCount(req, res) {
     try {
         const filter = buildDateFilter(req);
-        const isDefault = Object.keys(filter).length === 0;
+        const uidQuery = req.query.uid ? req.query.uid.trim() : '';
+        const pidQuery = req.query.pid ? req.query.pid.trim() : '';
+        
+        if (uidQuery) {
+            filter.$or = [
+                { transactionToken: { $regex: uidQuery, $options: 'i' } },
+                { vendorRid: { $regex: uidQuery, $options: 'i' } },
+                { uid: { $regex: uidQuery, $options: 'i' } }
+            ];
+        }
+
+        if (pidQuery) {
+            filter.projectId = { $regex: pidQuery, $options: 'i' };
+        }
+
+        const isDefault = Object.keys(filter).length === 0 && !uidQuery && !pidQuery;
 
         // Try reading from cache if no custom date filters are applied
         if (isDefault) {

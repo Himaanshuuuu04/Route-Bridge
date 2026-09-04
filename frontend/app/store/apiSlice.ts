@@ -122,7 +122,7 @@ export const apiSlice = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ['Surveys', 'Counts', 'Suppliers', 'Vendors', 'Transactions', 'AdminSurveys', 'AdminUsers'],
   endpoints: (builder) => ({
-    getCounts: builder.query<SurveyCount, { startDate?: string; endDate?: string }>({
+    getCounts: builder.query<SurveyCount, { startDate?: string; endDate?: string; uid?: string; pid?: string }>({
       query: (params) => {
         let formattedStartDate = params.startDate;
         let formattedEndDate = params.endDate;
@@ -144,6 +144,8 @@ export const apiSlice = createApi({
           params: {
             ...(formattedStartDate && { startDate: formattedStartDate }),
             ...(formattedEndDate && { endDate: formattedEndDate }),
+            ...(params.uid && { uid: params.uid }),
+            ...(params.pid && { pid: params.pid }),
           },
         };
       },

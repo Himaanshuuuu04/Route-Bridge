@@ -54,7 +54,12 @@ export default function CategoryPage({ params }: PageProps) {
     return () => clearTimeout(handler);
   }, [pid]);
 
-  const { data: counts, isLoading: isCountsLoading, refetch: refetchCounts } = useGetCountsQuery({ startDate, endDate });
+  const { data: counts, isLoading: isCountsLoading, refetch: refetchCounts } = useGetCountsQuery({ 
+    startDate, 
+    endDate,
+    uid: debouncedUid,
+    pid: debouncedPid
+  });
   const { data: surveys = [], isLoading: isSurveysLoading, isFetching: isSurveysFetching, refetch: refetchSurveys } = useGetSurveysQuery({ 
     category: config.tabName, 
     page, 
