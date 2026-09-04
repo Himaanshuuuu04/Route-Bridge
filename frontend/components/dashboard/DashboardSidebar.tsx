@@ -58,12 +58,13 @@ export function DashboardSidebar() {
     { name: "Terminated", href: "/dashboard/terminated", icon: <XCircle className="mr-2 h-4 w-4 text-rose-500" /> },
     { name: "Quota Full", href: "/dashboard/quota", icon: <AlertTriangle className="mr-2 h-4 w-4 text-amber-500" /> },
     { name: "Security Term", href: "/dashboard/security", icon: <Activity className="mr-2 h-4 w-4 text-indigo-500" /> },
-     { name: "Download Data", href: "/dashboard/download", icon: <Download className="mr-2 h-4 w-4 text-blue-600" /> },
+    { name: "Download Data", href: "/dashboard/download", icon: <Download className="mr-2 h-4 w-4 text-blue-600" /> },
+    { name: "Settings", href: "/dashboard/settings", icon: <Settings className="mr-2 h-4 w-4 text-emerald-500" /> },
   ];
 
   const adminItems = [
     { name: "Manage Surveys", href: "/dashboard/surveys", icon: <ClipboardList className="mr-2 h-4 w-4 text-purple-600" /> },
-    { name: "Manage Users", href: "/dashboard/users", icon: <Settings className="mr-2 h-4 w-4 text-emerald-600" /> },
+    { name: "Manage Users", href: "/dashboard/users", icon: <Settings className="mr-2 h-4 w-4 text-teal-600" /> },
   ];
 
   return (

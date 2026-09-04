@@ -198,6 +198,13 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Surveys', 'Counts'],
     }),
+    rebuildCache: builder.mutation<{ message: string }, void>({
+      query: () => ({
+        url: '/api/dashboard/rebuild-cache',
+        method: 'POST',
+      }),
+      invalidatesTags: ['Surveys', 'Counts'],
+    }),
     logout: builder.mutation<{ success: boolean }, void>({
       query: () => ({
         url: '/api/user/logout',
@@ -283,6 +290,7 @@ export const {
   useGetSurveysQuery,
   useDeleteSurveyMutation,
   useUpdateSurveyStatusMutation,
+  useRebuildCacheMutation,
   useLogoutMutation,
   useGetAdminSurveysQuery,
   useGetAdminSurveyByIdQuery,

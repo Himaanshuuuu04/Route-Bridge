@@ -36,7 +36,10 @@ async function handleRegisteredProject(uid, pid, ip, geo, mappedStatus, transact
 
     if (updatedTransaction) {
         await webhookQueue.add('fire', { transactionId: updatedTransaction._id });
-        await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
+        await dashboardCacheQueue.add('update_entry', { 
+            transaction: updatedTransaction.toObject ? updatedTransaction.toObject() : updatedTransaction, 
+            oldStatus: transaction.status 
+        }, { removeOnComplete: true });
     }
 
     return updatedTransaction;
@@ -60,7 +63,9 @@ async function handleUnregisteredProject(uid, pid, ip, geo, mappedStatus, transa
     });
     
     await newTransaction.save();
-    await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
+    await dashboardCacheQueue.add('add_entry', { 
+        transaction: newTransaction.toObject ? newTransaction.toObject() : newTransaction 
+    }, { removeOnComplete: true });
     return newTransaction;
 }
 

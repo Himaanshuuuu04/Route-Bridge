@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config({ quiet: true });
 dotenv.config({ path: "../.env", quiet: true });
 
-export default async function create_token(user_id,user_email){
-    const tokenPayload = { id: user_id, email: user_email };
+export default async function create_token(user_id, user_email, surveyAdmin = false){
+    const tokenPayload = { id: user_id, email: user_email, surveyAdmin };
     return jwt.sign(tokenPayload,process.env.JWT_SECRET,{expiresIn:"3d"});
 }

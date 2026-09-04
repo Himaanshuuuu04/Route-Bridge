@@ -37,7 +37,7 @@ export const submitScreener = async ({ hash, vendor_rid, answers, ipAddress, ses
     if (!isQualified) {
         // Create transaction as screened_out
         const transactionToken = vendor_rid || crypto.randomUUID();
-        await TransactionModel.create({
+        const newTx = await TransactionModel.create({
             transactionToken,
             projectId: survey.projectId,
             surveyId: survey._id,
@@ -47,7 +47,9 @@ export const submitScreener = async ({ hash, vendor_rid, answers, ipAddress, ses
             status: 'screened_out'
         });
 
-        await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
+        await dashboardCacheQueue.add('add_entry', { 
+            transaction: newTx.toObject ? newTx.toObject() : newTx 
+        }, { removeOnComplete: true });
 
         return { status: 'screened_out' };
     }
@@ -57,7 +59,7 @@ export const submitScreener = async ({ hash, vendor_rid, answers, ipAddress, ses
     const transactionToken = vendor_rid || crypto.randomUUID();
 
     // Step 4: Create transaction
-    await TransactionModel.create({
+    const newTx2 = await TransactionModel.create({
         transactionToken,
         projectId: survey.projectId,
         surveyId: survey._id,
@@ -67,7 +69,9 @@ export const submitScreener = async ({ hash, vendor_rid, answers, ipAddress, ses
         status: 'started'
     });
 
-    await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
+    await dashboardCacheQueue.add('add_entry', { 
+        transaction: newTx2.toObject ? newTx2.toObject() : newTx2 
+    }, { removeOnComplete: true });
 
     // Step 5: Link Encoding
     const redirectUrl = survey.baseSupplierUrl.replace('[identifier]', transactionToken);

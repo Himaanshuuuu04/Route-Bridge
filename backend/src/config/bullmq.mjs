@@ -6,3 +6,9 @@ import '../workers/index.mjs';
 export const webhookQueue = new Queue('webhookQueue', { connection: redisConnection });
 export const dashboardCacheQueue = new Queue('dashboardCacheQueue', { connection: redisConnection });
 export const emailQueue = new Queue('emailQueue', { connection: redisConnection });
+
+// --- Scheduled Jobs ---
+dashboardCacheQueue.add('rebuild', {}, { 
+    jobId: 'dashboard-periodic-rebuild',
+    repeat: { pattern: '*/30 * * * *' } 
+});

@@ -136,11 +136,6 @@ export async function getSurveyCount(req, res) {
             timeline
         };
 
-        // Trigger queue worker to rebuild and refresh the cache in the background
-        if (isDefault) {
-            await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
-        }
-
         return res.status(200).json(dashboardData);
     } catch (error) {
         console.log(error);
@@ -154,32 +149,29 @@ export async function getRecentSurveys(req, res) {
         const limit = parseInt(req.query.limit) || 50;
         const skip = (page - 1) * limit;
         const filter = buildDateFilter(req);
-        const statusQuery = req.query.status || 'All';
         const uidQuery = req.query.uid ? req.query.uid.trim() : '';
         const pidQuery = req.query.pid ? req.query.pid.trim() : '';
-        const isDefault = Object.keys(filter).length === 0 && page === 1 && statusQuery === 'All' && !uidQuery && !pidQuery;
-
-        const cacheKey = `dashboard:recent:${page}:${limit}:${statusQuery}:${req.query.startDate || ''}:${req.query.endDate || ''}:${uidQuery}:${pidQuery}`;
         
-        // Try reading from cache first
-        const cachedData = await redisConnection.get(cacheKey);
-        if (cachedData) {
-            return res.status(200).json(JSON.parse(cachedData));
-        }
-
-        // Trigger queue worker to rebuild and refresh the cache in the background on cache miss
-        if (isDefault) {
-            await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
-        }
-
+        let statusVal = 'All';
         if (req.query.status && req.query.status !== 'All') {
-            let statusVal = req.query.status;
+            statusVal = req.query.status;
             if (statusVal === 'Complete' || statusVal === 'completed') statusVal = 'completed';
             else if (statusVal === 'Terminate' || statusVal === 'terminate') statusVal = 'terminate';
             else if (statusVal === 'Quota Full' || statusVal === 'quota_full') statusVal = 'quota_full';
             else if (statusVal === 'Security Term' || statusVal === 'security_term') statusVal = 'security_term';
             else if (statusVal === 'Screen Out' || statusVal === 'screened_out') statusVal = 'screened_out';
             filter.status = statusVal;
+        }
+
+        const dateFilterEmpty = Object.keys(buildDateFilter(req)).length === 0;
+        const isEligibleForCache = dateFilterEmpty && page === 1 && !uidQuery && !pidQuery;
+
+        if (isEligibleForCache) {
+            const listItems = await redisConnection.lrange(`dashboard:recent_list:${statusVal}`, 0, limit - 1);
+            if (listItems && listItems.length > 0) {
+                const parsedSurveys = listItems.map(item => JSON.parse(item));
+                return res.status(200).json(parsedSurveys);
+            }
         }
 
         if (uidQuery) {
@@ -224,6 +216,16 @@ async function invalidateDashboardCache() {
     }
 }
 
+export async function rebuildDashboardCache(req, res) {
+    try {
+        await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-manual-rebuild', removeOnComplete: true });
+        return res.status(200).json({ message: "Dashboard cache rebuild triggered successfully." });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
 export async function removeSurvey(req, res) {
     try {
         const { id } = req.params;
@@ -235,7 +237,11 @@ export async function removeSurvey(req, res) {
             return res.status(404).json({ message: "Survey not found" });
         }
 
+        // Synchronously invalidate cache so frontend fetches fresh data from MongoDB
         await invalidateDashboardCache();
+
+        // We trigger a rebuild since deleting might remove an item from the top 50, 
+        // requiring us to shift the list, which is complex to do inline.
         await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
 
         return res.status(200).json(survey);
@@ -252,13 +258,21 @@ export async function updateSurvey(req, res) {
         if (!id || !status) {
             return res.status(400).json({ message: "Survey ID and status are required" });
         }
-        const survey = await TransactionModel.findByIdAndUpdate(id, { status }, { new: true });
-        if (!survey) {
+        
+        const oldSurvey = await TransactionModel.findById(id).lean();
+        if (!oldSurvey) {
             return res.status(404).json({ message: "Survey not found" });
         }
 
+        const survey = await TransactionModel.findByIdAndUpdate(id, { status }, { new: true });
+        
+        // Synchronously invalidate cache so frontend fetches fresh data from MongoDB
         await invalidateDashboardCache();
-        await dashboardCacheQueue.add('rebuild', {}, { jobId: 'dashboard-rebuild-job', removeOnComplete: true });
+
+        await dashboardCacheQueue.add('update_entry', { 
+            transaction: survey.toObject ? survey.toObject() : survey, 
+            oldStatus: oldSurvey.status 
+        }, { removeOnComplete: true });
 
         return res.status(200).json(survey);
     } catch (error) {

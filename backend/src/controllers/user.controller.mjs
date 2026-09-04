@@ -55,7 +55,7 @@ export async function verifyOtp(req, res) {
         // OTP is valid, remove it from Redis
         await redisConnection.del(`otp:${email}`);
 
-        const token = await create_token(user._id, user.email);
+        const token = await create_token(user._id, user.email, user.surveyAdmin);
         const isProd = process.env.NODE_ENV === "production" || (req.get("origin") && req.get("origin").startsWith("https"));
         const cookieOptions = {
             httpOnly: true,
@@ -152,8 +152,8 @@ export async function getMe(req, res) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Cache user profile in Redis for 10 minutes (600 seconds)
-        await redisConnection.set(cacheKey, JSON.stringify(user), 'EX', 600);
+        // Cache user profile in Redis permanently
+        await redisConnection.set(cacheKey, JSON.stringify(user));
 
         return res.status(200).json(user);
     } catch (error) {
