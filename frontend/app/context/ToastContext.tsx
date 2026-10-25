@@ -30,11 +30,16 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
 
   const showToast = useCallback((message: string, type: ToastType = "info") => {
     const id = Math.random().toString(36).substr(2, 9);
-    setToasts((prev) => [...prev, { id, message, type }]);
+    setToasts((prev) => {
+      // Prevent stacking duplicate messages
+      const isDuplicate = prev.some((t) => t.message === message);
+      if (isDuplicate) return prev;
+      return [...prev.slice(-3), { id, message, type }];
+    });
 
     setTimeout(() => {
       setToasts((prev) => prev.filter((toast) => toast.id !== id));
-    }, 5000);
+    }, 3500);
   }, []);
 
   const removeToast = (id: string) => {
@@ -44,31 +49,24 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+      <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm pointer-events-none">
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg border backdrop-blur-md transition-all duration-300 animate-in slide-in-from-right-5 fade-in
-              ${
-                toast.type === "success"
-                  ? "bg-green-500/10 border-green-500/20 text-green-700 dark:text-green-400"
-                  : toast.type === "error"
-                  ? "bg-red-500/10 border-red-500/20 text-red-700 dark:text-red-400"
-                  : "bg-zinc-800/10 border-zinc-200 dark:bg-zinc-100/10 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100"
-              }
-            `}
+            className="pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-2xl bg-slate-900 text-slate-100 border border-slate-800/80 shadow-2xl shadow-slate-950/20 transition-all duration-200 animate-in slide-in-from-bottom-2 fade-in"
           >
-            {toast.type === "success" && <CheckCircle2 className="w-5 h-5" />}
-            {toast.type === "error" && <AlertCircle className="w-5 h-5" />}
-            {toast.type === "info" && <Info className="w-5 h-5" />}
+            {toast.type === "success" && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
+            {toast.type === "error" && <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />}
+            {toast.type === "info" && <Info className="w-4 h-4 text-sky-400 shrink-0" />}
             
-            <p className="text-sm font-medium">{toast.message}</p>
+            <p className="text-xs font-semibold text-slate-100 select-none tracking-tight">{toast.message}</p>
             
             <button
               onClick={() => removeToast(toast.id)}
-              className="ml-auto text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+              className="ml-auto p-1 text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer shrink-0"
+              title="Close notification"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
         ))}

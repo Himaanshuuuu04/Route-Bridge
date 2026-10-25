@@ -1,0 +1,68 @@
+import express from "express";
+
+const router = express.Router();
+
+// =========================================================================
+// MOCK ROUTES FOR END-TO-END TESTING
+// =========================================================================
+router.get("/mock-supplier", (req, res) => {
+  const { uid, pid } = req.query;
+  res.send(`
+    <html>
+      <head>
+        <title>Mock Supplier Survey</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 40px; background: #f8fafc; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; box-sizing: border-box; }
+          .card { background: white; padding: 32px; border-radius: 12px; box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.05), 0 10px 30px -15px rgba(0, 0, 0, 0.1); max-width: 500px; width: 100%; border: 1px solid #e2e8f0; }
+          h1 { font-size: 22px; color: #0f172a; margin-top: 0; margin-bottom: 8px; font-weight: 700; }
+          p { margin: 12px 0; color: #475569; font-size: 15px; line-height: 1.5; }
+          .info { background: #f1f5f9; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 13px; margin: 16px 0; border: 1px solid #e2e8f0; overflow-x: auto; }
+          .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+          .btn { padding: 12px; border-radius: 8px; text-decoration: none; color: white; font-weight: 600; font-size: 14px; text-align: center; transition: background 0.2s; border: none; cursor: pointer; }
+          .btn-complete { background: #10b981; }
+          .btn-complete:hover { background: #059669; }
+          .btn-terminate { background: #ef4444; }
+          .btn-terminate:hover { background: #dc2626; }
+          .btn-quota { background: #f59e0b; }
+          .btn-quota:hover { background: #d97706; }
+          .btn-security { background: #6366f1; }
+          .btn-security:hover { background: #4f46e5; }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <h1>Mock Supplier Survey</h1>
+          <p>You have successfully matched the screener rules and redirected to the supplier survey page!</p>
+          <div class="info">
+            <strong>Transaction ID (uid):</strong> ${uid}<br/>
+            <strong>Project ID (pid):</strong> ${pid}
+          </div>
+          <p>Select a survey outcome below to simulate the supplier redirecting the respondent back to the backend legacy bridge:</p>
+          <div class="btn-group">
+            <a href="/l/complete?uid=${uid}&pid=${pid}" class="btn btn-complete">Complete (100% OK)</a>
+            <a href="/l/terminate?uid=${uid}&pid=${pid}" class="btn btn-terminate">Screen Out (Terminate)</a>
+            <a href="/l/quotafull?uid=${uid}&pid=${pid}" class="btn btn-quota">Quota Full</a>
+            <a href="/l/securityterm?uid=${uid}&pid=${pid}" class="btn btn-security">Security Term</a>
+          </div>
+        </div>
+      </body>
+    </html>
+  `);
+});
+
+const handleMockVendorCallback = (statusStr) => (req, res) => {
+  // Check multiple query variations (rid, vendor_rid, uid) for flexibility
+  const identifier = req.query.vendor_rid || req.query.rid || req.query.uid || "Unknown";
+  console.log("\x1b[36m%s\x1b[0m", `[Mock Vendor Callback] Webhook trigger successfully received!`);
+  console.log(`  └─ Vendor RID: ${identifier}`);
+  console.log(`  └─ Simulated Status Endpoint: ${statusStr}`);
+  console.log(`  └─ Timestamp: ${new Date().toISOString()}\n`);
+  res.status(200).send(`Mock Vendor received ${statusStr} postback OK!`);
+};
+
+router.get("/mock-vendor-callback/complete", handleMockVendorCallback("Complete"));
+router.get("/mock-vendor-callback/terminate", handleMockVendorCallback("Terminate"));
+router.get("/mock-vendor-callback/quotafull", handleMockVendorCallback("Quota Full"));
+router.get("/mock-vendor-callback/securityterm", handleMockVendorCallback("Security Term"));
+
+export default router;
